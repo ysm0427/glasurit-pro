@@ -27,7 +27,7 @@ export const TONER_DB: Record<string, TonerData> = {
 
 export const OEM_COLORS: { code: string; name: string }[] = [
     // 👇👇👇 여기에 글라슈리트 엑셀 데이터 복사 👇👇👇
-    { code: 'AZ', name: '펄' },
+
     // 👆👆👆 여기에 글라슈리트 엑셀 데이터 복사 👆👆👆
 ];
 
