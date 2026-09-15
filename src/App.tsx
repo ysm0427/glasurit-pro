@@ -2,9 +2,10 @@ import React, { useState, useEffect, useRef, useMemo } from 'react';
 import { Sliders, Trash2, Plus, Minus, X, FolderOpen, Maximize, Camera, ScanLine, Beaker, Sun, Droplet, Image as ImageIcon, Lock, Unlock, Layers, ChevronRight, ChevronDown, ChevronUp, BookOpen, Share2, Zap, Search, FileSpreadsheet, History, PaintBucket, Columns, Mail, Code, Users, CreditCard, AlertTriangle, ThumbsUp, Eye, Calendar, RefreshCw, MessageSquare, Send, Save, CheckCircle, Edit3, Target } from 'lucide-react';
 
 interface TonerData { role: string; type: string; face: string; flop: string; desc: string; details?: [string, string][]; }
+
 export const TONER_DB: Record<string, TonerData> = {
   // =====================================================================
-  // 🚀 [1구간] 90라인 시스템 수지 및 첨가제 
+  // 🚀 [1구간] 90라인 시스템 수지 및 첨가제
   // =====================================================================
   '90-M4': { 
     role: '스탠다드 믹싱 베이스', type: 'binder', face: '#ffffff', flop: '#ffffff', 
@@ -880,7 +881,7 @@ export const TONER_DB: Record<string, TonerData> = {
       ['⚠️ 도장 테크닉 경고', '분말 성향을 띠므로 100-MB50 수지에 완벽히 개어 액상화시킨 뒤 흩뿌려야 표면에 하얗게 덩어리지는(Clumping) 하자를 막을 수 있습니다.'],
       ['💡 심층 비교 분석', '100라인 도장 특유의 \'얇은 도막 두께\' 덕분에, 다이아몬드 펄 고유의 예리한 질감이 도막에 깊숙이 파묻히지 않고 표면에서 가장 화려하고 영롱하게 살아 숨 쉽니다.']
     ] 
-  }
+  };
 export const catalogData = Object.entries(TONER_DB).map(([code, data]) => { return { code, ...data }; });
 export const safeNum = (val: any): number => { const num = Number(val); return isNaN(num) ? 0 : num; };
 export const isTonerMetallic = (role: string) => { const r = role || ''; return r.includes('알루미늄') || r.includes('실버') || r.includes('펄') || r.includes('이펙트') || r.includes('다이아몬드') || r.includes('글라스') || r.includes('시라릭') || r.includes('매직'); };
@@ -1056,8 +1057,7 @@ export default function App() {
             </div>
         </div>
       </div>
-
-      <div className="fixed bottom-0 left-0 w-full z-50 bg-slate-900 p-4 border-t border-slate-800 shadow-[0_-10px_30px_rgba(0,0,0,0.5)] flex justify-between items-center">
+<div className="fixed bottom-0 left-0 w-full z-50 bg-slate-900 p-4 border-t border-slate-800 shadow-[0_-10px_30px_rgba(0,0,0,0.5)] flex justify-between items-center">
           <div className="flex gap-4">
              <div className="text-white text-xs">베이스: <span className="text-blue-400 font-bold text-base">{totalBaseWeight}g</span> <span className="text-slate-500">+ 환원제 {(parseFloat(totalBaseWeight)*(isBaseMetallic?0.2:0.1)).toFixed(1)}g</span></div>
              {isThreeCoatMode && <div className="text-white text-xs">펄: <span className="text-purple-400 font-bold text-base">{totalPearlWeight}g</span> <span className="text-slate-500">+ 환원제 {(parseFloat(totalPearlWeight)*(isPearlMetallic?0.2:0.1)).toFixed(1)}g</span></div>}
@@ -1069,4 +1069,3 @@ export default function App() {
     </div>
   );
 }
-};
