@@ -1,3 +1,7 @@
+import React, { useState, useEffect, useRef, useMemo } from 'react';
+import { Sliders, Trash2, Plus, Minus, X, FolderOpen, Maximize, Camera, ScanLine, Beaker, Sun, Droplet, Image as ImageIcon, Lock, Unlock, Layers, ChevronRight, ChevronDown, ChevronUp, BookOpen, Share2, Zap, Search, FileSpreadsheet, History, PaintBucket, Columns, Mail, Code, Users, CreditCard, AlertTriangle, ThumbsUp, Eye, Calendar, RefreshCw, MessageSquare, Send, Save, CheckCircle, Edit3, Target } from 'lucide-react';
+
+interface TonerData { role: string; type: string; face: string; flop: string; desc: string; details?: [string, string][]; }
 export const TONER_DB: Record<string, TonerData> = {
   // =====================================================================
   // 🚀 [1구간] 90라인 시스템 수지 및 첨가제 
@@ -877,4 +881,192 @@ export const TONER_DB: Record<string, TonerData> = {
       ['💡 심층 비교 분석', '100라인 도장 특유의 \'얇은 도막 두께\' 덕분에, 다이아몬드 펄 고유의 예리한 질감이 도막에 깊숙이 파묻히지 않고 표면에서 가장 화려하고 영롱하게 살아 숨 쉽니다.']
     ] 
   }
+export const catalogData = Object.entries(TONER_DB).map(([code, data]) => { return { code, ...data }; });
+export const safeNum = (val: any): number => { const num = Number(val); return isNaN(num) ? 0 : num; };
+export const isTonerMetallic = (role: string) => { const r = role || ''; return r.includes('알루미늄') || r.includes('실버') || r.includes('펄') || r.includes('이펙트') || r.includes('다이아몬드') || r.includes('글라스') || r.includes('시라릭') || r.includes('매직'); };
+
+// eslint-disable-next-line
+const textureCache: any = {};
+export const getCachedTexture = (type: string, faceColor: string, flopColor: string, isMetallic: boolean): React.CSSProperties => {
+    if (!isMetallic || type === 'binder' || type === 'solid' || type === 'candy') return { background: `linear-gradient(135deg, ${faceColor} 0%, ${flopColor} 100%)` };
+    const key = `${type}_${faceColor}_${flopColor}`; if (textureCache[key]) return textureCache[key];
+    let baseFreq = '0.8', alphaMult = '4', surfaceScale = '1.5', specConst = '1.2';
+    if (type === 'xirallic') { baseFreq = '0.6'; alphaMult = '8'; surfaceScale = '3'; specConst = '1.8'; }
+    else if (type === 'pearl') { baseFreq = '0.5'; alphaMult = '6'; surfaceScale = '2'; specConst = '1.5'; }
+    else if (type === 'silver_fine') { baseFreq = '1.2'; alphaMult = '3'; surfaceScale = '1.2'; specConst = '1.0'; }
+    else if (type === 'silver_coarse') { baseFreq = '0.4'; alphaMult = '8'; surfaceScale = '2.5'; specConst = '1.6'; }
+    const safeFaceColor = faceColor || '#ffffff'; const safeFlopColor = flopColor || '#ffffff';
+    const svg = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200"><filter id="f"><feTurbulence type="fractalNoise" baseFrequency="${baseFreq}" numOctaves="3"/><feColorMatrix values="1 0 0 0 0 0 1 0 0 0 0 0 1 0 0 0 0 0 ${alphaMult} -1"/><feSpecularLighting surfaceScale="${surfaceScale}" specularConstant="${specConst}" specularExponent="25" lighting-color="%23ffffff"><feDistantLight azimuth="45" elevation="55"/></feSpecularLighting></filter><rect width="100%25" height="100%25" fill="${encodeURIComponent(safeFaceColor)}"/><rect width="100%25" height="100%25" filter="url(%23f)" opacity="0.6"/></svg>`;
+    const result = { backgroundColor: safeFaceColor, backgroundImage: `url("data:image/svg+xml;utf8,${svg}"), radial-gradient(circle at 50% 20%, ${safeFaceColor} 0%, ${safeFlopColor} 80%, #000000 100%)`, backgroundBlendMode: 'overlay, normal' as any, boxShadow: 'inset 0 -10px 30px rgba(0,0,0,0.8)' };
+    textureCache[key] = result; return result;
+};
+
+export const packToners = (tonerList: any[]) => { return tonerList.filter((t: any) => t.code).map((t: any) => `${t.code}_${t.adjustedWeight || ''}`).join('*'); };
+export const unpackToners = (str: string) => { if (!str) return []; return str.split('*').map((t, i) => { const [c, w] = t.split('_'); return { id: `restored_${Date.now()}_${i}`, code: c || '', adjustedWeight: w || '', history: [], memo: '', isExpanded: false }; }); };
+
+export default function App() {
+  const [isLoaded, setIsLoaded] = useState(false);
+  const [toners, setToners] = useState<any[]>([{ id: `b_init`, code: '', adjustedWeight: "", history: [], memo: "", isExpanded: false }]);
+  const [pearlToners, setPearlToners] = useState<any[]>([{ id: `p_init`, code: '', adjustedWeight: "", history: [], memo: "", isExpanded: false }]);
+  const [isThreeCoatMode, setIsThreeCoatMode] = useState(false); 
+  const [targetColorCode, setTargetColorCode] = useState(''); 
+  const [registrationDate, setRegistrationDate] = useState(new Date().toISOString().split('T')[0]);
+  
+  const [totalBaseWeight, setTotalBaseWeight] = useState("0.00"); 
+  const [totalPearlWeight, setTotalPearlWeight] = useState("0.00"); 
+  
+  const [catalogSearch, setCatalogSearch] = useState('');
+  const [isBaseMetallic, setIsBaseMetallic] = useState(false); 
+  const [isPearlMetallic, setIsPearlMetallic] = useState(false);
+
+  const codeRefs = useRef<{ [key: string]: HTMLInputElement | null }>({}); 
+  const weightRefs = useRef<{ [key: string]: HTMLInputElement | null }>({});
+  const [focusTarget, setFocusTarget] = useState<{id: string, type: 'code'|'weight'} | null>(null);
+
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+        const savedBase = localStorage.getItem('glasurit_base'); const savedPearl = localStorage.getItem('glasurit_pearl'); 
+        if (savedBase) setToners(JSON.parse(savedBase)); if (savedPearl) setPearlToners(JSON.parse(savedPearl));
+        setIsLoaded(true);
+    }
+  }, []);
+
+  useEffect(() => {
+      if (isLoaded && typeof window !== 'undefined') {
+          localStorage.setItem('glasurit_base', JSON.stringify(toners)); localStorage.setItem('glasurit_pearl', JSON.stringify(pearlToners)); 
+      }
+  }, [toners, pearlToners, isLoaded]);
+
+  useEffect(() => {
+    const baseTotal = toners.reduce((sum, t) => sum + safeNum(parseFloat(t.adjustedWeight)), 0); 
+    const pearlTotal = pearlToners.reduce((sum, t) => sum + safeNum(parseFloat(t.adjustedWeight)), 0);
+    setTotalBaseWeight(baseTotal.toFixed(2)); setTotalPearlWeight(pearlTotal.toFixed(2));
+    setIsBaseMetallic(toners.some(t => TONER_DB[t.code] && isTonerMetallic(TONER_DB[t.code].role)));
+    setIsPearlMetallic(pearlToners.some(t => TONER_DB[t.code] && isTonerMetallic(TONER_DB[t.code].role)));
+  }, [toners, pearlToners]);
+
+  useEffect(() => {
+    if (focusTarget) {
+      setTimeout(() => {
+        const el = focusTarget.type === 'code' ? codeRefs.current[focusTarget.id] : weightRefs.current[focusTarget.id];
+        if (el) { el.focus(); el.scrollIntoView({ behavior: 'smooth', block: 'center' }); }
+        setFocusTarget(null);
+      }, 50);
+    }
+  }, [focusTarget]);
+
+  const handleCodeChange = (id: string, newCode: string, isPearl = false) => {
+    const rawVal = newCode.toUpperCase(); 
+    const setter = isPearl ? setPearlToners : setToners;
+    setter(prev => prev.map(t => { if (t.id === id) { if (TONER_DB[rawVal]) setFocusTarget({ id: id, type: 'weight' }); return { ...t, code: rawVal }; } return t; }));
+  };
+
+  const handleWeightChange = (id: string, rawValue: string, isPearl = false) => {
+    let val = rawValue.replace(/[^0-9.]/g, ''); const parts = val.split('.'); if (parts.length > 2) val = parts[0] + '.' + parts.slice(1).join('');
+    const setter = isPearl ? setPearlToners : setToners; setter(prev => prev.map(t => t.id === id ? { ...t, adjustedWeight: val } : t));
+  };
+
+  const addToner = (isPearl = false) => {
+    const newToner = { id: `new_${Date.now()}`, code: '', adjustedWeight: "", history: [], memo: "", isExpanded: false };
+    if (isPearl) setPearlToners([...pearlToners, newToner]); else setToners([...toners, newToner]);
+    setFocusTarget({ id: newToner.id, type: 'code' });
+  };
+
+  const removeToner = (id: string, isPearl = false) => {
+    if (isPearl) setPearlToners(pearlToners.filter(t => t.id !== id)); else setToners(toners.filter(t => t.id !== id));
+  };
+
+  const renderTonerList = (tonerList: any[], isPearl: boolean) => (
+    <div className="space-y-2">
+      <div className="text-xs font-black text-slate-400 flex justify-between border-b pb-1">
+        <span>{isPearl ? "▼ 펄 코트 (Mid Coat)" : "▼ 베이스 원색 리스트 (Ground Coat)"}</span>
+      </div>
+      {tonerList.map((toner) => {
+        const info = TONER_DB[toner.code] || { role: '미등록 안료', type: 'solid', face: '#e2e8f0', flop: '#e2e8f0', desc: '' };
+        const isEffect = info.type !== 'solid' && info.type !== 'binder' && info.type !== 'candy';
+        return (
+          <div key={toner.id} className={`flex flex-col p-2.5 mb-1.5 rounded-xl border shadow-sm transition-colors ${isPearl ? 'bg-purple-50 border-purple-200' : 'bg-slate-50 border-slate-200'}`}>
+            <div className="flex flex-col sm:flex-row items-start sm:items-center w-full">
+              <div className="flex flex-col flex-1 w-full overflow-hidden">
+                  <div className="flex items-center gap-2 mb-1 w-full">
+                      <div className="flex w-14 h-10 rounded shadow-sm border border-slate-300 overflow-hidden shrink-0">
+                           <div className="flex-1" style={getCachedTexture(info.type, info.face, info.flop, isEffect)}></div>
+                           <div className="flex-1 border-l border-slate-300" style={{ background: `linear-gradient(135deg, ${info.face} 0%, ${isEffect ? info.flop : 'rgba(0,0,0,0.2)'} 100%)` }}></div>
+                      </div>
+                      <input ref={el => { codeRefs.current[toner.id] = el; }} value={toner.code} onChange={e => handleCodeChange(toner.id, e.target.value, isPearl)} 
+                          onKeyDown={(e) => { if (e.key === 'Enter') { e.preventDefault(); setFocusTarget({ id: toner.id, type: 'weight' }); } }}
+                          type="text" className="w-24 text-center text-sm font-black border border-slate-300 rounded p-1.5 focus:border-blue-500 focus:outline-none shadow-inner shrink-0 uppercase" placeholder="번호" />
+                      <span className={`font-bold text-sm truncate ${isPearl ? 'text-purple-700' : 'text-blue-700'}`}>{info.role}</span>
+                  </div>
+              </div>
+              <div className="flex items-center self-end sm:self-auto bg-white border rounded-md px-1.5 py-0.5 shrink-0 shadow-sm mt-2 sm:mt-0">
+                 <input ref={el => { weightRefs.current[toner.id] = el; }} inputMode="decimal" value={toner.adjustedWeight} 
+                     onChange={e => handleWeightChange(toner.id, e.target.value, isPearl)} onKeyDown={(e) => { if(e.key==='Enter') addToner(isPearl); }}
+                     className={`w-16 text-right text-base font-black focus:outline-none mx-1 ${isPearl ? 'text-purple-600' : 'text-blue-600'}`} placeholder="0.0" />
+                 <span className="text-[10px] font-bold text-slate-400 ml-1 mr-1">g</span>
+                 <button onClick={() => removeToner(toner.id, isPearl)} className="ml-1 text-slate-300 hover:text-red-500"><Trash2 size={18}/></button>
+              </div>
+            </div>
+          </div>
+        )
+      })}
+      <button onClick={() => addToner(isPearl)} className="w-full py-3 border border-dashed border-slate-300 bg-white hover:bg-blue-50 rounded-lg text-slate-500 font-bold text-sm flex justify-center items-center shadow-sm">
+          <Plus size={18} className="mr-1"/>안료 추가
+      </button>
+    </div>
+  );
+
+  return (
+    <div className="min-h-screen bg-slate-100 text-slate-800 font-sans pb-[180px]">
+      <header className="bg-slate-900 flex justify-between items-center p-4 border-b border-slate-800 shadow-md">
+        <h1 className="text-xl font-semibold text-white flex items-center gap-2"><div className="w-8 h-8 bg-blue-500 rounded flex items-center justify-center font-bold">G</div>조색 Pro (Glasurit)</h1>
+      </header>
+
+      <div className="p-3 grid grid-cols-1 lg:grid-cols-12 gap-4">
+        <div className="lg:col-span-7 bg-white border border-slate-300 rounded-xl shadow-xl p-4">
+          <h2 className="text-sm font-bold flex items-center mb-3"><Sliders className="text-blue-600 mr-2" size={16} />배합 워크 시트</h2>
+          <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 mb-4">
+              <input type="date" value={registrationDate} onChange={e=>setRegistrationDate(e.target.value)} className="border p-2 rounded text-sm font-bold w-full" />
+              <input type="text" value={targetColorCode} onChange={e=>setTargetColorCode(e.target.value)} placeholder="컬러코드 (예: UX)" className="border p-2 rounded text-sm font-bold w-full uppercase" />
+          </div>
+
+          {renderTonerList(toners, false)}
+
+          <div className="mt-6 pt-4 border-t border-slate-200 flex justify-between items-center mb-4">
+              <label className="flex items-center cursor-pointer bg-slate-50 px-3 py-2 rounded-lg border">
+                <span className="mr-2 text-xs font-black text-purple-700">3Coat (펄 추가) 켜기</span>
+                <input type="checkbox" className="sr-only" checked={isThreeCoatMode} onChange={() => setIsThreeCoatMode(!isThreeCoatMode)} />
+                <div className={`w-10 h-5 rounded-full transition-colors ${isThreeCoatMode ? 'bg-purple-500' : 'bg-slate-300'}`}></div>
+              </label>
+          </div>
+          {isThreeCoatMode && renderTonerList(pearlToners, true)}
+        </div>
+
+        <div className="lg:col-span-5 bg-white border border-slate-300 rounded-xl shadow-xl p-4">
+            <h3 className="text-xs font-black mb-2 text-slate-800">💎 글라슈리트 카탈로그 검색</h3>
+            <input type="text" value={catalogSearch} onChange={e=>setCatalogSearch(e.target.value)} placeholder="안료명 / 색상코드 검색" className="w-full bg-slate-100 border border-slate-300 text-slate-800 text-sm px-3 py-2 rounded-lg mb-4" />
+            
+            <div className="h-[500px] overflow-y-auto space-y-2 pr-1 custom-scrollbar">
+                {catalogData.filter(item => item.code.includes(catalogSearch.toUpperCase()) || item.role.includes(catalogSearch)).map((item) => (
+                    <div key={item.code} className="p-3 border rounded-lg hover:border-blue-400 cursor-pointer shadow-sm">
+                        <div className="font-black text-blue-700">{item.code} <span className="text-xs text-slate-600 ml-1">{item.role}</span></div>
+                        <p className="text-xs text-slate-500 mt-1">{item.desc}</p>
+                    </div>
+                ))}
+            </div>
+        </div>
+      </div>
+
+      <div className="fixed bottom-0 left-0 w-full z-50 bg-slate-900 p-4 border-t border-slate-800 shadow-[0_-10px_30px_rgba(0,0,0,0.5)] flex justify-between items-center">
+          <div className="flex gap-4">
+             <div className="text-white text-xs">베이스: <span className="text-blue-400 font-bold text-base">{totalBaseWeight}g</span> <span className="text-slate-500">+ 환원제 {(parseFloat(totalBaseWeight)*(isBaseMetallic?0.2:0.1)).toFixed(1)}g</span></div>
+             {isThreeCoatMode && <div className="text-white text-xs">펄: <span className="text-purple-400 font-bold text-base">{totalPearlWeight}g</span> <span className="text-slate-500">+ 환원제 {(parseFloat(totalPearlWeight)*(isPearlMetallic?0.2:0.1)).toFixed(1)}g</span></div>}
+          </div>
+          <div className="text-yellow-400 font-black text-2xl">
+              총 {(parseFloat((parseFloat(totalBaseWeight) * (isBaseMetallic ? 1.2 : 1.1)).toFixed(1)) + (isThreeCoatMode ? parseFloat((parseFloat(totalPearlWeight) * (isPearlMetallic ? 1.2 : 1.1)).toFixed(1)) : 0)).toFixed(1)}g
+          </div>
+      </div>
+    </div>
+  );
+}
 };
