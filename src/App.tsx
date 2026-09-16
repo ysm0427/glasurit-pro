@@ -679,10 +679,10 @@ export default function App() {
     }
 
     const setter = isPearl ? setPearlToners : setToners;
-    setter(prev => prev.map(toner => { 
+setter(prev => prev.map(toner => { 
         if (toner.id === id) { 
             if (TONER_DB[val]) { setFocusTarget({ id: id, type: 'weight' }); } 
-            return { ...t, code: val }; 
+            return { ...toner, code: val };  // 👈 t 를 toner 로 바꿔주시면 끝납니다!
         } 
         return toner; 
     }));
