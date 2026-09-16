@@ -753,7 +753,7 @@ export default function App() {
   const [isPearlGuideOpen, setIsPearlGuideOpen] = useState(false);
   const [activePearlLevel, setActivePearlLevel] = useState(6);
   
-  const [boardPosts, setBoardPosts] = useState([
+  const [boardPosts, setBoardPosts] = useState<any[]>([
       { id: 1, brand: '현대', code: 'UG4', date: '2026-09-11', likes: 12, views: 45, author: '윤프로', spec: '이색 심함, 보카시 블렌딩 필수', baseFormula: [{code: 'WT 321', adjustedWeight: '15.5'}], pearlFormula: [], isThreeCoat: false }
   ]);
 
