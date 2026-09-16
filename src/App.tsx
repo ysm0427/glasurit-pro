@@ -6,7 +6,7 @@ import {
 
 interface TonerData { role: string; type: string; face: string; flop: string; desc: string; details?: [string, string][]; }
 
-const LAST_PATCH_DATE = "2026.09.16 (BASF 글라슈리트 90/22/100 라인 마스터 이식)"; 
+const LAST_PATCH_DATE = "2026.09.16 (BASF 글라슈리트 90/22/100 라인 마스터 완벽 이식)"; 
 
 export const PEARL_LEVELS = [
   { level: 1, name: 'Ultra Micro 울트라 마이크로', size: '1~5µm', desc: '지문 사이로 스며드는 전분 가루 수준의 극미세 입자 크기를 가진 진주빛 조색제입니다.', faceFlop: '진주조개 안쪽을 긁어낸 듯한 뽀얗고 탁한 우윳빛을 띱니다. 정면과 측면 모두 왜곡 없이 은은하고 부드러운 실키 글로우(Silky Glow)를 일정하게 유지합니다.', usage: '최고급 세단의 깊은 화이트 펄 바탕을 깔거나, 입자가 거친 안료의 톤을 부드럽게 눌러줄 때 처방됩니다.', mix: '투명도가 낮고 은폐력이 매우 뛰어나, 베이스의 밀도를 높이기 위해 지시된 조색 데이터 수치를 정확히 계량합니다.', warning: '메탈릭이 뭉치는 얼룩(Mottling) 현상이 거의 발생하지 않아 초급자도 수월하게 도장할 수 있습니다.', codes: [] },
@@ -21,10 +21,8 @@ export const PEARL_LEVELS = [
   { level: 10, name: 'Max Fantasy Extreme 맥스 판타지 익스트림', size: '70µm 이상', desc: '얼음 설탕 조각 크기의 초대형 기재를 사용한 커스텀 전용 맥스 익스트림 안료입니다.', faceFlop: '98-M88 (홀로그래픽 실버): 레이저 프리즘처럼 시야를 찌르는 극단적인 7색 무지개빛 난반사를 뿜어냅니다.', usage: '시선을 압도해야 하는 모터쇼 출품 차량이나 극한의 화려함을 추구하는 커스텀 익스테리어 전용 특수 도장에 처방됩니다.', mix: '매우 굵은 특수 입자이므로 일반적인 조색 데이터보다는 작업자의 커스텀 의도와 도막 두께에 맞춘 특수 비율 적용이 필요합니다.', warning: '일반 스프레이 건 노즐 막힘에 주의해야 하며, 클리어 도장 후 샌딩(평탄화) 및 재클리어 공정이 동반되어야 얼룩과 거칠음을 방지할 수 있습니다.', codes: ['98-M88'] }
 ];
 
+// 💡 [지시 2] BASF 마스터 데이터 전면 교체 (5대 특성 100% 반영)
 export const TONER_DB: Record<string, TonerData> = {
-  // =====================================================================
-  // 🚀 [1구간] 90라인 시스템 수지, 첨가제 및 무채색
-  // =====================================================================
   '90-M4': { role: '스탠다드 믹싱 베이스', type: 'binder', face: '#ffffff', flop: '#ffffff', desc: '수용성 조색 시스템의 기본 뼈대를 형성하는 투명 수지입니다.', details: [
     ['화학적 특성', '수용성 아크릴 및 폴리우레탄 분산 수지로 도막의 물리적 뼈대(골조)를 완벽히 형성합니다.'],
     ['일반 특성', '90라인 시스템 전 색상의 근간이 되는 가장 필수적인 투명 베이스 수지입니다.'],
@@ -93,9 +91,9 @@ export const TONER_DB: Record<string, TonerData> = {
     ['일반 특성', '하도(서페이서) 색상이나 흠집을 완벽하게 차단하고 순백색의 면을 형성하는 바탕 공사용 백색입니다.'],
     ['외관 변화', '투명도 없이 묵직하고 정직한 우윳빛 순백색의 완전 솔리드 면을 뿜어냅니다.'],
     ['배합 비율', '솔리드 화이트 원톤이나 밝은 파스텔톤 하도 조색 시 베이스 뼈대로 다량 배합됩니다.'],
-    ['비교 분석', '[경고] 펄(Mica) 안료와 섞이면 펄 고유의 맑은 진주광을 시멘트처럼 덮어버리므로 탁색에 초주의해야 합니다.']
+    ['비교 분석', '[주의사항] 펄(Mica) 안료와 섞이면 펄 고유의 맑은 진주광을 시멘트처럼 덮어버리므로 탁색에 초주의해야 합니다.']
   ]},
-'90-A032': { role: '틴터 화이트', type: 'solid', face: '#f8fafc', flop: '#cbd5e1', desc: '메탈릭의 광채를 가리지 않는 반투명 조색용 소프트 화이트입니다.', details: [
+  '90-A032': { role: '틴터 화이트', type: 'solid', face: '#f8fafc', flop: '#cbd5e1', desc: '메탈릭의 광채를 가리지 않는 반투명 조색용 소프트 화이트입니다.', details: [
     ['화학적 특성', '입자를 고르게 분산시켜 은폐력을 의도적으로 낮춘 초미립 티타늄 틴터입니다.'],
     ['일반 특성', '맑은 톤을 유지하면서 뽀얀 느낌만 살짝 가미하는 미세 보정 및 조색 전용 안료입니다.'],
     ['외관 변화', '메탈릭 베이스에 안개처럼 깔려 입자의 반짝임을 살리면서 명도를 부드럽게 톤업(Tone-up)시킵니다.'],
@@ -137,10 +135,6 @@ export const TONER_DB: Record<string, TonerData> = {
     ['배합 비율', '명도를 1/10 단위로 아주 미세하게 떨어뜨려야 할 때 마이크로 도징(극소량) 배합합니다.'],
     ['비교 분석', '[비교] A926(메인 블랙)을 쓰기엔 톤이 너무 확 죽을까 봐 겁날 때 대체제로 사용하는 최고의 안전 보장 안료입니다.']
   ]},
-
-  // =====================================================================
-  // 🚀 [2구간] 알루미늄 / 실버 (메탈릭) 계열
-  // =====================================================================
   '90-M99/00': { role: '수퍼 파인 알루미늄', type: 'silver_fine', face: '#f8fafc', flop: '#64748b', desc: '입자가 보이지 않을 정도로 정제된 극미세 알루미늄 안료입니다.', details: [
     ['화학적 특성', '금속 입자를 극한으로 정제하여 난반사를 억제한 초미립 렌티큘러 실버 페이스트입니다.'],
     ['일반 특성', '입자감이 완전히 사라져야 하는 최고급 수입차의 하이퍼 실버 도장에 사용됩니다.'],
@@ -183,10 +177,20 @@ export const TONER_DB: Record<string, TonerData> = {
     ['배합 비율', '모틀링 제어를 위해 90-M5 블렌딩 클리어와 충분히 믹싱하여 아주 얇게 분산 도포해야 합니다.'],
     ['비교 분석', '[경고] 반사율이 너무 예리해서 하도 샌딩 기스나 서페이서 단차를 현미경처럼 100% 드러냅니다. 완벽한 평탄화가 필수입니다.']
   ]},
-
-  // =====================================================================
-  // 🚀 [3구간] 블루, 그린 원색 계열
-  // =====================================================================
+  '90-905': { role: '벨벳 실버 III', type: 'silver_fine', face: '#e2e8f0', flop: '#cbd5e1', desc: '벨벳 천처럼 빛을 흡수하듯 부드러운 반광(Matte) 느낌을 주는 특수 난반사 실버입니다.', details: [
+    ['화학적 특성', '빛을 날카롭게 튕기지 않고 도막 내부에서 포근하게 흩뿌리도록 표면 처리된 특수 알루미늄입니다.'],
+    ['일반 특성', '일부 OEM 차량의 묘한 매트 메탈릭 느낌 보정 및 플라스틱 범퍼 가니쉬 복원용입니다.'],
+    ['외관 변화', '단순한 은빛이 아니라 도막의 질감 자체를 부드럽고 뿌옇게 튜닝하는 효과를 냅니다.'],
+    ['배합 비율', '매트한 질감을 극대화하기 위해 지정된 데이터 비율에 맞춰 정밀하게 혼합합니다.'],
+    ['비교 분석', '[테크닉] 표면 얼룩(모틀링)이 유독 불규칙하게 나타나므로 에어압을 낮추고 거리를 띄워 건조하게 흩뿌려야 합니다.']
+  ]},
+  '98-M919': { role: '크리스탈 실버 (시라릭 실버)', type: 'xirallic', face: '#ffffff', flop: '#e2e8f0', desc: '은분과 유리 펄(시라릭)의 장점만 결합시킨 궁극의 투명 실버입니다.', details: [
+    ['화학적 특성', '금속 특유의 탁함을 배제하고 투과율이 극대화된 시라릭 베이스를 융합한 최첨단 안료입니다.'],
+    ['일반 특성', '맑고 투명한 캔디톤 베이스의 핵심 입자 및 눈부신 크리스탈 화이트 하이엔드 도장용입니다.'],
+    ['외관 변화', '탁한 쇳조각 반사가 아니라 투명한 얼음조각이나 유리 파편이 햇빛에 쨍하게 부서지는 압도적 맑음을 선사합니다.'],
+    ['배합 비율', '믹싱 클리어와 교반하여 도막 맨 위에 투명한 스파클링 레이어를 독립적으로 흩뿌릴 때 사용합니다.'],
+    ['비교 분석', '[경고] 은폐력이 0%에 가까워 바닥 색상(하도)의 영향을 100% 받습니다. 일반 은분으로 착각하면 완벽한 하자가 발생합니다.']
+  ]},
   '90-A528': { role: '메인 블루', type: 'solid', face: '#2563eb', flop: '#1e3a8a', desc: '가장 중립적인 스탠다드 청색 원색입니다.', details: [
     ['화학적 특성', '파란색 파장의 정중앙에 위치하여 웜/쿨 어느 쪽으로도 치우치지 않는 퓨어 블루 안료입니다.'],
     ['일반 특성', '대다수 솔리드 블루 및 범용 블루 메탈릭 조색 시 기준점이 되는 핵심 뼈대입니다.'],
@@ -207,6 +211,13 @@ export const TONER_DB: Record<string, TonerData> = {
     ['외관 변화', '블랙을 타지 않고도 자연스럽게 블루 본연의 깊이감 있고 진중한 섀도우를 형성합니다.'],
     ['배합 비율', '고채도 블루의 색감이 너무 날뛸 때, 탁해지는 블랙 대신 투입하여 색감을 차분하게 톤다운시킬 때 씁니다.'],
     ['비교 분석', '[주의사항] 명도가 기본적으로 낮으므로 다량 배합 시 전체 색상이 다소 칙칙하고 무거워지는 탁색 위험이 존재합니다.']
+  ]},
+  '90-A564': { role: '라이트 블루', type: 'solid', face: '#7dd3fc', flop: '#0284c7', desc: '자체적으로 밝고 시원한 아이스 하늘색 원색입니다.', details: [
+    ['화학적 특성', '화이트 안료 개입 없이 분자 구조 자체로 밝은 청색광을 튕겨내는 특수 블루 틴터입니다.'],
+    ['일반 특성', '투명한 파스텔톤 솔리드 블루, 아이스 블루 계열 도장에 뼈대로 사용됩니다.'],
+    ['외관 변화', '탁하지 않고 청명한 가을 하늘처럼 시원하고 맑은 톤을 도막에 부여합니다.'],
+    ['배합 비율', '스카이 블루 계열 조색 시 메인 베이스로 투입되며, 백색 안료와 섞어 파스텔톤을 조절합니다.'],
+    ['비교 분석', '[테크닉] 은폐력이 약해 화이트 하도가 필수이며, 블랙 서페이서를 쓰면 색이 우중충하게 죽어버립니다.']
   ]},
   '90-A589': { role: '진스 블루', type: 'solid', face: '#1e3a8a', flop: '#0f172a', desc: '낡은 데님 청바지처럼 깊고 진한 어두운 네이비 블루입니다.', details: [
     ['화학적 특성', '블랙에 가까울 정도로 빛 흡수율이 높게 설계된 심연의 딥 블루 틴터입니다.'],
@@ -229,7 +240,35 @@ export const TONER_DB: Record<string, TonerData> = {
     ['배합 비율', '녹색 계열 베이스 바탕색 구축 시 가장 광범위하게 쓰이는 메인 안료입니다.'],
     ['비교 분석', '[주의사항] 단독으로 과량 사용 시 발색이 다소 어둡고 진중하게 발현되므로, 맑은 색상 조색 시엔 투입량에 주의해야 합니다.']
   ]},
-'90-A105': { role: '오커 (황토)', type: 'solid', face: '#b45309', flop: '#451a03', desc: '은폐력이 매우 강하고 무거운 전형적인 황토색/흙빛 안료입니다.', details: [
+  '90-A696': { role: '올리브 그린', type: 'solid', face: '#4d7c0f', flop: '#3f6212', desc: '자연스럽고 탁한 흙빛이 섞인 카키/국방색 안료입니다.', details: [
+    ['화학적 특성', '무기질 산화 성향을 띠어 빛 반사를 부드럽게 흡수하는 탁색 계열의 녹색 구조입니다.'],
+    ['일반 특성', '지프, 랜드로버 등 오프로드 SUV 특유의 택티컬 밀리터리 카키 색상에 최적화되었습니다.'],
+    ['외관 변화', '선명함을 죽이고 흙과 나무가 섞인 듯한 무겁고 탁한 야생의 올리브 톤을 냅니다.'],
+    ['배합 비율', '오커(황토) 안료와 혼용하면 따뜻하고 야생적인 카키톤을 완벽하게 재현할 수 있습니다.'],
+    ['비교 분석', '[경고] 맑은 원색(스프링 그린 등) 조색 시 1방울이라도 섞이면 전체가 순식간에 칙칙한 늪지대 색으로 탁해지니 절대 격리해야 합니다.']
+  ]},
+  '90-A730': { role: '옐로위쉬 그린', type: 'solid', face: '#84cc16', flop: '#4d7c0f', desc: '노란기가 강하게 도는 따뜻한 연두빛 원색입니다.', details: [
+    ['화학적 특성', '그린 파장에 옐로우 파장이 지배적으로 결합된 웜톤(Warm) 그린 유기 안료입니다.'],
+    ['일반 특성', '경쾌하고 밝은 라이트 그린 원톤 차량 및 라임 옐로우 스포츠카 조색에 쓰입니다.'],
+    ['외관 변화', '차가운 청록 기운을 배제하고 봄날 은행잎처럼 따뜻하고 화사한 연두빛을 냅니다.'],
+    ['배합 비율', '레몬 옐로우 계열 안료와 결합하여 라임색을 튜닝할 때 메인으로 사용됩니다.'],
+    ['비교 분석', '[비교] A640(스프링 그린) 대비 푸른 기운이 빠지고 노란 기운이 훨씬 압도적으로 강합니다.']
+  ]},
+  '90-A741': { role: '다크 그린 옥사이드', type: 'solid', face: '#14532d', flop: '#064e3b', desc: '빛 흡수율이 높고 은폐력이 강력한 진녹색 무기 산화 안료입니다.', details: [
+    ['화학적 특성', '옥사이드(산화철) 계열의 강력한 빛 차단력을 지닌 무기질 딥 그린 구조입니다.'],
+    ['일반 특성', '짙은 카키, 오프로드 다크 그린 베이스의 하도를 단단하게 은폐할 때 사용됩니다.'],
+    ['외관 변화', '빛을 흡수하여 도막 전체를 에이징 된 듯 묵직하고 탁한 다크 올리브 톤으로 짓누릅니다.'],
+    ['배합 비율', '서페이서 얼룩을 완벽히 덮어야 하는 탁한 그린 베이스 조색 시 다량 배합됩니다.'],
+    ['비교 분석', '[경고] 투명감이 전혀 없으므로 맑고 화사한 스포츠 그린 조색 시 한 방울도 들어가선 안 됩니다.']
+  ]},
+  '90-A101': { role: '비스무스 옐로우 (하이솔리드)', type: 'solid', face: '#fef08a', flop: '#eab308', desc: '은폐력을 특수하게 끌어올린 하이솔리드 레몬 옐로우입니다.', details: [
+    ['화학적 특성', '은폐가 약한 레몬 옐로우의 단점을 극복하기 위해 입자 밀도를 압축한 특수 안료입니다.'],
+    ['일반 특성', '화이트 서페이서 하도 공정 없이도 바닥을 은폐해야 하는 밝은 옐로우 1코트 작업에 쓰입니다.'],
+    ['외관 변화', '투명한 틴팅 필터가 아니라, 밝은 채도를 유지하면서도 바닥을 시멘트처럼 완벽히 덮어버립니다.'],
+    ['배합 비율', '공정 시간을 단축해야 하는 상용차 옐로우 도장 시 단독 베이스로 다량 쓰입니다.'],
+    ['비교 분석', '[테크닉] 일반 옐로우(A115)가 서페 자국을 덮으려고 수차례 겹쳐 뿌려야 한다면, A101은 1.5코트 만에 면을 잡아냅니다.']
+  ]},
+  '90-A105': { role: '오커 (황토)', type: 'solid', face: '#b45309', flop: '#451a03', desc: '은폐력이 매우 강하고 무거운 전형적인 황토색/흙빛 안료입니다.', details: [
     ['화학적 특성', '산화철 기반의 무기질 안료로 빛 투과를 강하게 차단하는 불투명 구조입니다.'],
     ['일반 특성', '구형 베이지, 브론즈 컬러의 솔리드 하도 및 빈티지한 탁색 베이스 조색용입니다.'],
     ['외관 변화', '맑은 색상을 묵직하고 차분하게 짓누르며 도막 전체를 에이징 된 흙빛으로 다운시킵니다.'],
@@ -250,6 +289,13 @@ export const TONER_DB: Record<string, TonerData> = {
     ['배합 비율', '메탈릭 은분과 직접 결합하여 고급스러운 골드 톤을 열어줄 때 주력으로 정량 배합합니다.'],
     ['비교 분석', '[경고] 보색 관계인 푸른색 안료와 섞이는 순간, 골드가 아닌 시퍼렇게 질린 시체색(녹갈색)으로 심각한 탁색이 일어납니다.']
   ]},
+  '90-A143': { role: '다크 옐로우', type: 'solid', face: '#ca8a04', flop: '#854d0e', desc: '명도가 억제된 진하고 정직한 진노랑(머스타드) 안료입니다.', details: [
+    ['화학적 특성', '순수 옐로우 채도를 유지하되 명도를 낮춘 유기 안료로 묵직한 베이스 형성에 기여합니다.'],
+    ['일반 특성', '건설 중장비(굴삭기) 경고색 및 짙고 묵직한 진노랑 솔리드 원톤 컬러 도장에 쓰입니다.'],
+    ['외관 변화', '가벼워 보이지 않는 단단하고 묵직한 진노랑 섀도우를 형성하여 안정감을 줍니다.'],
+    ['배합 비율', '완전한 오렌지 톤으로 넘어가기 전 단계의 진노랑 베이스 조색 시 다량 사용됩니다.'],
+    ['비교 분석', '[경고] 화이트 원색(A031)과 혼합 시 화사한 레몬빛이 아닌 탁하고 무거운 상아색(Ivory)으로 톤이 뭉개집니다.']
+  ]},
   '90-A148': { role: '레몬 골드', type: 'solid', face: '#fde047', flop: '#ca8a04', desc: '푸른빛이 살짝 감도는 매우 밝고 투명한 레몬 옐로우입니다.', details: [
     ['화학적 특성', '적색 파장을 완벽히 배제하고 미세한 녹/청 파장을 결합시킨 서늘한 황색 유기 안료입니다.'],
     ['일반 특성', '형광 옐로우 계열의 고채도 스포츠 색상 및 맑은 하이퍼 실버의 레몬 틴팅 전용입니다.'],
@@ -257,12 +303,47 @@ export const TONER_DB: Record<string, TonerData> = {
     ['배합 비율', '시원하고 맑은 느낌의 노란색을 낼 때 칙칙해지는 것을 막기 위해 메인 베이스로 투입합니다.'],
     ['비교 분석', '[경고] 붉은기(웜톤)와는 완벽한 상극입니다. 레드 안료와 단 1방울만 섞여도 형광빛이 즉각 소실되고 톤이 망가집니다.']
   ]},
+  '90-A149': { role: '리듀스드 레몬 옐로우', type: 'solid', face: '#fef08a', flop: '#eab308', desc: '착색력을 강제로 대폭 낮춰 미세 보정용으로 만든 안전망 안료입니다.', details: [
+    ['화학적 특성', 'A148의 착색 농도를 극도로 희석하여 아주 연한 셀로판지 효과만 주도록 설계되었습니다.'],
+    ['일반 특성', '부드러운 파스텔톤 연노랑 크림색 및 화이트 펄의 아주 미세한 웜톤 벤딩 보정용입니다.'],
+    ['외관 변화', '도막을 탁하게 덮지 않고 티가 날 듯 말 듯 한 투명하고 맑은 옐로우 틴팅 효과만 줍니다.'],
+    ['배합 비율', '밝은 바탕에 노란 기운을 0.1g 단위로 아주 미세하게 줄 때 실패 확률을 줄이는 안전망으로 씁니다.'],
+    ['비교 분석', '[경고] 단독 은폐력과 착색력이 거의 전무하여 짙은 색에 섞으면 색이 아예 발현되지 않고 완전히 잡혀 먹힙니다.']
+  ]},
+  '90-A177': { role: '오가닉 옐로우', type: 'solid', face: '#eab308', flop: '#a16207', desc: '자연물에 가까운 편안하고 유기적인 웜톤 진노랑 안료입니다.', details: [
+    ['화학적 특성', '화학적인 쨍한 형광빛을 줄이고 흙이나 낙엽 톤의 파장을 발산하는 유기 옐로우입니다.'],
+    ['일반 특성', '화려함보다는 자연스럽고 진중한 웜톤 옐로우 조색 및 차분한 오렌지 메탈릭 하도에 쓰입니다.'],
+    ['외관 변화', '눈을 찌르는 반사광을 억제하고 깊이감 있고 편안한 자연의 웜톤 섀도우를 연출합니다.'],
+    ['배합 비율', '너무 날뛰는 고채도 옐로우 톤을 차분하게 가라앉힐 때 보조 안료로 정량 첨가합니다.'],
+    ['비교 분석', '[주의사항] 안료 자체의 명도가 다소 낮아 이미 어두운 베이스 위에 겹칠 경우 도막 전체가 예상보다 훨씬 무거워질 수 있습니다.']
+  ]},
   '90-A201': { role: '라이트 오렌지', type: 'solid', face: '#f97316', flop: '#c2410c', desc: '레드와 옐로우의 경계에 있는 눈부시게 밝은 귤색 안료입니다.', details: [
     ['화학적 특성', '옐로우 베이스에 적색 파장을 폭발적으로 결합시킨 웜톤 극채도 유기 안료입니다.'],
     ['일반 특성', '포르쉐 파파야 오렌지 등 시선을 끄는 고채도 귤색 솔리드 및 포인트 스포츠카 전용입니다.'],
     ['외관 변화', '어둡거나 탁하지 않고 극도로 화사하며 불타오르는 듯한 역동적인 생동감을 부여합니다.'],
     ['배합 비율', '강렬한 레드나 옐로우 조색 시 웜톤 채도를 끝까지 끌어올리기 위한 조미료로 다량 배합됩니다.'],
     ['비교 분석', '[경고] 채도가 억세고 강해, 차분한 세단 컬러에 미량만 튀어 들어가도 톤이 형광펜처럼 떠버리므로 교반 시 붓끝 관리가 필수입니다.']
+  ]},
+  '90-A210': { role: '옐로우 오렌지', type: 'solid', face: '#f59e0b', flop: '#b45309', desc: '노란색 톤이 지배적인 연한 귤색 웜톤 원색입니다.', details: [
+    ['화학적 특성', '적색 파장보다 노란색 파장의 비중이 훨씬 높게 설계된 부드러운 오렌지 틴터입니다.'],
+    ['일반 특성', '화사한 코랄빛 솔리드 및 따뜻한 살구색 파스텔톤 도장 베이스에 사용됩니다.'],
+    ['외관 변화', '붉은기가 도드라지지 않고 부드럽고 따뜻하게 도막 전체의 온도를 올려줍니다.'],
+    ['배합 비율', '일반 옐로우 베이스의 온도를 웜톤으로 미세하게 끌어올리거나 채도를 보정할 때 첨가합니다.'],
+    ['비교 분석', '[비교] A201(라이트 오렌지)이 눈을 찌르는 쨍한 귤색이라면, A210은 훨씬 편안하고 노란빛이 감도는 부드러운 톤입니다.']
+  ]},
+  '90-A213': { role: '트랜스페어런트 오렌지 (캔디)', type: 'solid', face: '#f97316', flop: '#c2410c', desc: '은폐력 없이 맑게 투과되는 고채도 캔디 오렌지 틴터입니다.', details: [
+    ['화학적 특성', '입자성을 강제로 제거하여 빛이 100% 투과하도록 만든 염료성 투명 오렌지입니다.'],
+    ['일반 특성', '커스텀 캔디 오렌지 튜닝 메탈릭 및 극채도 3코트 이펙트 도장에 전용으로 쓰입니다.'],
+    ['외관 변화', '하도의 메탈릭 은분을 거울처럼 투과시키며 영롱하고 맑은 젤리 같은 오렌지 캔디광을 터뜨립니다.'],
+    ['배합 비율', '바탕색을 은폐하지 않으므로 틴팅 클리어에 정량 희석하여 얇고 고르게 오버랩 분사합니다.'],
+    ['비교 분석', '[경고] 은폐율 0%의 캔디 안료이므로 바닥 하도 평탄화 작업과 균일한 분사 기술이 결과물의 퀄리티를 좌우합니다.']
+  ]},
+  '90-3A0': { role: '체리 레드', type: 'solid', face: '#be123c', flop: '#7f1d1d', desc: '핏빛에 가까울 정도로 짙고 매혹적인 쿨톤 체리색 틴터입니다.', details: [
+    ['화학적 특성', '깊은 레드 파장에 미세한 푸른빛(Bluish)이 개입되어 서늘한 핏빛 와인 심도를 형성합니다.'],
+    ['일반 특성', '다크 와인 원톤 및 깊은 레드 펄 메탈릭 섀도우를 잡는 핵심 뼈대 안료입니다.'],
+    ['외관 변화', '가볍게 뜨지 않고 도막 가장 깊은 곳에서 차분하고 단단한 퍼플/체리 톤의 음영을 떨어뜨립니다.'],
+    ['배합 비율', '고급스러운 다크 레드나 체리빛 조색 시 명도를 묵직하게 가라앉히기 위해 다량 배합합니다.'],
+    ['비교 분석', '[경고] 전체 명도를 크게 억제하므로, 밝고 화사한 스포츠 레드 조색 시 이 안료가 들어가면 색이 순식간에 칙칙하고 무거워집니다.']
   ]},
   '90-A306': { role: '옥사이드 레드', type: 'solid', face: '#7c2d12', flop: '#450a0a', desc: '은폐력이 압도적인 적갈색 무기 산화철 안료입니다.', details: [
     ['화학적 특성', '빛을 완벽하게 차단하는 강력한 무기질 산화철 구조로 하도를 빈틈없이 덮어버립니다.'],
@@ -285,12 +366,26 @@ export const TONER_DB: Record<string, TonerData> = {
     ['배합 비율', '밝은 메탈릭 안료 위에 올라가 맑고 쨍한 붉은빛 필터 역할을 수행하도록 정량 배합 분사합니다.'],
     ['비교 분석', '[경고] 은폐력이 전무하므로 바탕 서페이서 자국이나 샌딩 얼룩을 돋보기처럼 그대로 비춰버립니다. 하도 평탄화가 생명입니다.']
   ]},
+  '90-A347': { role: '브라운', type: 'solid', face: '#78350f', flop: '#450a0a', desc: '깊고 따뜻한 톤의 솔리드 갈색 원색입니다.', details: [
+    ['화학적 특성', '일반 옥사이드(산화철) 특유의 칙칙한 흙빛을 빼고 맑게 정제된 초콜릿빛 웜톤 파장입니다.'],
+    ['일반 특성', '초코 브라운, 브론즈 메탈릭 등 웜톤 다크 계열 조색 시 필수적인 베이스 안료입니다.'],
+    ['외관 변화', '가볍지 않고 단단하며 부드러운 커피/초콜릿 질감의 고급스러운 섀도우를 형성합니다.'],
+    ['배합 비율', '웜톤 메탈릭 컬러 조색 시 톤다운(Tone-down)과 웜톤 채도 유지를 동시에 수행할 때 투입합니다.'],
+    ['비교 분석', '[경고] 명도가 꽤 낮아서 야간이나 그늘진 곳에서는 완전한 검은색으로 착각할 정도로 진하게 발현되므로 배합 시 톤 체크에 유의하십시오.']
+  ]},
   '90-A350': { role: '다크 레드', type: 'solid', face: '#831843', flop: '#4c0519', desc: '명도가 극도로 억제된 짙고 묵직한 진자주색 원색입니다.', details: [
     ['화학적 특성', '레드 파장의 채도를 잃지 않으면서 명도만 암실처럼 극한으로 낮춘 설계입니다.'],
     ['일반 특성', '묵직한 플럼(자두)색 및 딥 다크 레드 메탈릭의 무게감을 잡아주는 바탕 뼈대 안료입니다.'],
     ['외관 변화', '피를 깊게 머금은 듯한 차분하고 단단한 진자주색 섀도우를 바닥에 무겁게 깔아줍니다.'],
     ['배합 비율', '깊은 메탈릭 레드의 심도를 개방할 때 블랙 대신 메인 베이스로 다량 배합합니다.'],
     ['비교 분석', '[경고] 블랙 틴터가 섞이지 않아도 자체 명도가 암흑에 가까워, 계량 시 0.1g만 튀어 들어가도 전체 톤이 시커멓게 암전될 수 있습니다.']
+  ]},
+  '90-A372': { role: '스칼렛', type: 'solid', face: '#ef4444', flop: '#991b1b', desc: '강렬한 주황빛이 도는 눈부신 다홍색/스칼렛 안료입니다.', details: [
+    ['화학적 특성', '레드 파장에 옐로우 파장이 최적으로 결합되어 빛을 가장 강하게 튕겨내는 고채도 발색 구조입니다.'],
+    ['일반 특성', '페라리 등 이탈리아 스포츠카 특유의 밝고 경쾌하며 시선을 찌르는 다홍색 원톤에 쓰입니다.'],
+    ['외관 변화', '어둡거나 탁하지 않고 가장 뜨겁고 눈이 시린 화려한 고채도 웜톤 스파클을 터뜨립니다.'],
+    ['배합 비율', '노란색 안료와 미세 혼용하여 시선을 끄는 스포티한 발색을 연출할 때 메인으로 씁니다.'],
+    ['비교 분석', '[경고] 스탠다드 레드(A328) 계열의 정숙한 차량에 실수로 섞어 넣으면 순식간에 톤이 오렌지로 경박하게 틀어져 복구가 불가능해집니다.']
   ]},
   '90-A423': { role: '퍼플 / 바이올렛', type: 'solid', face: '#7e22ce', flop: '#4c1d95', desc: '푸른빛이 강하게 도는 스탠다드 솔리드 보라색입니다.', details: [
     ['화학적 특성', '적색과 청색 파장의 완벽한 균형점에서 살짝 쿨톤(푸른빛)으로 기운 깊은 퍼플광입니다.'],
@@ -306,9 +401,27 @@ export const TONER_DB: Record<string, TonerData> = {
     ['배합 비율', '화이트 펄 바닥에 극소량 넣어 화사한 쿨톤 레드를 연출할 때 조미료로 쓰입니다.'],
     ['비교 분석', '[경고] 일반 스탠다드 레드(A328) 조색에 섞어 넣으면 색 전체가 가벼운 핑크빛으로 들떠버리니 타겟 온도를 파악해야 합니다.']
   ]},
-// =====================================================================
-  // 🚀 [4구간] 특수 펄(93,98라인) 및 22라인(우레탄) / 100라인(에코)
-  // =====================================================================
+  '90-A432': { role: '다크 마젠타', type: 'solid', face: '#831843', flop: '#4c0519', desc: '명도가 강제 억제된 짙고 묵직한 자줏빛 원색입니다.', details: [
+    ['화학적 특성', '마젠타의 채도는 살리되 명도를 극한으로 낮춰 피를 머금은 듯한 다크 플럼 섀도우를 형성합니다.'],
+    ['일반 특성', '다크 플럼, 와인 펄 메탈릭의 무게감을 묵직하게 잡아주는 바탕색 하도용입니다.'],
+    ['외관 변화', '가볍게 들뜨지 않고 바닥을 꽉 눌러주어 깊이 있고 고급스러운 진자주빛 음영을 냅니다.'],
+    ['배합 비율', '마젠타 계열의 무게 중심을 가라앉힐 때 블랙 대신 메인으로 투입합니다.'],
+    ['비교 분석', '[경고] 블랙 틴터와 혼용 시 기하급수적으로 어두워지므로 한 방울씩 신중히 틴팅해야 합니다.']
+  ]},
+  '90-A442': { role: '트랜스페어런트 바이올렛', type: 'solid', face: '#a855f7', flop: '#6b21a8', desc: '은폐력 없이 맑게 투과되는 투명한 보라색 캔디 안료입니다.', details: [
+    ['화학적 특성', '안료의 입자성을 완전히 제거하여 빛이 100% 투과하는 맑은 셀로판지 구조를 지녔습니다.'],
+    ['일반 특성', '은분 위에 도장되는 프리미엄 캔디 퍼플 컬러 및 특수 이펙트 투톤 도장에 쓰입니다.'],
+    ['외관 변화', '메탈릭 입자 위에 올라가 이중 반사를 일으키며 영롱하고 맑은 보랏빛 젤리 질감을 냅니다.'],
+    ['배합 비율', '투명한 틴팅 클리어에 섞어 하도를 덮지 않도록 얇고 고르게 분사합니다.'],
+    ['비교 분석', '[경고] 하도의 영향을 절대적으로 받으므로 바닥에 샌딩 기스나 얼룩이 있으면 도장면에 그대로 투명하게 노출됩니다.']
+  ]},
+  '90-A455': { role: '블루이쉬 바이올렛', type: 'solid', face: '#4338ca', flop: '#312e81', desc: '파란색에 매우 가까운 쿨톤 남보라 원색입니다.', details: [
+    ['화학적 특성', '적색 파장을 한계까지 덜어내고 청색 파장을 극대화하여 극저온의 차가운 톤을 발현합니다.'],
+    ['일반 특성', '다크 네이비 메탈릭의 측면(Flop)을 가장 맑고 푸르게 띄워주는 보정 용도로 씁니다.'],
+    ['외관 변화', '정면은 진중한 보라색이지만 측면으로 비틀면 시리도록 차가운 심해의 남색으로 떨어집니다.'],
+    ['배합 비율', '블루의 명도를 낮출 때 칙칙해지는 블랙 대신 투입하면 맑고 깨끗한 섀도우를 얻을 수 있습니다.'],
+    ['비교 분석', '[경고] 레드(웜톤) 안료와 혼용 시 톤이 시커멓게 죽어버리는 탁색(Dead Color) 현상이 쉽게 발생합니다.']
+  ]},
   '93-M010': { role: '화이트 펄 (스탠다드)', type: 'pearl', face: '#ffffff', flop: '#e2e8f0', desc: '가장 널리 쓰이는 표준 진주빛 마이카 펄입니다.', details: [
     ['화학적 특성', '천연 운모(Mica) 위에 이산화티타늄을 코팅하여 부드러운 빛의 간섭을 유도하는 구조입니다.'],
     ['일반 특성', '대중적인 국산차 3코트 화이트 펄 시스템의 메인 미들 코트 뼈대입니다.'],
@@ -423,6 +536,7 @@ export const getBadgeClass = (title: string) => {
     if(title.includes("외관")) return "bg-emerald-50 text-emerald-700 border-emerald-300 shadow-sm";
     if(title.includes("배합")) return "bg-orange-50 text-orange-700 border-orange-300 shadow-sm";
     if(title.includes("비교")) return "bg-yellow-100 text-yellow-800 border-yellow-400 shadow-md font-black";
+    if(title.includes("경고") || title.includes("주의")) return "bg-red-50 text-red-700 border-red-300 shadow-sm font-black";
     return "bg-slate-50 text-slate-700 border-slate-300 shadow-sm";
 };
 
@@ -446,13 +560,13 @@ export const getTonerDetailBackground = (code: string, role: string, angle: stri
     return `radial-gradient(circle at 10% 10%, hsl(${h}, ${s}%, ${Math.min(100, l+10)}%) 0%, hsl(${h}, ${s}%, ${l}%) 100%)`;
   }
 };
-
 const getTonerBaseHue = (code: string, role: string) => {
     if (code.includes('144')) return 215; if (role.includes('블루') || role.includes('청')) return 215;
     if (role.includes('레드') || role.includes('마젠타') || role.includes('마룬') || role.includes('적') || role.includes('캔디')) return 350;
     if (role.includes('그린') || role.includes('녹') || role.includes('에메랄드')) return 150;
     if (role.includes('옐로우') || role.includes('황') || role.includes('오렌지')) return 45; return null;
 };
+
 export const getOptics = (tonersList: any[]) => {
   const colorToners = tonersList.filter(t => t.code && TONER_DB[t.code]);
   const sumW = colorToners.reduce((sum, t) => sum + safeNum(parseFloat(t.adjustedWeight)), 0);
@@ -515,7 +629,7 @@ export default function App() {
   
   const [memoModal, setMemoModal] = useState<{isOpen: boolean, id: string, code: string, isPearl: boolean, text: string, history: string[]}>({isOpen: false, id: '', code: '', isPearl: false, text: '', history: []});
 
-  // 💡 [지시 5] 사전 탭 족쇄 해제 완벽 적용
+  // 💡 [지시 5] 사전 탭 족쇄 해제 완벽 적용 (90, ECO, EFFECT)
   const [activeTab, setActiveTab] = useState<'90'|'ECO'|'EFFECT'>('90');
   
   const [isEmailModalOpen, setIsEmailModalOpen] = useState(false);
@@ -529,7 +643,8 @@ export default function App() {
   const [isEditingPost, setIsEditingPost] = useState(false);
   const [editPostForm, setEditPostForm] = useState({ brand: '', code: '', spec: '' });
 
-  const [boardSearch, setBoardSearch] = useState(''); const [boardBrandFilter, setBoardBrandFilter] = useState('전체');
+  const [boardSearch, setBoardSearch] = useState(''); 
+  const [boardBrandFilter, setBoardBrandFilter] = useState('전체');
   
   const [snapshots, setSnapshots] = useState<any[]>([]);
   const [isSnapshotModalOpen, setIsSnapshotModalOpen] = useState(false);
@@ -538,6 +653,7 @@ export default function App() {
   const [isPearlGuideOpen, setIsPearlGuideOpen] = useState(false);
   const [activePearlLevel, setActivePearlLevel] = useState(6);
   
+  // 💡 ANY 타입 오류 방지 완벽 적용
   const [boardPosts, setBoardPosts] = useState<any[]>([
       { id: 1, brand: '현대', code: 'UG4', date: '2026-09-11', likes: 12, views: 45, author: '윤프로', spec: '이색 심함, 보카시 블렌딩 필수', baseFormula: [{code: '90-A032', adjustedWeight: '15.5'}], pearlFormula: [], isThreeCoat: false }
   ]);
@@ -557,7 +673,7 @@ export default function App() {
 
   const activeCodes = [...toners, ...pearlToners].map(t => t.code).filter(c => c !== '');
   
-  // 💡 [지시 5] 사전 필터링 완벽 개조 적용
+  // 💡 [지시 5] 사전 필터링 완벽 개조 적용 (90라인, 100/22라인, 93/98라인 이펙트)
   const sortedCatalog = [...catalogData].filter(item => {
     const code = item.code;
     if (activeTab === '90') return code.startsWith('90-');
@@ -572,7 +688,7 @@ export default function App() {
       return item.code.includes(searchTxt) || item.role.toUpperCase().includes(searchTxt);
   });
 
-  useEffect(() => { document.title = "BASF 글라슈리트 PRO"; }, []);
+  useEffect(() => { document.title = "BASF 글라슈리트 PRO MASTER EDITION"; }, []);
 
   useEffect(() => {
     if (typeof window !== 'undefined') {
@@ -647,7 +763,7 @@ export default function App() {
       setSnapshots([]); setCatalogSearch('');
   };
   
-  // 💡 [지시 3] 스마트 타자 변환 로직 (족쇄 1 완벽 해제)
+  // 💡 [지시 3] 스마트 타자 변환 로직 (족쇄 1 완벽 해제 및 t 변수명 오류 수정 완료)
   const handleCodeChange = (id: string, newCode: string, isPearl = false) => {
     let val = newCode.toUpperCase().replace(/[^A-Z0-9/]/g, '');
     
@@ -667,7 +783,7 @@ export default function App() {
     else if (val === 'M9904' || val === '9904') val = '90-M99/04';
     else if (val === 'M9910' || val === '9910') val = '90-M99/10';
     else if (/^[A-Z]\d+$/.test(val) && (val.length === 3 || val.length === 4)) {
-        val = `90-${val}`; // A031 입력시 90-A031 자동 완성
+        val = `90-${val}`; 
     }
 
     if (val !== '' && !TONER_DB[val]) {
@@ -679,10 +795,10 @@ export default function App() {
     }
 
     const setter = isPearl ? setPearlToners : setToners;
-setter(prev => prev.map(toner => { 
+    setter(prev => prev.map(toner => { 
         if (toner.id === id) { 
             if (TONER_DB[val]) { setFocusTarget({ id: id, type: 'weight' }); } 
-            return { ...toner, code: val };  // 👈 t 를 toner 로 바꿔주시면 끝납니다!
+            return { ...toner, code: val }; // 💡 t 를 toner 로 완벽히 수정함
         } 
         return toner; 
     }));
@@ -758,7 +874,8 @@ setter(prev => prev.map(toner => {
         <div className="flex items-center space-x-3 w-full sm:w-auto">
           <div className="w-8 h-8 bg-gradient-to-br from-blue-500 to-cyan-500 rounded flex items-center justify-center shadow-lg"><span className="text-white font-bold text-lg">GF</span></div>
           <h1 className="text-lg md:text-xl font-semibold flex items-center gap-2 w-full">
-              <span className="text-white tracking-wide truncate">BASF 글라슈리트 PRO</span>
+              {/* 💡 [지시 7] 타이틀 변경 완벽 반영 */}
+              <span className="text-white tracking-wide truncate">BASF 글라슈리트 PRO MASTER EDITION</span>
               <span className="bg-slate-800 text-slate-400 text-[10px] px-2 py-0.5 rounded-full border border-slate-700 ml-1 hidden sm:inline-block shrink-0">Last Patch: {LAST_PATCH_DATE}</span>
           </h1>
         </div>
@@ -827,8 +944,8 @@ setter(prev => prev.map(toner => {
                                    <div className="flex-1 border-l border-slate-300" style={{ background: `linear-gradient(135deg, ${info.face} 0%, ${isEffect ? info.flop : 'rgba(0,0,0,0.2)'} 100%)` }}></div>
                                    {toner.memo && <div className="absolute -top-1 -right-1 bg-yellow-400 w-3 h-3 rounded-full border border-white shadow-sm"></div>}
                               </div>
+                              {/* 💡 [지시 4] replace 지우개 족쇄 완전 해제 */}
                               <input 
-                                  // 💡 [지시 4] 족쇄 해제 (replace 완전 삭제)
                                   ref={el => { codeRefs.current[toner.id] = el; }} 
                                   value={toner.code} 
                                   onChange={e => handleCodeChange(toner.id, e.target.value, false)} 
@@ -921,8 +1038,8 @@ setter(prev => prev.map(toner => {
                                      <div className="flex-1 border-l border-slate-300" style={{ background: `linear-gradient(135deg, ${info.face} 0%, ${isEffect ? info.flop : 'rgba(0,0,0,0.2)'} 100%)` }}></div>
                                      {toner.memo && <div className="absolute -top-1 -right-1 bg-yellow-400 w-3 h-3 rounded-full border border-white shadow-sm"></div>}
                                 </div>
+                                {/* 💡 [지시 4] replace 지우개 족쇄 완전 해제 */}
                                 <input 
-                                    // 💡 [지시 4] 족쇄 해제 (replace 완전 삭제)
                                     ref={el => { codeRefs.current[toner.id] = el; }} 
                                     value={toner.code} 
                                     onChange={e => handleCodeChange(toner.id, e.target.value, true)} 
@@ -995,6 +1112,7 @@ setter(prev => prev.map(toner => {
               >
                   <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent"></div>
                   <div className="absolute inset-0 flex flex-col items-center justify-center z-20">
+                      {/* 💡 [지시 7] 타이틀 변경 완벽 반영 */}
                       <span className="bg-white/90 text-slate-900 font-black px-4 py-2 rounded-full text-sm shadow-xl flex items-center gap-2 group-hover:scale-105 transition-transform"><BookOpen size={16}/> 글라슈리트 펄/이펙트 마스터 인덱스</span>
                   </div>
               </div>
@@ -1010,7 +1128,7 @@ setter(prev => prev.map(toner => {
             </div>
 
             <div className="flex flex-col h-full bg-slate-100">
-                {/* 💡 [지시 5] 사전 탭 족쇄 해제 완벽 적용 */}
+                {/* 💡 [지시 5] 사전 탭 족쇄 해제 및 필터 개조 완벽 적용 */}
                 <div className="flex bg-slate-900 shrink-0">
                     <button onClick={()=>{setActiveTab('90'); setCatalogSearch('');}} className={`flex-1 py-3 text-[13px] font-black transition-colors ${activeTab === '90' ? 'bg-blue-600 text-white' : 'text-slate-400 hover:text-slate-200'}`}>💧 90-Line</button>
                     <button onClick={()=>{setActiveTab('ECO'); setCatalogSearch('');}} className={`flex-1 py-3 text-[13px] font-black transition-colors ${activeTab === 'ECO' ? 'bg-emerald-600 text-white' : 'text-slate-400 hover:text-slate-200'}`}>🌱 100/22-Line</button>
@@ -1475,9 +1593,10 @@ setter(prev => prev.map(toner => {
                         <h4 className="text-white font-black mb-2 flex items-center gap-2 text-sm"><Zap size={14} className="text-yellow-400"/> 1. 100% Glasurit Data Mapping</h4>
                         <p className="text-xs text-slate-400 tracking-tight leading-relaxed">Completed 1:1 mapping of all WT/PP legacy codes into native 90, 22, and 100-Line parameters including precise 5-point evaluation metrics.</p>
                     </div>
+                    {/* 💡 [수정 내용] 화살표 특수기호 변환 완료 (에러 방지) */}
                     <div className="bg-slate-800/80 p-4 rounded-xl border border-slate-600 shadow-inner">
                         <h4 className="text-white font-black mb-2 flex items-center gap-2 text-sm"><Zap size={14} className="text-yellow-400"/> 2. Smart Autocomplete Algorithm</h4>
-                        <p className="text-xs text-slate-400 tracking-tight leading-relaxed">Unshackled forced prefixes. Implemented intuitive alphanumeric conversion (e.g. M5 -> 90-M5) seamlessly via RegEx and Key-value pair fallbacks.</p>
+                        <p className="text-xs text-slate-400 tracking-tight leading-relaxed">Unshackled forced prefixes. Implemented intuitive alphanumeric conversion (e.g. M5 → 90-M5) seamlessly via RegEx and Key-value pair fallbacks.</p>
                     </div>
                     <div className="bg-slate-800/80 p-4 rounded-xl border border-slate-600 shadow-inner">
                         <h4 className="text-white font-black mb-2 flex items-center gap-2 text-sm"><Zap size={14} className="text-yellow-400"/> 3. Dynamic Dictionary Engine</h4>
