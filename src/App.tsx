@@ -612,7 +612,7 @@ export const TONER_DB: Record<string, TonerData> = {
     ['비교 분석', '[테크닉] 분말 성향을 띠므로 100-MB50 수지에 완벽히 개어 액상화시킨 뒤 흩뿌려야 표면에 하얗게 덩어리지는 하자를 막을 수 있습니다.']
   ]}
 };
-export const OEM_COLORS: { code: string; name: string }[] = [
+export const OEM_COLORS: { code: string; name: string }[] = []
 export const catalogData = Object.entries(TONER_DB).map(([code, data]) => { return { code, ...data }; });
 export const safeNum = (val: any): number => { const num = Number(val); return isNaN(num) ? 0 : num; };
 export const isTonerMetallic = (role: string) => { const r = role || ''; return r.includes('실버') || r.includes('알루미늄') || r.includes('펄') || r.includes('이펙트') || r.includes('분말') || r.includes('글라스'); };
@@ -859,31 +859,33 @@ export default function App() {
       setToners([{ id: `b_${Date.now()}`, code: '', adjustedWeight: "", history: [], memo: "", isExpanded: false }]); setPearlToners([{ id: `p_${Date.now()}`, code: '', adjustedWeight: "", history: [], memo: "", isExpanded: false }]); setSelectedTonerForView(null); 
       setSnapshots([]); setCatalogSearch('');
   };
-  
+  // 💡 BASF 글라슈리트 전용 스마트 자동 완성 (m5 치면 90-M5로 완벽 변환)
   const handleCodeChange = (id: string, newCode: string, isPearl = false) => {
-    const rawVal = newCode.toUpperCase(); 
-    const numOnly = rawVal.replace(/[^0-9]/g, '');
-    let finalCode = rawVal;
+    let val = newCode.toUpperCase().replace(/[^A-Z0-9/]/g, '');
     
-    if (rawVal.startsWith('90') && numOnly.length >= 4) {
-        finalCode = numOnly.substring(0, 4); 
-    } else if (['1051', '1500', '455', 'AXT700'].includes(numOnly) || rawVal === 'AXT700') {
-        finalCode = rawVal === 'AXT700' ? 'AXT700' : numOnly; 
-    } else if (numOnly) {
-        finalCode = `WT ${numOnly}`; 
+    if (val === 'M4') val = '90-M4';
+    else if (val === 'M5') val = '90-M5';
+    else if (val === 'M1') val = '90-M1';
+    else if (val === 'E3') val = '93-E3';
+    else if (val === 'E3SLOW' || val === 'SLOW') val = '93-E3 Slow';
+    else if (val === 'M3') val = '90-M3';
+    else if (val === 'M20') val = '90-M20';
+    else if (val === 'M9900' || val === '9900') val = '90-M99/00';
+    else if (val === 'M9902' || val === '9902') val = '90-M99/02';
+    else if (val === 'M9904' || val === '9904') val = '90-M99/04';
+    else if (/^[A-Z]\d+$/.test(val) && (val.length === 3 || val.length === 4)) {
+        val = `90-${val}`; // A031 치면 90-A031 로 자동 완성
     }
 
     const setter = isPearl ? setPearlToners : setToners;
-    setter(prev => prev.map(toner => { 
-        if (toner.id === id) { 
-            if (TONER_DB[finalCode]) { setFocusTarget({ id: id, type: 'weight' }); } 
-            return { ...toner, code: finalCode }; 
-        } 
-        return toner; 
+    setter(prev => prev.map(t => { 
+      if (t.id === id) { 
+        if (TONER_DB[val]) setFocusTarget({ id: id, type: 'weight' }); 
+        return { ...t, code: val }; 
+      } 
+      return t; 
     }));
-  };
-
-  const handleWeightInputChange = (id: string, rawValue: string, isPearl = false) => {
+  };  const handleWeightInputChange = (id: string, rawValue: string, isPearl = false) => {
     let val = rawValue.replace(/[^0-9.]/g, ''); const parts = val.split('.'); if (parts.length > 2) val = parts[0] + '.' + parts.slice(1).join(''); 
     if (val === '') val = ''; else if (val.length > 1 && val.startsWith('0') && val[1] !== '.') val = val.replace(/^0+/, ''); else if (val.startsWith('.')) val = '0' + val; 
     if (isPearl) setPearlToners(pearlToners.map(t => t.id === id ? { ...t, adjustedWeight: val } : t)); else setToners(toners.map(t => t.id === id ? { ...t, adjustedWeight: val } : t));
@@ -906,8 +908,7 @@ export default function App() {
     const applyScale = (list: any[]) => list.map(t => { if (!t.adjustedWeight) return t; const newVal = scale(t.adjustedWeight); const currentHistory = t.history || []; const nextHistory = (currentHistory.length === 0 || currentHistory[currentHistory.length - 1] !== newVal) ? [...currentHistory, newVal] : currentHistory; return { ...t, adjustedWeight: newVal, history: nextHistory }; });
     setToners(applyScale(toners)); setPearlToners(applyScale(pearlToners));
   };
-
-  const generateShareText = () => {
+ const generateShareText = () => {
     let baseListText = toners.filter(t => t.code).map(t => `  - ${t.code} (${TONER_DB[t.code]?.role || '미지정'}): ${t.adjustedWeight || '0'}g`).join('\n'); let pearlListText = pearlToners.filter(t => t.code).map(t => `  - ${t.code} (${TONER_DB[t.code]?.role || '미지정'}): ${t.adjustedWeight || '0'}g`).join('\n'); let currentOrigin = localStorage.getItem('hitec_clean_domain') || window.location.origin;
     const payloadStr = [vehicleNumber, carModel, targetColorCode, jobDescription, specialNotes, packToners(toners), isThreeCoatMode ? packToners(pearlToners) : '', isThreeCoatMode ? '1' : '0', registrationDate].join('|'); const shareUrl = `${currentOrigin}${window.location.pathname}?d=${btoa(unescape(encodeURIComponent(payloadStr)))}`;
     return `[조색 배합 지시서]\n================================\n📅 등록날짜: ${registrationDate}\n🚗 차량번호: ${vehicleNumber || '미지정'}\n🚙 브랜드: ${carModel || '미지정'}\n🎨 컬러코드: ${targetColorCode || '미지정'}\n🛠️ 작업내용: ${jobDescription || '미지정'}\n📌 특이사항: ${specialNotes || '없음'}\n================================\n\n[▼ 베이스 코트]\n${baseListText || '  (입력 데이터 없음)'}\n--------------------------------\n▶ 베이스 합계: ${totalBaseWeight}g\n▶ 6052 수지: ${(parseFloat(totalBaseWeight) * (isBaseMetallic ? 0.2 : 0.1)).toFixed(1)}g\n\n${isThreeCoatMode ? `[▼ 펄 코트]\n${pearlListText || '  (입력 데이터 없음)'}\n--------------------------------\n▶ 펄 합계: ${totalPearlWeight}g\n▶ 6052 수지: ${(parseFloat(totalPearlWeight) * (isPearlMetallic ? 0.2 : 0.1)).toFixed(1)}g\n\n` : ''}================================\n✨ 최종 도막 총량: ${totalFinalWeight}g\n\n👉 링크:\n${shareUrl}`;
