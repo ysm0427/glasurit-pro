@@ -797,7 +797,7 @@ export default function App() {
 
   useEffect(() => {
     if (typeof window !== 'undefined') {
-        const urlParams = newSearchParams(window.location.search); const d = urlParams.get('d'); 
+       const urlParams = new URLSearchParams(window.location.search); const d = urlParams.get('d');
         const ori = window.location.origin;
         if (!ori.includes('google') && !ori.includes('gemini') && !ori.includes('null')) localStorage.setItem('hitec_clean_domain', ori);
         let loadedFromUrl = false;
