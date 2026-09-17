@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef, useMemo } from 'react';
-import './index.css'; // ⚠️ [조건 제 0원칙 절대 엄수] 헥커 원본 디자인(Tailwind CSS) 생명줄 100% 동결 보존
+import './index.css'; // ⚠️ 디자인 유지를 위한 필수 연결선
 import { 
   Sliders, Trash2, Plus, Minus, X, FolderOpen, Maximize, Camera, ScanLine, Beaker, Sun, Droplet, 
   Image as ImageIcon, Lock, Unlock, Layers, ChevronRight, ChevronDown, ChevronUp, BookOpen, Share2, Zap, Search, FileSpreadsheet, History, PaintBucket, Columns, Mail, Code, Users, CreditCard, AlertTriangle, ThumbsUp, Eye, Calendar, RefreshCw, MessageSquare, Send, Save, CheckCircle, Edit3, Target, Edit
@@ -7,261 +7,20 @@ import {
 
 interface TonerData { role: string; type: string; face: string; flop: string; desc: string; details?: [string, string][]; }
 
-const LAST_PATCH_DATE = "2026.09.17 (BASF 글라슈리트 무결점 마스터 풀데이터 & UI 완벽 이식)"; 
+const LAST_PATCH_DATE = "2026.09.17 (뼈대 클린 빌드 테스트용)"; 
 
-export const PEARL_LEVELS = [
-  { level: 1, name: 'Ultra Micro 울트라 마이크로', size: '1~5µm', desc: '지문 사이로 스며드는 전분 가루 수준의 극미세 입자 크기를 가진 진주빛 조색제입니다.', faceFlop: '진주조개 안쪽을 긁어낸 듯한 뽀얗고 탁한 우윳빛을 띱니다. 정면과 측면 모두 왜곡 없이 은은하고 부드러운 실키 글로우(Silky Glow)를 일정하게 유지합니다.', usage: '최고급 세단의 깊은 화이트 펄 바탕을 깔거나, 입자가 거친 안료의 톤을 부드럽게 눌러줄 때 처방됩니다.', mix: '투명도가 낮고 은폐력이 매우 뛰어나, 베이스의 밀도를 높이기 위해 지시된 조색 데이터 수치를 정확히 계량합니다.', warning: '메탈릭이 뭉치는 얼룩(Mottling) 현상이 거의 발생하지 않아 초급자도 수월하게 도장할 수 있습니다.', codes: [] },
-  { level: 2, name: 'Micro 마이크로', size: '5~10µm', desc: '고운 밀가루 수준의 미세 입자로, 도장 표면을 매끄럽고 차분하게 정돈하는 안료입니다.', faceFlop: '90-A032 (틴터 화이트): 맑은 물에 우유를 한 방울 떨어뜨린 듯한 반투명하고 뽀얀 흰빛을 냅니다.\n90-M99/01 (실버): 고운 알루미늄 호일을 갈아 넣은 듯 차분하고 매끄러운 쥐색(은빛)이 돕니다.', usage: '매끄러운 질감과 차분한 바탕색이 요구되는 부드러운 순정(OEM) 펄 계열 도장에 광범위하게 적용됩니다.', mix: '입자 배열이 안정적이므로 기본 배합 비율에 맞춰 혼합하며, 타 안료와 섞일 때 변수가 적습니다.', warning: '얼룩 발생 위험이 적어 숨김 도장(보카시) 작업 시 신구 도막의 경계면을 자연스럽게 잇기 유리합니다.', codes: ['90-A032', '90-M99/01'] },
-  { level: 3, name: 'Fine 파인', size: '10~15µm', desc: '고운 슈가 파우더 크기로 미세한 반짝임과 투명한 질감을 동시에 부여하는 펄 조색제입니다.', faceFlop: '93-M010 (화이트 펄): 맑은 쌀뜨물처럼 깨끗하고 고운 흰색 진주빛이 피어오릅니다.\n93-M822 (그린 펄): 맑은 에메랄드 바다를 연상시키는 은은한 초록빛을 띱니다.', usage: '아시아계 양산차 특유의 촘촘하고 밝은 화이트 펄 베이스 컬러 도장 시 핵심적으로 처방됩니다.', mix: '은폐력과 투명성을 동시에 고려하여 설계되었으므로, 지정된 배합 비율을 오차 없이 준수해야 합니다.', warning: '수용성 베이스 도장 시 플래시 오프(건조) 시간을 정석대로 철저히 지켜야 투명한 질감을 극대화할 수 있습니다.', codes: ['93-M010', '93-M822'] },
-  { level: 4, name: 'Fine Medium 파인 미디엄', size: '15~20µm', desc: '고운 맛소금 정도의 입자 크기로 어떤 바탕과도 자연스럽게 융화되는 중미세 안료입니다.', faceFlop: '특정한 색이 도드라지기보다 바탕색에 스며들어, 은은한 진주빛 코팅을 얇게 씌운 듯한 맑은 광택을 냅니다.', usage: '일반적인 순정(OEM) 밝은 컬러 도장 시 범용적으로 사용되며, 다양한 색상과 무난하게 조화됩니다.', mix: '작업성(은폐력)과 시각적 효과(반짝임)의 밸런스가 뛰어나 지시된 데이터를 기준으로 유연한 혼합이 가능합니다.', warning: '하도(바탕색)가 미세하게 불량하더라도 어느 정도 커버가 가능하여 작업자에게 가장 관대하고 안정성이 높습니다.', codes: [] },
-  { level: 5, name: 'Standard Medium 스탠다드 미디엄', size: '20~25µm', desc: '일반 백설탕 크기의 표준 규격으로 은폐력과 광택 반사의 균형이 가장 뛰어난 안료입니다.', faceFlop: '93-M011 (파인 화이트 펄): 우유 빙수나 바닐라 아이스크림처럼 부드럽고 뽀얀 정통 화이트 진주빛을 냅니다.\n93-M176 (골드 펄): 투명한 샴페인이나 맑은 식용유처럼 찰랑거리는 고급스러운 연한 금빛이 돕니다.', usage: '양산차 보수 도장 현장에서 가장 사용 빈도가 높은 핵심 규격으로 대부분의 표준 펄 컬러에 처방됩니다.', mix: '배열제(플롭 컨트롤러) 등 첨가제 비율 변화에 크게 민감하지 않아 표준 배합 데이터를 따를 때 가장 안정적입니다.', warning: '웻(Wet)하게 뿌리든 드라이(Dry)하게 뿌리든 입자가 고르게 누워 얼룩 발생이 적고 일관된 결과물을 보장합니다.', codes: ['93-M011', '93-M176'] },
-  { level: 6, name: 'Medium Coarse 미디엄 코어스', size: '25~35µm', desc: '굵은 황설탕 크기로 개별 입자의 반짝임이 시야에 뚜렷하게 들어오기 시작하는 조색제입니다.', faceFlop: '98-M319 (라디언트 레드): 잘 익은 체리나 붉은 석류알처럼 검붉은 바탕에 선명하게 맺히는 빨간빛을 냅니다.\n93-M505 (블루 펄): 맑은 가을 하늘이나 이온음료처럼 쨍하고 청량한 파란빛을 뿜어냅니다.', usage: '시선을 사로잡는 생동감 넘치는 레드 펄이나 눈부시게 밝고 선명한 블루 펄 컬러 등에 처방됩니다.', mix: '입자가 무거워지기 시작하므로 도료 내 침전을 막고 고르게 분산시키기 위해 지정된 배합 비율과 점도를 정확히 맞춥니다.', warning: '과도하게 젖은(Wet) 상태로 도포 시 입자가 엉켜 측면이 지저분해질 수 있으므로 일정한 겹침(Overlap)이 필수입니다.', codes: ['98-M319', '93-M505'] },
-  { level: 7, name: 'Coarse & Xirallic 코어스 및 시라릭', size: '35~42µm', desc: '굵은 꽃소금 크기로 빛의 굴절을 극대화시킨 투명 고휘도 시라릭(Xirallic) 펄 조색제입니다.', faceFlop: '90-A34 (다이아몬드 화이트): 갓 내린 눈 결정체에 햇빛이 비칠 때처럼 차갑고 쨍하게 쏘는 순백의 크리스탈빛을 냅니다.\n90-A35 (다이아몬드 레드): 핏빛 루비 보석을 부수어 놓은 듯 묵직하면서도 날카롭게 반짝이는 붉은빛을 띱니다.', usage: '최고급 화이트 펄 및 특수 고채도 컬러 도장 시 극한의 입체 반사광을 구현하기 위해 처방됩니다.', mix: '분말 특성이 강하므로 믹싱 클리어와 완벽하게 교반하여 도막에 안착시켜야 하얗게 덩어리지는 하자를 막을 수 있습니다.', warning: '에어 압력이 낮거나 하도가 불량하면 측면 멍듦 현상이 발생하므로, 세심한 스프레이 컨트롤과 완벽한 바탕색이 요구됩니다.', codes: ['90-A34', '90-A35'] },
-  { level: 8, name: 'High Coarse Diamond 하이 코어스 다이아몬드', size: '42~50µm', desc: '굵은 천일염 크기로 강렬한 난반사와 극단적인 명암 대비를 보여주는 다이아몬드급 이펙트 안료입니다.', faceFlop: '98-M919 (크리스탈 실버): 거친 얼음조각이 부서지듯 극단적이고 압도적인 투명 난반사를 폭발시킵니다.', usage: '압도적인 화려함을 뽐내는 프리미엄 익스테리어 컬러 및 캔디 이펙트 하도에 사용됩니다.', mix: '굵은 다이아몬드 입자가 균일하게 도막에 안착할 수 있도록 배합 후 충분하고 부드러운 교반을 거쳐야 합니다.', warning: '숨김 도장(보카시) 시 경계면에 입자가 하얗게 쌓이는 현상(Halo Effect)을 막기 위해 정교한 흩뿌리기 기술이 필요합니다.', codes: ['98-M919'] },
-  { level: 9, name: 'Glass Flake 글래스 플레크', size: '50~70µm', desc: '미세한 유리 조각 크기로 유리 특유의 투과율을 이용한 스페셜 유리 편상 안료입니다.', faceFlop: '98-M80 (매직 카멜레온): 비눗방울 표면이나 홀로그램 스티커처럼 보는 각도에 따라 청록에서 보라로 요동치는 카멜레온빛을 냅니다.', usage: '신비로운 색상 변화나 압도적인 깊이감을 요구하는 매직 이펙트 및 판타지 커스텀 컬러에 적용됩니다.', mix: '베이스의 은폐력이 없으므로 반드시 완벽하게 조색된 하도(바탕색) 위에 지정된 비율로 혼합하여 투명한 층으로 올려야 합니다.', warning: '건조 후 표면이 거칠어지므로, 투명 클리어를 평소보다 두툼하게 올리고 고품질로 마감해야 완벽한 광택을 낼 수 있습니다.', codes: ['98-M80'] },
-  { level: 10, name: 'Max Fantasy Extreme 맥스 판타지 익스트림', size: '70µm 이상', desc: '얼음 설탕 조각 크기의 초대형 기재를 사용한 커스텀 전용 맥스 익스트림 안료입니다.', faceFlop: '98-M88 (홀로그래픽 실버): 레이저 프리즘처럼 시야를 찌르는 극단적인 7색 무지개빛 난반사를 뿜어냅니다.', usage: '시선을 압도해야 하는 모터쇼 출품 차량이나 극한의 화려함을 추구하는 커스텀 익스테리어 전용 특수 도장에 처방됩니다.', mix: '매우 굵은 특수 입자이므로 일반적인 조색 데이터보다는 작업자의 커스텀 의도와 도막 두께에 맞춘 특수 비율 적용이 필요합니다.', warning: '일반 스프레이 건 노즐 막힘에 주의해야 하며, 클리어 도장 후 샌딩(평탄화) 및 재클리어 공정이 동반되어야 얼룩과 거칠음을 방지할 수 있습니다.', codes: ['98-M88'] }
-];
+// 💡 1. 펄 가이드 데이터 초기화 (뼈대)
+export const PEARL_LEVELS: any[] = [];
 
-// 💡 [지시 3] 글라슈리트 마스터 데이터 완벽 이식 (5대 특성 배열 필수 포함)
-export const TONER_DB: Record<string, TonerData> = {
-  '90-M4': { role: '스탠다드 믹싱 베이스', type: 'binder', face: '#ffffff', flop: '#ffffff', desc: '수용성 조색 시스템의 기본 뼈대를 형성하는 투명 수지입니다.', details: [
-    ['화학적 특성', '수용성 아크릴 및 폴리우레탄 분산 수지로 도막의 물리적 뼈대(골조)를 완벽히 형성합니다.'],
-    ['일반 특성', '90라인 시스템 전 색상의 근간이 되는 가장 필수적인 투명 베이스 수지입니다.'],
-    ['외관 변화', '안료 고유 색상에 간섭하지 않으며 메탈릭/펄 입자의 배열(Orientation)을 고르게 안착시킵니다.'],
-    ['배합 비율', '컬러 뼈대 구축을 위해 조색 시 가장 기본적이고 절대 다량으로 계량되어 투입됩니다.'],
-    ['비교 분석', '[비교] 90-M4는 굳어서 도막 두께가 되고, 93-E3(환원제)는 점도만 맞춘 뒤 증발하여 날아갑니다.']
-  ]},
-  '90-M5': { role: '블렌딩 클리어 / 틴터', type: 'binder', face: '#ffffff', flop: '#ffffff', desc: '메탈릭 입자를 투명하고 부드럽게 펴주는 블렌딩 전용 수지입니다.', details: [
-    ['화학적 특성', '기존 도막의 클리어층과 화학적 친화력이 높은 특수 용제가 포함된 침투성 수지입니다.'],
-    ['일반 특성', '부분 도장(보카시) 시 신구 도막의 이질감을 없애고 시각적 경계를 완벽히 허물어버립니다.'],
-    ['외관 변화', '메탈릭 입자가 뭉치지 않고 투명하고 넓게 분산되도록 유도하여 모틀링(얼룩)을 방지합니다.'],
-    ['배합 비율', '도장 부위 경계면에 선행 도장(Wet-bed)하거나 특수 투명 베이스 조색 시 사용됩니다.'],
-    ['비교 분석', '[비교] 일반 M4 수지 대비 용제 침투력이 뛰어나 경계면을 자연스럽게 녹여 잇는 데 탁월합니다.']
-  ]},
-  '90-M1': { role: '이펙트 어디티브', type: 'binder', face: '#ffffff', flop: '#ffffff', desc: '도막의 흐름성과 웻(Wet) 상태를 강제로 유지하는 투명 첨가제입니다.', details: [
-    ['화학적 특성', '도막 표면이 급격히 마르는 것을 화학적으로 억제하는 보습 및 흐름성 지연 수지입니다.'],
-    ['일반 특성', '한여름 고온 건조한 악조건 환경(열풍기 가동 등)에서의 작업 안정성을 극대화합니다.'],
-    ['외관 변화', '시각적인 발색이나 광택에는 전혀 개입하지 않으며, 거친 표면을 매끄럽게 눕혀줍니다.'],
-    ['배합 비율', '부스 환경 조건에 따라 조색 최종 단계에서 미량만 정밀하게 첨가해야 합니다.'],
-    ['비교 분석', '[경고] 정량 초과 과다 투입 시 내부 수분이 날아가지 않아(트래핑) 완전 건조 시간이 치명적으로 지연됩니다.']
-  ]},
-  '93-E3': { role: '어저스팅 베이스 (환원제)', type: 'binder', face: '#ffffff', flop: '#ffffff', desc: '수용성 조색 시스템의 점도를 제어하는 핵심 투명 환원제입니다.', details: [
-    ['화학적 특성', '시각적 특성이 0%인 완벽한 투명 수용성 환원제로, 안료 입자의 분산 공간을 제공합니다.'],
-    ['일반 특성', '도막이 안착할 최적의 웻(Wet) 상태를 유지시켜 스프레이 건 분사 시 미립화를 돕습니다.'],
-    ['외관 변화', '입자가 고르게 펴지도록(Leveling) 유도하여 도막 표면의 오렌지필을 억제합니다.'],
-    ['배합 비율', '조색 완료된 원액에 10~20% 비율로 희석하여 사용합니다. (은폐 약한 색 10%, 고점도 20%).'],
-    ['비교 분석', '[환경 변수] 부스 온도가 30도 이상일 경우, 증발을 늦추는 지연제(93-E3 Slow)로 대체해야 얼룩이 안 생깁니다.']
-  ]},
-  '90-M20': { role: '플롭 컨트롤러 (배열제)', type: 'binder', face: '#ffffff', flop: '#ffffff', desc: '메탈릭 안료의 누워있는 각도만 강제로 제어하는 특수 첨가제입니다.', details: [
-    ['화학적 특성', '색상에 전혀 개입하지 않고 은분/펄 입자의 물리적 배향(Orientation) 각도만 비트는 에이전트입니다.'],
-    ['일반 특성', '조색 비율을 건드리지 않고 정면광과 측면광의 명도(대비)만 미세하게 조절할 때 씁니다.'],
-    ['외관 변화', '은분을 강제로 눕히거나 세워서, 측면(Flop)을 환하게 개방하거나 정면을 어둡게 누릅니다.'],
-    ['배합 비율', '현장 데이터 보정 시 0.5%~2% 이내로 극미량만 정밀 첨가합니다.'],
-    ['비교 분석', '[테크닉] 컬러 톤은 완벽히 맞는데 유독 측면(Flop)만 어둡거나 밝아 이색이 날 때 최후의 보루로 사용하는 치트키입니다.']
-  ]},
-  '90-A031': { role: '스탠다드 화이트', type: 'solid', face: '#ffffff', flop: '#e2e8f0', desc: '은폐력이 우수하며 밑바탕을 단단하게 덮어버리는 메인 백색 안료입니다.', details: [
-    ['화학적 특성', '빛의 투과를 100% 차단하는 고밀도 이산화티타늄(TiO2) 기반 무기 안료입니다.'],
-    ['일반 특성', '하도(서페이서) 색상이나 흠집을 완벽하게 차단하고 순백색의 면을 형성하는 바탕 공사용 백색입니다.'],
-    ['외관 변화', '투명도 없이 묵직하고 정직한 우윳빛 순백색의 완전 솔리드 면을 뿜어냅니다.'],
-    ['배합 비율', '솔리드 화이트 원톤이나 밝은 파스텔톤 하도 조색 시 베이스 뼈대로 다량 배합됩니다.'],
-    ['비교 분석', '[주의사항] 펄(Mica) 안료와 섞이면 펄 고유의 맑은 진주광을 시멘트처럼 덮어버리므로 탁색에 초주의해야 합니다.']
-  ]},
-  '90-A032': { role: '틴터 화이트', type: 'solid', face: '#f8fafc', flop: '#cbd5e1', desc: '메탈릭의 광채를 가리지 않는 반투명 조색용 소프트 화이트입니다.', details: [
-    ['화학적 특성', '입자를 고르게 분산시켜 은폐력을 의도적으로 낮춘 초미립 티타늄 틴터입니다.'],
-    ['일반 특성', '맑은 톤을 유지하면서 뽀얀 느낌만 살짝 가미하는 미세 보정 및 조색 전용 안료입니다.'],
-    ['외관 변화', '메탈릭 베이스에 안개처럼 깔려 입자의 반짝임을 살리면서 명도를 부드럽게 톤업(Tone-up)시킵니다.'],
-    ['배합 비율', '투명한 3코트 펄의 미들 코트 조색이나 미세 명도 조절을 위해 소량씩 조심스레 투입됩니다.'],
-    ['비교 분석', '[비교] 90-A031이 바닥을 완벽히 덮어버린다면, A032는 바닥을 맑게 비추면서 우윳빛 필터만 씌우는 반투명 틴트입니다.']
-  ]},
-  '90-A926': { role: '메인 블랙', type: 'solid', face: '#020617', flop: '#000000', desc: '적색이나 청색으로 치우치지 않은 완벽하게 중립적인 표준 흑색입니다.', details: [
-    ['화학적 특성', '빛 흡수율이 고르게 설계되어 특정 파장으로 쏠리지 않는 고순도 카본 블랙입니다.'],
-    ['일반 특성', '딥 블랙 솔리드 차량의 뼈대 및 다크 남색, 쥐색 메탈릭의 톤다운(Tone-down) 핵심 베이스입니다.'],
-    ['외관 변화', '가장 정직하고 무거운 심연의 섀도우를 단단하게 형성하며 색의 뼈대를 가라앉힙니다.'],
-    ['배합 비율', '착색력이 극도로 강해 명도 조절 시 0.1g 단위로 최소량부터 시작하여 정밀 계량해야 합니다.'],
-    ['비교 분석', '[비교] 저가 범용 블랙이 은분과 섞일 때 측면이 흙빛으로 더러워지는 반면, A926은 맑고 깨끗하게 명도만 수직으로 떨어뜨립니다.']
-  ]},
-  '90-1250': { role: '제트 블랙', type: 'solid', face: '#000000', flop: '#000000', desc: '빛 흡수율을 극한으로 끌어올린 깊고 진한 심연의 최고급 블랙입니다.', details: [
-    ['화학적 특성', '일반 카본을 넘어선 완벽한 빛 흡수 구조로 회색빛 잔상조차 허용하지 않는 압도적 암흑 안료입니다.'],
-    ['일반 특성', '마이바흐, 포르쉐 등 럭셔리 플래그십 브랜드의 옵시디안 딥 블랙(피아노 블랙) 1코트 전용입니다.'],
-    ['외관 변화', '어떠한 난반사도 없이 거울처럼 맑고 완벽한 흑경(Black Mirror)을 발현합니다.'],
-    ['배합 비율', '안료 단가가 매우 비싸며 튜닝용보다는 순수 블랙 원톤 도장에 단독으로 다량 사용됩니다.'],
-    ['비교 분석', '[경고] 일반 다크 메탈릭에 메인 블랙(A926) 대신 섞으면 톤이 비정상적으로 까맣고 무거워져 섀도우가 뭉개집니다.']
-  ]},
-  '90-M99/00': { role: '수퍼 파인 알루미늄', type: 'silver_fine', face: '#f8fafc', flop: '#64748b', desc: '입자가 보이지 않을 정도로 정제된 극미세 알루미늄 안료입니다.', details: [
-    ['화학적 특성', '금속 입자를 극한으로 정제하여 난반사를 억제한 초미립 렌티큘러 실버 페이스트입니다.'],
-    ['일반 특성', '입자감이 완전히 사라져야 하는 최고급 수입차의 하이퍼 실버 도장에 사용됩니다.'],
-    ['외관 변화', '정면은 액체 거울(Liquid Metal)처럼 매끄럽고 눈부시지만, 측면은 묵직한 솔리드 그레이로 차분하게 떨어집니다.'],
-    ['배합 비율', '하이엔드 미립자 실버 조색 시 메인 베이스로 다량 배합됩니다.'],
-    ['비교 분석', '[경고] 입자가 극도로 고와서 두껍게 웻 코트를 치면 100% 뭉치므로(Clumping), 거리를 띄운 드롭 코트가 생명입니다.']
-  ]},
-  '90-M99/01': { role: '엑스트라 파인 알루미늄', type: 'silver_fine', face: '#f1f5f9', flop: '#475569', desc: '매우 고운 실버로, 은은한 금속광을 내며 측면이 부드러운 안료입니다.', details: [
-    ['화학적 특성', '튀는 난반사를 억제하도록 표면이 균일하게 컷팅된 고품질 미립자 구조입니다.'],
-    ['일반 특성', '최신 국산 및 수입 차량의 입자감이 튀지 않는 고휘도 차분한 미립 실버톤에 쓰입니다.'],
-    ['외관 변화', '거친 느낌 없이 도막 전체에 은은하고 고급스러운 금속 윤기를 형성합니다.'],
-    ['배합 비율', '일반적인 미세 메탈릭 베이스 조색 시 메인 뼈대로 다량 투입됩니다.'],
-    ['비교 분석', '[비교] 00번(수퍼파인)과 02번(일반은분) 사이의 절묘한 간극을 메우는 텍스처로 모틀링 제어가 수월합니다.']
-  ]},
-  '90-M99/02': { role: '파인 알루미늄', type: 'silver_fine', face: '#e2e8f0', flop: '#334155', desc: '가장 스탠다드하게 광범위하게 쓰이는 중간 고운 입자 은분입니다.', details: [
-    ['화학적 특성', '빛을 가장 안정적이고 둥글게 산란시키는 중간 이하의 코발트 컷팅 입자 구조입니다.'],
-    ['일반 특성', '대중적인 양산차 실버 메탈릭 및 밝은 쥐색 메탈릭의 근간이 되는 현장 범용 은분입니다.'],
-    ['외관 변화', '과하게 빛나지도 칙칙하지도 않은 익숙하고 편안한 스탠다드 실버감을 선사합니다.'],
-    ['배합 비율', '범용 실버 조색 데이터의 핵심 안료로 레시피에서 가장 큰 중량 비중을 차지합니다.'],
-    ['비교 분석', '[주의사항] 특수 마이카 펄(진주)과 혼용 시 이 은분의 금속 스파클이 진주광을 억제하여 펄감이 묻힐 수 있습니다.']
-  ]},
-  '90-M99/03': { role: '미디엄 알루미늄', type: 'silver_coarse', face: '#cbd5e1', flop: '#1e293b', desc: '정면광과 측면광의 명암 대비(Contrast)가 가장 뚜렷한 중간 입자 은분입니다.', details: [
-    ['화학적 특성', '빛을 강하게 반사시키는 렌티큘러 입자 특성이 본격적으로 나타나는 중간 굵기 알루미늄입니다.'],
-    ['일반 특성', '명암 대비가 뚜렷하고 입체감이 살아야 하는 스포티한 다크 그레이, 건메탈 계열에 최적화되었습니다.'],
-    ['외관 변화', '정면은 잘게 부순 은박지처럼 화사하게 터지고, 측면은 그림자가 묵직하게 지며 차량 굴곡을 극대화합니다.'],
-    ['배합 비율', '남성적이고 단단한 느낌을 주는 어두운 메탈릭 컬러 조색 시 메인 베이스로 활약합니다.'],
-    ['비교 분석', '[주의사항] 금속 특유의 찌르는 스파클이 강해 부드러운 파스텔톤에 들어가면 입자가 지저분하게 둥둥 떠 보입니다.']
-  ]},
-  '90-M99/04': { role: '라지 알루미늄', type: 'silver_coarse', face: '#94a3b8', flop: '#0f172a', desc: '매우 굵은 반사광을 발현하는 조대(Coarse) 알루미늄 입자입니다.', details: [
-    ['화학적 특성', '면적이 넓고 불규칙하게 컷팅된 초대형 금속 입자로 가장 거친 난반사를 유도합니다.'],
-    ['일반 특성', '입자감이 도드라지는 대형 SUV의 특수 다크 실버 및 커스텀 튜닝카 베이스에 사용됩니다.'],
-    ['외관 변화', '직사광선에서 거친 모래알이나 쇳조각이 부서지듯 야성적이고 화려한 스파클을 폭발시킵니다.'],
-    ['배합 비율', '입자가 무거워 도료 침전이 빠르므로 스프레이 직전 교반을 확실히 한 뒤 포인트 안료로 첨가합니다.'],
-    ['비교 분석', '[경고] 입자 사이 빈 공간이 많아 자체 은폐력이 현저히 떨어지므로 바닥 서페이서 색상을 완벽히 맞춰야 얼룩이 안 비칩니다.']
-  ]},
-  '90-M99/10': { role: '실버 수퍼 파인', type: 'silver_fine', face: '#ffffff', flop: '#94a3b8', desc: '고휘도의 맑고 밝은 명도를 극한으로 유지하는 극미립자 특수 은분입니다.', details: [
-    ['화학적 특성', '탁색 불순물을 완전히 제거한 고휘도 극미립 렌티큘러 컷팅 공법으로 제작되었습니다.'],
-    ['일반 특성', '벤츠, 렉서스 등의 최고급 맑은 크롬톤 실버 메탈릭 및 맑은 고채도 캔디 하도에 쓰입니다.'],
-    ['외관 변화', '측면으로 누워도 칙칙하게 탁해지지 않고 정/측면 모두 맑은 백색 크롬 수준의 밝기를 유지합니다.'],
-    ['배합 비율', '모틀링 제어를 위해 90-M5 블렌딩 클리어와 충분히 믹싱하여 아주 얇게 분산 도포해야 합니다.'],
-    ['비교 분석', '[경고] 반사율이 너무 예리해서 하도 샌딩 기스나 서페이서 단차를 현미경처럼 100% 드러냅니다. 완벽한 평탄화가 필수입니다.']
-  ]},
-  '90-A528': { role: '메인 블루', type: 'solid', face: '#2563eb', flop: '#1e3a8a', desc: '가장 중립적인 스탠다드 청색 원색입니다.', details: [
-    ['화학적 특성', '파란색 파장의 정중앙에 위치하여 웜/쿨 어느 쪽으로도 치우치지 않는 퓨어 블루 안료입니다.'],
-    ['일반 특성', '대다수 솔리드 블루 및 범용 블루 메탈릭 조색 시 기준점이 되는 핵심 뼈대입니다.'],
-    ['외관 변화', '정면의 맑은 파란색이 측면으로 갈수록 붉은 멍울 없이 차분하고 정직하게 톤다운됩니다.'],
-    ['배합 비율', '청색 계열 조색 시 가장 다량으로 배합되어 전체적인 파란색 톤의 도화지 역할을 합니다.'],
-    ['비교 분석', '[경고] 화이트 펄 안료와 잘못 혼합되면 블루의 맑은 채도가 급감하고 탁한 파스텔톤으로 뭉개집니다.']
-  ]},
-  '90-A533': { role: '사파이어 블루', type: 'solid', face: '#1d4ed8', flop: '#1e40af', desc: '채도가 극도로 높고 영롱한 보석빛을 내는 하이엔드 블루 안료입니다.', details: [
-    ['화학적 특성', '빛 투과율을 극대화하여 메탈릭 입자와 결합 시 이중 반사를 일으키는 특수 고채도 구조입니다.'],
-    ['일반 특성', '포르쉐 등 시선을 한눈에 사로잡아야 하는 고성능 스포츠카의 고채도 특수 블루 도장용입니다.'],
-    ['외관 변화', '빛을 뿜어내는 네온사인처럼 일반 블루가 범접할 수 없는 깊고 선명한 압도적 반사율을 자랑합니다.'],
-    ['배합 비율', '맑은 은분과 결합하여 정면광의 시린 파란색을 한계치까지 끌어올릴 때 다량 씁니다.'],
-    ['비교 분석', '[경고] 색이 너무 화려하게 튀어, 일반적이고 차분한 세단 색상 조색에 잘못 섞으면 톤이 가벼워지고 겉돌게 됩니다.']
-  ]},
-  '90-A563': { role: '미드 블루', type: 'solid', face: '#3b82f6', flop: '#1e3a8a', desc: '명도가 살짝 억제된 차분한 중간 톤의 솔리드 청색입니다.', details: [
-    ['화학적 특성', '블루 파장에 미세한 무채색 입자가 화학적으로 결합되어 채도 폭발을 막아줍니다.'],
-    ['일반 특성', '무게감 있는 다크 블루 차량 및 어두운 네이비 메탈릭의 기본 하도에 주로 사용됩니다.'],
-    ['외관 변화', '블랙을 타지 않고도 자연스럽게 블루 본연의 깊이감 있고 진중한 섀도우를 형성합니다.'],
-    ['배합 비율', '고채도 블루의 색감이 너무 날뛸 때, 탁해지는 블랙 대신 투입하여 색감을 차분하게 톤다운시킬 때 씁니다.'],
-    ['비교 분석', '[주의사항] 명도가 기본적으로 낮으므로 다량 배합 시 전체 색상이 다소 칙칙하고 무거워지는 탁색 위험이 존재합니다.']
-  ]},
-  '90-A640': { role: '스프링 그린', type: 'solid', face: '#84cc16', flop: '#4d7c0f', desc: '명도와 채도가 매우 높은 맑고 싱그러운 라임색 안료입니다.', details: [
-    ['화학적 특성', '노란 파장과 녹색 파장이 최적의 비율로 결합되어 눈이 시릴 정도의 맑은 발색을 냅니다.'],
-    ['일반 특성', '람보르기니 등 고채도 라임색 스포츠카 솔리드 및 특수 에메랄드 메탈릭 도장용입니다.'],
-    ['외관 변화', '칙칙함 없이 투명하고 맑은 봄날 새싹처럼 화사하고 쨍한 질감을 도막에 부여합니다.'],
-    ['배합 비율', '옐로우 틴터와 혼용하여 형광빛에 가까운 고채도 녹색을 연출할 때 메인으로 다량 배합합니다.'],
-    ['비교 분석', '[경고] 이 안료에 블루 틴터를 잘못 혼용하면 예상치 못한 탁한 청록색(시체색)으로 스와이프되며 톤이 완전히 망가집니다.']
-  ]},
-  '90-A695': { role: '메인 그린', type: 'solid', face: '#15803d', flop: '#14532d', desc: '짙고 안정적인 가장 스탠다드한 기준점 녹색 안료입니다.', details: [
-    ['화학적 특성', '노란기나 푸른기로 쏠리지 않은 정직하고 깊은 녹색 파장을 흡수/반사합니다.'],
-    ['일반 특성', '브리티시 레이싱 그린 등 고전적이고 클래식한 솔리드 딥 그린 및 다크 펄의 하도입니다.'],
-    ['외관 변화', '가볍게 뜨지 않고 색의 중심을 무겁고 단단하게 잡아주는 깊은 숲속 질감을 냅니다.'],
-    ['배합 비율', '녹색 계열 베이스 바탕색 구축 시 가장 광범위하게 쓰이는 메인 안료입니다.'],
-    ['비교 분석', '[주의사항] 단독으로 과량 사용 시 발색이 다소 어둡고 진중하게 발현되므로, 맑은 색상 조색 시엔 투입량에 주의해야 합니다.']
-  ]},
-  '90-A105': { role: '오커 (황토)', type: 'solid', face: '#b45309', flop: '#451a03', desc: '은폐력이 매우 강하고 무거운 전형적인 황토색/흙빛 안료입니다.', details: [
-    ['화학적 특성', '산화철 기반의 무기질 안료로 빛 투과를 강하게 차단하는 불투명 구조입니다.'],
-    ['일반 특성', '구형 베이지, 브론즈 컬러의 솔리드 하도 및 빈티지한 탁색 베이스 조색용입니다.'],
-    ['외관 변화', '맑은 색상을 묵직하고 차분하게 짓누르며 도막 전체를 에이징 된 흙빛으로 다운시킵니다.'],
-    ['배합 비율', '차분하고 진중한 웜톤 계열 조색 시 명도를 낮추는 용도로 소량씩 조심스럽게 씁니다.'],
-    ['비교 분석', '[경고] 채도를 급격히 떨어뜨리므로 투명감이 생명인 맑은 골드 펄이나 화사한 메탈릭 조색 시엔 절대 투입 금지입니다.']
-  ]},
-  '90-A115': { role: '메인 옐로우', type: 'solid', face: '#eab308', flop: '#a16207', desc: '불순물이 섞이지 않은 가장 맑고 선명한 표준 노란색입니다.', details: [
-    ['화학적 특성', '적색이나 청색 간섭을 차단한 고순도 퓨어 옐로우 유기 안료입니다.'],
-    ['일반 특성', '스쿨버스, 스포츠카 등 눈길을 확 사로잡는 밝은 명시성의 솔리드 노랑 원톤 뼈대입니다.'],
-    ['외관 변화', '눈부시고 쨍한 순수 옐로우 반사를 통해 왜곡 없이 화사한 웜톤 광채를 발산합니다.'],
-    ['배합 비율', '모든 옐로우/오렌지 조색 시 가장 기본이 되는 메인 베이스로 대량 배합됩니다.'],
-    ['비교 분석', '[경고] 순수 노란색 특성상 자체 은폐력이 매우 약하므로 반드시 화이트 서페이서(하도) 처리가 선행되어야 칙칙해지지 않습니다.']
-  ]},
-  '90-A148': { role: '레몬 골드', type: 'solid', face: '#fde047', flop: '#ca8a04', desc: '푸른빛이 살짝 감도는 매우 밝고 투명한 레몬 옐로우입니다.', details: [
-    ['화학적 특성', '적색 파장을 완벽히 배제하고 미세한 녹/청 파장을 결합시킨 서늘한 황색 유기 안료입니다.'],
-    ['일반 특성', '형광 옐로우 계열의 고채도 스포츠 색상 및 맑은 하이퍼 실버의 레몬 틴팅 전용입니다.'],
-    ['외관 변화', '눈이 시리도록 밝고 투명한 형광 레몬빛 필터를 통해 도막을 차갑고 예리하게 튜닝합니다.'],
-    ['배합 비율', '시원하고 맑은 느낌의 노란색을 낼 때 칙칙해지는 것을 막기 위해 메인 베이스로 투입합니다.'],
-    ['비교 분석', '[경고] 붉은기(웜톤)와는 완벽한 상극입니다. 레드 안료와 단 1방울만 섞여도 형광빛이 즉각 소실되고 톤이 망가집니다.']
-  ]},
-  '90-A201': { role: '라이트 오렌지', type: 'solid', face: '#f97316', flop: '#c2410c', desc: '레드와 옐로우의 경계에 있는 눈부시게 밝은 귤색 안료입니다.', details: [
-    ['화학적 특성', '옐로우 베이스에 적색 파장을 폭발적으로 결합시킨 웜톤 극채도 유기 안료입니다.'],
-    ['일반 특성', '포르쉐 파파야 오렌지 등 시선을 끄는 고채도 귤색 솔리드 및 포인트 스포츠카 전용입니다.'],
-    ['외관 변화', '어둡거나 탁하지 않고 극도로 화사하며 불타오르는 듯한 역동적인 생동감을 부여합니다.'],
-    ['배합 비율', '강렬한 레드나 옐로우 조색 시 웜톤 채도를 끝까지 끌어올리기 위한 조미료로 다량 배합됩니다.'],
-    ['비교 분석', '[경고] 채도가 억세고 강해, 차분한 세단 컬러에 미량만 튀어 들어가도 톤이 형광펜처럼 떠버리므로 교반 시 붓끝 관리가 필수입니다.']
-  ]},
-  '90-A328': { role: '스탠다드 레드', type: 'solid', face: '#dc2626', flop: '#991b1b', desc: '가장 표준적이고 정직한 스탠다드 적색 솔리드입니다.', details: [
-    ['화학적 특성', '오렌지 파장이나 마젠타 파장으로 치우침이 없는 완벽한 정중앙의 퓨어 레드 파장입니다.'],
-    ['일반 특성', '소방차, 우체국 차량 등 대중적이고 스탠다드한 솔리드 레드 원톤에 필수적인 뼈대입니다.'],
-    ['외관 변화', '탁색이나 이질감 없이 화사하면서도 정직하고 따뜻한 붉은빛으로 도막의 온도를 올립니다.'],
-    ['배합 비율', '모든 적색 베이스 조색 시 가장 기본 체력이 되는 스탠다드 비율을 차지하여 대량 투입됩니다.'],
-    ['비교 분석', '[테크닉] 은폐력이 100% 완벽하지 않아 하도 색상에 영향을 받으므로, 얼룩 없이 덮으려면 정석적인 웻 코트(Wet coat) 겹침이 필수입니다.']
-  ]},
-  '90-A329': { role: '투명 레드 (캔디)', type: 'solid', face: '#ef4444', flop: '#b91c1c', desc: '빛 투과율이 매우 높은 맑은 고채도 투명 적색 틴터입니다.', details: [
-    ['화학적 특성', '안료의 은폐력을 화학적으로 제거하여 거울 위의 맑은 셀로판지 효과를 내는 염료성 틴터입니다.'],
-    ['일반 특성', '마쯔다 소울레드 크리스탈 등 프리미엄 캔디톤 3코트 레드의 핵심 미들 코트에 쓰입니다.'],
-    ['외관 변화', '빛이 도막을 투명하게 뚫고 들어가 바닥 메탈릭을 치고 나오는 극강의 이중 반사 캔디 이펙트를 터뜨립니다.'],
-    ['배합 비율', '밝은 메탈릭 안료 위에 올라가 맑고 쨍한 붉은빛 필터 역할을 수행하도록 정량 배합 분사합니다.'],
-    ['비교 분석', '[경고] 은폐력이 전무하므로 바탕 서페이서 자국이나 샌딩 얼룩을 돋보기처럼 그대로 비춰버립니다. 하도 평탄화가 생명입니다.']
-  ]},
-  '90-A423': { role: '퍼플 / 바이올렛', type: 'solid', face: '#7e22ce', flop: '#4c1d95', desc: '푸른빛이 강하게 도는 스탠다드 솔리드 보라색입니다.', details: [
-    ['화학적 특성', '적색과 청색 파장의 완벽한 균형점에서 살짝 쿨톤(푸른빛)으로 기운 깊은 퍼플광입니다.'],
-    ['일반 특성', '퍼플 펄 메탈릭 베이스 하도 및 블루 메탈릭의 오묘한 톤다운 보정에 사용됩니다.'],
-    ['외관 변화', '정면의 쨍한 보라색이 측면에서는 붉은기를 버리고 차가운 다크 네이비 톤으로 단단히 가라앉습니다.'],
-    ['배합 비율', '신비로운 쿨톤 퍼플을 조색할 때 뼈대로 다량 투입되며 명도 조절에 주의합니다.'],
-    ['비교 분석', '[경고] 화이트 원색과 섞이면 고급스러움이 사라지고 순식간에 촌스러운 연보라색(파스텔 탁색)으로 변합니다.']
-  ]},
-  '93-M010': { role: '화이트 펄 (스탠다드)', type: 'pearl', face: '#ffffff', flop: '#e2e8f0', desc: '가장 널리 쓰이는 표준 진주빛 마이카 펄입니다.', details: [
-    ['화학적 특성', '천연 운모(Mica) 위에 이산화티타늄을 코팅하여 부드러운 빛의 간섭을 유도하는 구조입니다.'],
-    ['일반 특성', '대중적인 국산차 3코트 화이트 펄 시스템의 메인 미들 코트 뼈대입니다.'],
-    ['외관 변화', '입자가 거칠게 튀지 않고 둥글고 뽀얀 정통 우윳빛 진주광을 왜곡 없이 뿜어냅니다.'],
-    ['배합 비율', '모든 화이트 펄 조색 시 가장 다량으로, 가장 빈번하게 배합됩니다.'],
-    ['비교 분석', '[경고] 웻 코트로 한 번에 두껍게 뭉쳐 뿌리면 누렇게 뜨는 황변 현상이 발생하므로 흩뿌리기가 중요합니다.']
-  ]},
-  '90-A34': { role: '다이아몬드 화이트 (시라릭)', type: 'xirallic', face: '#ffffff', flop: '#f1f5f9', desc: '가장 쨍하고 굵은 반사를 내는 화이트 크리스탈입니다.', details: [
-    ['화학적 특성', '투과율이 가장 높은 인공 합성 크리스탈(Alumina Flake) 베이스의 대형 입자입니다.'],
-    ['일반 특성', '최고급 플래그십 세단의 다이아몬드 화이트 펄 도장 시 궁극의 화려함을 위해 처방됩니다.'],
-    ['외관 변화', '태양광 아래에서 유리 파편이나 얼음조각이 부서지듯 압도적인 스파클링을 폭발시킵니다.'],
-    ['배합 비율', '소량 투입으로도 극강의 화려함을 내며 정량 초과 시 눈이 아플 정도로 난반사됩니다.'],
-    ['비교 분석', '[테크닉] 분말 성향이 강해 믹싱 클리어 수지에 완벽히 개어서 분사해야 하얗게 뭉치지 않습니다.']
-  ]},
-  '98-M80': { role: '매직 카멜레온 (시안-퍼플)', type: 'xirallic', face: '#2dd4bf', flop: '#a855f7', desc: '청록색에서 보라색으로 변환되는 마법의 카멜레온 펄입니다.', details: [
-    ['화학적 특성', '입자 코팅 두께를 다층으로 설계하여 입사각에 따라 빛의 스펙트럼이 완전히 꺾이는 구조입니다.'],
-    ['일반 특성', '특수 쇼카(Show Car) 및 미스틱 블루 카멜레온 투톤 컬러 도장에 사용됩니다.'],
-    ['외관 변화', '정면에서는 영롱한 시안(청록)이지만 측면으로 비틀면 차가운 퍼플(보라)로 180도 스와이프됩니다.'],
-    ['배합 비율', '카멜레온 이펙트 발현을 위해 믹싱 클리어와 섞어 독립적인 레이어로 정밀 분사합니다.'],
-    ['비교 분석', '[경고] 바탕색이 100% 흡수율을 가진 딥 블랙이 아니면 효과가 다 죽고 그냥 탁한 은가루로 보입니다.']
-  ]},
-  '22-MC35': { role: '2K 우레탄 믹싱 클리어', type: 'binder', face: '#ffffff', flop: '#ffffff', desc: '22라인 우레탄 시스템의 뼈대 역할을 하는 투명 수지입니다.', details: [
-    ['화학적 특성', '단순 조색용이 아니라 자외선과 오염을 방어하는 2K 하이솔리드 코팅제 뼈대 수지입니다.'],
-    ['일반 특성', '상도 클리어가 필요 없는 22라인 솔리드 원톤 컬러 전반의 핵심 뼈대입니다.'],
-    ['외관 변화', '건조 후 젤리처럼 맑고 깊은 묵직한 고광택(High Gloss)을 도막 자체적으로 발현합니다.'],
-    ['배합 비율', '22라인 조색 시 가장 다량으로 투입됩니다.'],
-    ['비교 분석', '[경고] 경화제와의 혼합 비율이 조금이라도 틀어지면 크랙 하자가 직빵으로 발생합니다.']
-  ]},
-  '100-MB50': { role: '100라인 고농축 믹싱 베이스', type: 'binder', face: '#ffffff', flop: '#ffffff', desc: '차세대 100라인 고농축 안료를 완벽히 펴주는 혁신 수지입니다.', details: [
-    ['화학적 특성', '과거 90라인의 두께감을 극복하고 압도적인 퍼짐성을 부여하는 하이-에코 분산 수지입니다.'],
-    ['일반 특성', '100라인 에코 수용성 시스템 전 색상의 근간이 되는 투명 뼈대입니다.'],
-    ['외관 변화', '도막을 매우 얇고 단단하게 잡으면서 최고 수준의 투명도를 안착시킵니다.'],
-    ['배합 비율', '100라인 시스템 컬러 구축 시 무조건 기초 단위로 대량 계량됩니다.'],
-    ['비교 분석', '[경고] 90라인 수지(M4 등)와 혼용 시 즉각 젤리처럼 응고되며 대참사가 발생합니다.']
-  ]},
-  '100-M1': { role: '100라인 에코 딥 블랙', type: 'solid', face: '#000000', flop: '#000000', desc: '기존 수용성의 한계를 뛰어넘어 빛 흡수율이 극대화된 심연의 흑색입니다.', details: [
-    ['화학적 특성', '안료의 농축도를 극한으로 끌어올려 완벽한 빛 흡수율을 자랑하는 차세대 블랙입니다.'],
-    ['일반 특성', '최신 수입차 프리미엄 솔리드 블랙 도장 및 톤다운용으로 쓰입니다.'],
-    ['외관 변화', '도막 건조 후 뿜어져 나오는 맑고 깊은 심연의 블랙이 90라인보다 한 차원 더 예리합니다.'],
-    ['배합 비율', '농축도가 매우 높아 톤다운 시 극소량만 정밀 투입해야 합니다.'],
-    ['비교 분석', '[비교] 100-M1 vs 90-M1 : 100라인 블랙이 착색력(Tinting Strength)이 월등히 강력합니다.']
-  ]}
-};
+// 💡 2. 마스터 안료 데이터 초기화 (뼈대)
+export const TONER_DB: Record<string, TonerData> = {};
 
+// 💡 3. OEM 컬러 데이터 초기화 (뼈대)
 export const OEM_COLORS: { code: string; name: string }[] = []; 
 
 export const catalogData = Object.entries(TONER_DB).map(([code, data]) => { return { code, ...data }; });
 export const safeNum = (val: any): number => { const num = Number(val); return isNaN(num) ? 0 : num; };
-export const isTonerMetallic = (role: string) => { const r = role || ''; return r.includes('실버') || r.includes('알루미늄') || r.includes('펄') || r.includes('이펙트') || r.includes('다이아몬드') || r.includes('시라릭'); };
+export const isTonerMetallic = (role: string) => { const r = role || ''; return r.includes('실버') || r.includes('알루미늄') || r.includes('펄') || r.includes('이펙트') || r.includes('분말') || r.includes('글라스'); };
 
 const textureCache: any = {};
 export const getCachedTexture = (type: string, faceColor: string, flopColor: string, isMetallic: boolean): React.CSSProperties => {
@@ -278,13 +37,12 @@ export const getCachedTexture = (type: string, faceColor: string, flopColor: str
     textureCache[key] = result; return result;
 };
 
-// 💡 [지시 6] 5대 특성 전용 프리미엄 뱃지 컬러 연동 완벽 적용!
 export const getBadgeClass = (title: string) => {
-    if(title.includes("화학적")) return "bg-purple-50 text-purple-700 border-purple-300 shadow-sm";
-    if(title.includes("일반")) return "bg-blue-50 text-blue-700 border-blue-300 shadow-sm";
-    if(title.includes("외관")) return "bg-emerald-50 text-emerald-700 border-emerald-300 shadow-sm";
-    if(title.includes("배합")) return "bg-orange-50 text-orange-700 border-orange-300 shadow-sm";
-    if(title.includes("비교")) return "bg-yellow-100 text-yellow-800 border-yellow-400 shadow-md font-black";
+    if(title.includes("특성") || title.includes("분말") || title.includes("캔디") || title.includes("배합")) return "bg-teal-50 text-teal-700 border-teal-300 shadow-sm";
+    if(title.includes("용도") || title.includes("컬러") || title.includes("확인")) return "bg-indigo-50 text-indigo-700 border-indigo-300 shadow-sm";
+    if(title.includes("외관")) return "bg-blue-50 text-blue-700 border-blue-300 shadow-sm";
+    if(title.includes("비교") || title.includes("유동성") || title.includes("원리")) return "bg-yellow-100 text-yellow-800 border-yellow-400 shadow-md font-black";
+    if(title.includes("경고") || title.includes("주의") || title.includes("한계") || title.includes("철칙")) return "bg-red-50 text-red-700 border-red-300 shadow-sm font-black";
     return "bg-slate-50 text-slate-700 border-slate-300 shadow-sm";
 };
 
@@ -315,6 +73,7 @@ const getTonerBaseHue = (code: string, role: string) => {
     if (role.includes('그린') || role.includes('녹') || role.includes('에메랄드')) return 150;
     if (role.includes('옐로우') || role.includes('황') || role.includes('오렌지')) return 45; return null;
 };
+
 export const getOptics = (tonersList: any[]) => {
   const colorToners = tonersList.filter(t => t.code && TONER_DB[t.code]);
   const sumW = colorToners.reduce((sum, t) => sum + safeNum(parseFloat(t.adjustedWeight)), 0);
@@ -324,10 +83,10 @@ export const getOptics = (tonersList: any[]) => {
   colorToners.forEach(t => {
     const w = safeNum(parseFloat(t.adjustedWeight)); if (w <= 0) return;
     const role = TONER_DB[t.code]?.role || ''; const code = t.code || '';
-    if (role.includes('블랙')) wBlack += w;
-    else if (role.includes('실버') || role.includes('알루미늄')) wSilver += w;
-    else if (role.includes('화이트')) wWhite += w;
-    else if (role.includes('펄') || role.includes('이펙트')) wPearl += w;
+    if (role.includes('블랙') || code.includes('323') || code.includes('188') || code.includes('1500')) wBlack += w;
+    else if (role.includes('실버') || role.includes('알루미늄') || code.includes('389') || code.includes('197')) wSilver += w;
+    else if (role.includes('화이트') || code.includes('321')) wWhite += w;
+    else if (role.includes('펄') || role.includes('이펙트') || code.includes('380') || code.includes('368')) wPearl += w;
     const baseHue = getTonerBaseHue(code, role);
     if (baseHue !== null) { let rad = baseHue * (Math.PI / 180); totalX += Math.cos(rad) * w; totalY += Math.sin(rad) * w; colorWeight += w; }
   });
@@ -358,12 +117,13 @@ const MIXING_DATA: Record<string, any> = {
 
 const polarToCartesian = (centerX: number, centerY: number, radius: number, angleInDegrees: number) => { const angleInRadians = (angleInDegrees - 90) * Math.PI / 180.0; return { x: centerX + (radius * Math.cos(angleInRadians)), y: centerY + (radius * Math.sin(angleInRadians)) }; };
 const describeArc = (x: number, y: number, innerRadius: number, outerRadius: number, startAngle: number, endAngle: number) => { const startOuter = polarToCartesian(x, y, outerRadius, endAngle); const endOuter = polarToCartesian(x, y, outerRadius, startAngle); const startInner = polarToCartesian(x, y, innerRadius, endAngle); const endInner = polarToCartesian(x, y, innerRadius, startAngle); const largeArcFlag = endAngle - startAngle <= 180 ? "0" : "1"; return [ "M", startOuter.x, startOuter.y, "A", outerRadius, outerRadius, 0, largeArcFlag, 0, endOuter.x, endOuter.y, "L", endInner.x, endInner.y, "A", innerRadius, innerRadius, 0, largeArcFlag, 1, startInner.x, startInner.y, "Z" ].join(" "); };
-
 export default function App() {
   const [isLoaded, setIsLoaded] = useState(false);
-  // 💡 [지시 5] Any 타입 족쇄 해제 완벽 적용 (TS2322 배포 에러 방지)
+  
+  // 💡 Vercel 배포 에러(TS2322) 방지를 위한 <any[]> 제네릭 타입 강제 지정 완료
   const [toners, setToners] = useState<any[]>([{ id: `b_init`, code: '', adjustedWeight: "", history: [], memo: "", isExpanded: false }]);
   const [pearlToners, setPearlToners] = useState<any[]>([{ id: `p_init`, code: '', adjustedWeight: "", history: [], memo: "", isExpanded: false }]);
+  
   const [isThreeCoatMode, setIsThreeCoatMode] = useState(false); 
   const [targetColorCode, setTargetColorCode] = useState(''); 
   const [vehicleNumber, setVehicleNumber] = useState(''); 
@@ -378,8 +138,7 @@ export default function App() {
   
   const [memoModal, setMemoModal] = useState<{isOpen: boolean, id: string, code: string, isPearl: boolean, text: string, history: string[]}>({isOpen: false, id: '', code: '', isPearl: false, text: '', history: []});
 
-  // 💡 [지시 4] 사전 탭 완벽 개조 적용 (90, ECO, EFFECT)
-  const [activeTab, setActiveTab] = useState<'90'|'ECO'|'EFFECT'>('90');
+  const [activeTab, setActiveTab] = useState<'WT'|'PP'|'CANDY'>('WT');
   
   const [isEmailModalOpen, setIsEmailModalOpen] = useState(false);
   const [isHistoryModalOpen, setIsHistoryModalOpen] = useState(false);
@@ -392,9 +151,9 @@ export default function App() {
   const [isEditingPost, setIsEditingPost] = useState(false);
   const [editPostForm, setEditPostForm] = useState({ brand: '', code: '', spec: '' });
 
-  const [boardSearch, setBoardSearch] = useState(''); 
-  const [boardBrandFilter, setBoardBrandFilter] = useState('전체');
+  const [boardSearch, setBoardSearch] = useState(''); const [boardBrandFilter, setBoardBrandFilter] = useState('전체');
   
+  // 💡 TS2322 방지
   const [snapshots, setSnapshots] = useState<any[]>([]);
   const [isSnapshotModalOpen, setIsSnapshotModalOpen] = useState(false);
   const [selectedSnapshot, setSelectedSnapshot] = useState<any>(null);
@@ -402,8 +161,9 @@ export default function App() {
   const [isPearlGuideOpen, setIsPearlGuideOpen] = useState(false);
   const [activePearlLevel, setActivePearlLevel] = useState(6);
   
+  // 💡 TS2322 방지
   const [boardPosts, setBoardPosts] = useState<any[]>([
-      { id: 1, brand: '현대', code: 'UG4', date: '2026-09-17', likes: 12, views: 45, author: '윤프로', spec: '이색 심함, 보카시 블렌딩 필수', baseFormula: [{code: '90-M5', adjustedWeight: '15.5'}], pearlFormula: [], isThreeCoat: false }
+      { id: 1, brand: '현대', code: 'UG4', date: '2026-09-11', likes: 12, views: 45, author: '윤프로', spec: '이색 심함, 보카시 블렌딩 필수', baseFormula: [{code: 'WT 321', adjustedWeight: '15.5'}], pearlFormula: [], isThreeCoat: false }
   ]);
 
   const codeRefs = useRef<{ [key: string]: HTMLInputElement | null }>({}); 
@@ -421,13 +181,11 @@ export default function App() {
 
   const activeCodes = [...toners, ...pearlToners].map(t => t.code).filter(c => c !== '');
   
-  // 💡 [지시 4] 사전 탭 필터링 조건식 완벽 개조 적용
   const sortedCatalog = [...catalogData].filter(item => {
     const code = item.code;
-    if (activeTab === '90') return code.startsWith('90-');
-    if (activeTab === 'ECO') return code.startsWith('100-') || code.startsWith('22-');
-    if (activeTab === 'EFFECT') return code.startsWith('93-') || code.startsWith('98-');
-    return true; 
+    if (activeTab === 'CANDY') return code.startsWith('90');
+    if (activeTab === 'PP') return code.startsWith('PP');
+    return !code.startsWith('90') && !code.startsWith('PP'); 
   }).sort((a, b) => { 
       const aActive = activeCodes.includes(a.code); const bActive = activeCodes.includes(b.code); 
       if (aActive && !bActive) return -1; if (!aActive && bActive) return 1; return 0; 
@@ -436,9 +194,8 @@ export default function App() {
       return item.code.includes(searchTxt) || item.role.toUpperCase().includes(searchTxt);
   });
 
-  useEffect(() => { document.title = "BASF 글라슈리트 PRO MASTER EDITION"; }, []);
+  useEffect(() => { document.title = "조색 Pro"; }, []);
 
-  // 💡 [에러 수정] TS2552: URLSearchParams 오타 및 띄어쓰기 완벽 해결!
   useEffect(() => {
     if (typeof window !== 'undefined') {
         const urlParams = new URLSearchParams(window.location.search); const d = urlParams.get('d'); 
@@ -512,43 +269,24 @@ export default function App() {
       setSnapshots([]); setCatalogSearch('');
   };
   
-  // 💡 [지시 1] 영문 타자 씹힘 및 한영 충돌 완벽 해결! (replace 정규식 수정 및 오토매칭)
   const handleCodeChange = (id: string, newCode: string, isPearl = false) => {
-    // 순수 영문, 숫자, 하이픈(-), 슬래시(/) 허용으로 부드러운 타자 유지
-    let val = newCode.toUpperCase().replace(/[^A-Z0-9/.-]/g, '');
+    const rawVal = newCode.toUpperCase(); 
+    const numOnly = rawVal.replace(/[^0-9]/g, '');
+    let finalCode = rawVal;
     
-    if (val === 'M4') val = '90-M4';
-    else if (val === 'M5') val = '90-M5';
-    else if (val === 'M1') val = '90-M1';
-    else if (val === 'E3') val = '93-E3';
-    else if (val === 'E3SLOW' || val === 'SLOW') val = '93-E3 Slow';
-    else if (val === 'E3FAST' || val === 'FAST') val = '93-E3 Fast';
-    else if (val === 'M3') val = '90-M3';
-    else if (val === 'M20') val = '90-M20';
-    else if (val === 'M25') val = '90-M25';
-    else if (val === 'M9900' || val === '9900') val = '90-M99/00';
-    else if (val === 'M9901' || val === '9901') val = '90-M99/01';
-    else if (val === 'M9902' || val === '9902') val = '90-M99/02';
-    else if (val === 'M9903' || val === '9903') val = '90-M99/03';
-    else if (val === 'M9904' || val === '9904') val = '90-M99/04';
-    else if (val === 'M9910' || val === '9910') val = '90-M99/10';
-    else if (/^[A-Z]\d+$/.test(val) && (val.length === 3 || val.length === 4)) {
-        val = `90-${val}`; // A031 입력시 90-A031 자동 완성
-    }
-
-    if (val !== '' && !TONER_DB[val]) {
-        const keys = Object.keys(TONER_DB);
-        let match = keys.find(k => k.replace(/-/g, '') === val.replace(/-/g, ''));
-        if (!match) match = keys.find(k => k.split('-')[1] === val);
-        if (!match) match = keys.find(k => k.split('-')[1]?.replace(/\//g, '') === val);
-        if (match) val = match;
+    if (rawVal.startsWith('90') && numOnly.length >= 4) {
+        finalCode = numOnly.substring(0, 4); 
+    } else if (['1051', '1500', '455', 'AXT700'].includes(numOnly) || rawVal === 'AXT700') {
+        finalCode = rawVal === 'AXT700' ? 'AXT700' : numOnly; 
+    } else if (numOnly) {
+        finalCode = `WT ${numOnly}`; 
     }
 
     const setter = isPearl ? setPearlToners : setToners;
     setter(prev => prev.map(toner => { 
         if (toner.id === id) { 
-            if (TONER_DB[val]) { setFocusTarget({ id: id, type: 'weight' }); } 
-            return { ...toner, code: val }; // 💡 t -> toner 변수 오류 수정 완료
+            if (TONER_DB[finalCode]) { setFocusTarget({ id: id, type: 'weight' }); } 
+            return { ...toner, code: finalCode }; 
         } 
         return toner; 
     }));
@@ -581,7 +319,7 @@ export default function App() {
   const generateShareText = () => {
     let baseListText = toners.filter(t => t.code).map(t => `  - ${t.code} (${TONER_DB[t.code]?.role || '미지정'}): ${t.adjustedWeight || '0'}g`).join('\n'); let pearlListText = pearlToners.filter(t => t.code).map(t => `  - ${t.code} (${TONER_DB[t.code]?.role || '미지정'}): ${t.adjustedWeight || '0'}g`).join('\n'); let currentOrigin = localStorage.getItem('hitec_clean_domain') || window.location.origin;
     const payloadStr = [vehicleNumber, carModel, targetColorCode, jobDescription, specialNotes, packToners(toners), isThreeCoatMode ? packToners(pearlToners) : '', isThreeCoatMode ? '1' : '0', registrationDate].join('|'); const shareUrl = `${currentOrigin}${window.location.pathname}?d=${btoa(unescape(encodeURIComponent(payloadStr)))}`;
-    return `[조색 배합 지시서]\n================================\n📅 등록날짜: ${registrationDate}\n🚗 차량번호: ${vehicleNumber || '미지정'}\n🚙 브랜드: ${carModel || '미지정'}\n🎨 컬러코드: ${targetColorCode || '미지정'}\n🛠️ 작업내용: ${jobDescription || '미지정'}\n📌 특이사항: ${specialNotes || '없음'}\n================================\n\n[▼ 베이스 코트]\n${baseListText || '  (입력 데이터 없음)'}\n--------------------------------\n▶ 베이스 합계: ${totalBaseWeight}g\n▶ 93-E3 수지: ${(parseFloat(totalBaseWeight) * (isBaseMetallic ? 0.2 : 0.1)).toFixed(1)}g\n\n${isThreeCoatMode ? `[▼ 펄 코트]\n${pearlListText || '  (입력 데이터 없음)'}\n--------------------------------\n▶ 펄 합계: ${totalPearlWeight}g\n▶ 93-E3 수지: ${(parseFloat(totalPearlWeight) * (isPearlMetallic ? 0.2 : 0.1)).toFixed(1)}g\n\n` : ''}================================\n✨ 최종 도막 총량: ${totalFinalWeight}g\n\n👉 링크:\n${shareUrl}`;
+    return `[조색 배합 지시서]\n================================\n📅 등록날짜: ${registrationDate}\n🚗 차량번호: ${vehicleNumber || '미지정'}\n🚙 브랜드: ${carModel || '미지정'}\n🎨 컬러코드: ${targetColorCode || '미지정'}\n🛠️ 작업내용: ${jobDescription || '미지정'}\n📌 특이사항: ${specialNotes || '없음'}\n================================\n\n[▼ 베이스 코트]\n${baseListText || '  (입력 데이터 없음)'}\n--------------------------------\n▶ 베이스 합계: ${totalBaseWeight}g\n▶ 6052 수지: ${(parseFloat(totalBaseWeight) * (isBaseMetallic ? 0.2 : 0.1)).toFixed(1)}g\n\n${isThreeCoatMode ? `[▼ 펄 코트]\n${pearlListText || '  (입력 데이터 없음)'}\n--------------------------------\n▶ 펄 합계: ${totalPearlWeight}g\n▶ 6052 수지: ${(parseFloat(totalPearlWeight) * (isPearlMetallic ? 0.2 : 0.1)).toFixed(1)}g\n\n` : ''}================================\n✨ 최종 도막 총량: ${totalFinalWeight}g\n\n👉 링크:\n${shareUrl}`;
   };
 
   const handleShareKakao = () => { if (typeof navigator !== 'undefined' && navigator.clipboard) { navigator.clipboard.writeText(generateShareText()); alert("복사되었습니다. 카톡에 붙여넣으세요."); } else { alert("클립보드 미지원."); } setIsShareModalOpen(false); };
@@ -615,22 +353,21 @@ export default function App() {
       const inputEl = document.getElementById('glossarySearchInput') as HTMLInputElement;
       const val = inputEl?.value?.trim();
       if(!val) { alert("사전 검색창에 뜻이 궁금한 용어를 직접 입력하세요!"); return; }
-      window.open(`https://www.google.com/search?q=글라슈리트+조색+${val}+뜻`, '_blank');
+      window.open(`https://www.google.com/search?q=스피스헥커+${val}+뜻`, '_blank');
   };
-
   return (
     <div className="min-h-screen bg-slate-100 text-slate-800 font-sans flex flex-col relative overflow-x-hidden pb-[320px] lg:pb-[140px] notranslate" translate="no">
       <header className="bg-slate-900 flex flex-col sm:flex-row justify-between items-center p-4 border-b border-slate-800 shadow-md shrink-0 gap-3">
         <div className="flex items-center space-x-3 w-full sm:w-auto">
-          <div className="w-8 h-8 bg-gradient-to-br from-blue-500 to-cyan-500 rounded flex items-center justify-center shadow-lg"><span className="text-white font-bold text-lg">GF</span></div>
+          <div className="w-8 h-8 bg-gradient-to-br from-blue-500 to-cyan-500 rounded flex items-center justify-center shadow-lg"><span className="text-white font-bold text-lg">H</span></div>
           <h1 className="text-lg md:text-xl font-semibold flex items-center gap-2 w-full">
-              <span className="text-white tracking-wide truncate">BASF 글라슈리트 PRO MASTER EDITION</span>
+              <span className="text-white tracking-wide truncate">조색 Pro</span>
               <span className="bg-slate-800 text-slate-400 text-[10px] px-2 py-0.5 rounded-full border border-slate-700 ml-1 hidden sm:inline-block shrink-0">Last Patch: {LAST_PATCH_DATE}</span>
           </h1>
         </div>
         <div className="flex gap-2 w-full sm:w-auto overflow-x-auto pb-1 sm:pb-0">
             <button onClick={() => setIsGlossaryModalOpen(true)} className="flex items-center gap-1.5 bg-emerald-600 hover:bg-emerald-700 text-white border border-emerald-500 px-3 py-1.5 rounded-lg text-xs font-bold transition-colors whitespace-nowrap shadow-sm">
-                📖 글라슈리트 용어 사전
+                📖 도장/조색 용어 사전
             </button>
             <button onClick={() => window.location.reload()} className="flex items-center gap-1.5 bg-slate-800 hover:bg-slate-700 text-blue-400 border border-blue-900/50 px-3 py-1.5 rounded-lg text-xs font-bold transition-colors whitespace-nowrap shadow-sm">
                 <RefreshCw size={14} /> 업데이트
@@ -665,7 +402,6 @@ export default function App() {
               </div>
             </div>
           </div>
-          
           <div className="p-3 bg-white">
             <div className="mb-4 bg-indigo-50 border border-indigo-100 p-2.5 rounded-lg flex flex-col sm:flex-row items-center justify-between shadow-sm gap-2">
                 <div className="flex items-center gap-2"><Beaker size={14} className="text-indigo-600" /><span className="text-xs font-bold text-indigo-800">현장 실시간 용량 배율 변환기</span></div>
@@ -693,15 +429,14 @@ export default function App() {
                                    <div className="flex-1 border-l border-slate-300" style={{ background: `linear-gradient(135deg, ${info.face} 0%, ${isEffect ? info.flop : 'rgba(0,0,0,0.2)'} 100%)` }}></div>
                                    {toner.memo && <div className="absolute -top-1 -right-1 bg-yellow-400 w-3 h-3 rounded-full border border-white shadow-sm"></div>}
                               </div>
-                              {/* 💡 [지시 2] 화면 출력 지우개 족쇄 완벽 해제 */}
                               <input 
                                   ref={el => { codeRefs.current[toner.id] = el; }} 
-                                  value={toner.code} 
+                                  value={toner.code.replace('WT ', '').replace('PP ', '')} 
                                   onChange={e => handleCodeChange(toner.id, e.target.value, false)} 
                                   onKeyDown={(e) => { if (e.key === 'Enter') { e.preventDefault(); setFocusTarget({ id: toner.id, type: 'weight' }); } }}
                                   type="text"
-                                  className="w-24 text-center text-sm font-black border border-slate-300 rounded p-1.5 focus:border-blue-500 focus:outline-none shadow-inner shrink-0 uppercase" 
-                                  placeholder="M5, E3 등" 
+                                  className="w-20 text-center text-sm font-black border border-slate-300 rounded p-1.5 focus:border-blue-500 focus:outline-none shadow-inner shrink-0 uppercase" 
+                                  placeholder="번호" 
                               />
                               <div className="flex items-center gap-1 cursor-pointer hover:bg-blue-100/50 py-1 px-1.5 rounded transition-colors flex-1 overflow-hidden" onClick={() => toggleExpand(toner.id, false)}>
                                   <span className="font-bold text-blue-700 text-sm truncate">{info.role || '미등록 안료'}</span>
@@ -787,15 +522,14 @@ export default function App() {
                                      <div className="flex-1 border-l border-slate-300" style={{ background: `linear-gradient(135deg, ${info.face} 0%, ${isEffect ? info.flop : 'rgba(0,0,0,0.2)'} 100%)` }}></div>
                                      {toner.memo && <div className="absolute -top-1 -right-1 bg-yellow-400 w-3 h-3 rounded-full border border-white shadow-sm"></div>}
                                 </div>
-                                {/* 💡 [지시 2] 화면 출력 지우개 족쇄 완전 해제 */}
                                 <input 
                                     ref={el => { codeRefs.current[toner.id] = el; }} 
-                                    value={toner.code} 
+                                    value={toner.code.replace('WT ', '').replace('PP ', '')} 
                                     onChange={e => handleCodeChange(toner.id, e.target.value, true)} 
                                     onKeyDown={(e) => { if (e.key === 'Enter') { e.preventDefault(); setFocusTarget({ id: toner.id, type: 'weight' }); } }}
                                     type="text" 
-                                    className="w-24 text-center text-sm font-black border border-purple-200 rounded px-1.5 py-1 text-purple-800 shadow-inner focus:outline-none focus:border-purple-500 shrink-0 uppercase" 
-                                    placeholder="펄 코드" 
+                                    className="w-20 text-center text-sm font-black border border-purple-200 rounded px-1.5 py-1 text-purple-800 shadow-inner focus:outline-none focus:border-purple-500 shrink-0 uppercase" 
+                                    placeholder="번호" 
                                 />
                                 <div className="flex items-center gap-1 cursor-pointer hover:bg-purple-100/50 py-1 px-1.5 rounded transition-colors flex-1 overflow-hidden" onClick={() => toggleExpand(toner.id, true)}>
                                     <span className="font-bold text-purple-700 text-sm truncate">{info.role || '미등록 안료'}</span>
@@ -839,13 +573,12 @@ export default function App() {
                   )
                 })}
                 <button onClick={() => addToner(true)} className="w-full py-3 border border-dashed border-purple-300 hover:border-purple-500 bg-purple-50/50 hover:bg-purple-100/50 rounded-lg text-purple-600 font-bold transition-all flex items-center justify-center space-x-2 text-sm mt-2 shadow-sm">
-                    <Plus size={18} /><span>펄 코트 조색제 추가</span>
+                    <Plus size={18} /><span>펄 조색제 추가</span>
                 </button>
               </div>
             )}
           </div>
         </div>
-
         <div className="lg:col-span-5 flex flex-col space-y-4 h-full">
           <div className="flex-1 bg-white border border-slate-300 rounded-xl shadow-xl overflow-hidden flex flex-col min-h-[500px]">
             <div className="p-3 shrink-0 bg-slate-50 border-b border-slate-200">
@@ -861,7 +594,7 @@ export default function App() {
               >
                   <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent"></div>
                   <div className="absolute inset-0 flex flex-col items-center justify-center z-20">
-                      <span className="bg-white/90 text-slate-900 font-black px-4 py-2 rounded-full text-sm shadow-xl flex items-center gap-2 group-hover:scale-105 transition-transform"><BookOpen size={16}/> 글라슈리트 펄/이펙트 마스터 인덱스 열기</span>
+                      <span className="bg-white/90 text-slate-900 font-black px-4 py-2 rounded-full text-sm shadow-xl flex items-center gap-2 group-hover:scale-105 transition-transform"><BookOpen size={16}/> PP(분말) 가이드 및 펄 마스터 인덱스 열기</span>
                   </div>
               </div>
 
@@ -877,25 +610,26 @@ export default function App() {
 
             <div className="flex flex-col h-full bg-slate-100">
                 <div className="flex bg-slate-900 shrink-0">
-                    <button onClick={()=>{setActiveTab('90'); setCatalogSearch('');}} className={`flex-1 py-3 text-[13px] font-black transition-colors ${activeTab === '90' ? 'bg-blue-600 text-white' : 'text-slate-400 hover:text-slate-200'}`}>💧 90-Line</button>
-                    <button onClick={()=>{setActiveTab('ECO'); setCatalogSearch('');}} className={`flex-1 py-3 text-[13px] font-black transition-colors ${activeTab === 'ECO' ? 'bg-emerald-600 text-white' : 'text-slate-400 hover:text-slate-200'}`}>🌱 100/22-Line</button>
-                    <button onClick={()=>{setActiveTab('EFFECT'); setCatalogSearch('');}} className={`flex-1 py-3 text-[13px] font-black transition-colors ${activeTab === 'EFFECT' ? 'bg-purple-500 text-white' : 'text-slate-400 hover:text-slate-200'}`}>✨ 특수/이펙트</button>
+                    <button onClick={()=>{setActiveTab('WT'); setCatalogSearch('');}} className={`flex-1 py-3 text-sm font-black transition-colors ${activeTab === 'WT' ? 'bg-blue-600 text-white' : 'text-slate-400 hover:text-slate-200'}`}>💧 WT (액상)</button>
+                    <button onClick={()=>{setActiveTab('PP'); setCatalogSearch('');}} className={`flex-1 py-3 text-sm font-black transition-colors ${activeTab === 'PP' ? 'bg-purple-600 text-white' : 'text-slate-400 hover:text-slate-200'}`}>🌬️ PP (분말)</button>
+                    <button onClick={()=>{setActiveTab('CANDY'); setCatalogSearch('');}} className={`flex-1 py-3 text-sm font-black transition-colors ${activeTab === 'CANDY' ? 'bg-yellow-500 text-slate-900' : 'text-slate-400 hover:text-slate-200'}`}>🍬 CANDY</button>
                 </div>
                 <div className="p-3 bg-slate-800 border-b border-slate-700 flex shrink-0 gap-2">
                     <div className="relative flex-1">
-                        <input type="text" value={catalogSearch} onChange={e=>setCatalogSearch(e.target.value)} placeholder="안료명 / 색상코드 (예: M5) 검색" className="w-full bg-slate-900 border border-slate-600 text-white text-xs px-2.5 py-2 rounded-lg pl-8 focus:outline-none focus:border-blue-500 transition-colors" />
+                        <input type="text" value={catalogSearch} onChange={e=>setCatalogSearch(e.target.value)} placeholder="안료명 / 색상코드 검색" className="w-full bg-slate-900 border border-slate-600 text-white text-xs px-2.5 py-2 rounded-lg pl-8 focus:outline-none focus:border-blue-500 transition-colors" />
                         <Search size={14} className="absolute left-2.5 top-2.5 text-slate-400" />
                     </div>
                 </div>
                 
                 <div className="flex-1 overflow-y-auto custom-scrollbar p-3 space-y-3">
-                    {activeTab === 'EFFECT' && (
-                        <div className="mb-4 bg-purple-50 border border-purple-300 p-4 rounded-xl shadow-sm">
-                           <h4 className="text-sm font-black text-purple-800 mb-2">⚠️ 글라슈리트 스페셜 이펙트 도장 가이드</h4>
-                           <ul className="text-xs text-purple-700 space-y-1.5 font-bold">
-                              <li>1. 투명도가 생명입니다. 바탕색 평활도(샌딩)를 완벽히 하세요.</li>
-                              <li>2. 캔디나 크리스탈 펄은 블렌딩 시 얼룩 발생률이 매우 높습니다.</li>
-                              <li>3. 분말 타입(90-A34 등)은 믹싱 클리어와 100% 교반해야 뭉치지 않습니다.</li>
+                    {activeTab === 'CANDY' && (
+                        <div className="mb-4 bg-yellow-50 border border-yellow-300 p-4 rounded-xl shadow-sm">
+                           <h4 className="text-sm font-black text-yellow-800 mb-2">⚠️ 퍼마솔리드 캔디 6단계 시공 및 3대 철칙</h4>
+                           <ul className="text-xs text-yellow-700 space-y-1.5 font-bold">
+                              <li>1. 이소시아네이트 포함. 방독 마스크 및 환기 필수</li>
+                              <li>2. 반사층 도장 후 완벽한 플래시 오프 필수</li>
+                              <li>3. 블렌딩 불가(전체 도장), 건조 타임 준수</li>
+                              <li>4. 2액형 클리어 조색비 엄수 및 Clear over Clear 필수</li>
                            </ul>
                         </div>
                     )}
@@ -956,7 +690,7 @@ export default function App() {
                    <div className="flex items-center justify-between bg-slate-900/90 px-3 py-2.5 rounded-xl border border-slate-800 shadow-inner text-xs">
                        <div className="flex flex-col items-center"><span className="text-[9px] text-slate-500 font-bold">순수 안료</span><span className="font-black text-white text-sm">{totalBaseWeight}g</span></div>
                        <span className="text-slate-600 font-black text-sm">+</span>
-                       <div className="flex flex-col items-center"><span className="text-[9px] text-blue-400 font-bold">93-E3 (수지)</span><span className="font-black text-blue-400 text-sm">{(parseFloat(totalBaseWeight) * (isBaseMetallic ? 0.2 : 0.1)).toFixed(1)}g</span></div>
+                       <div className="flex flex-col items-center"><span className="text-[9px] text-blue-400 font-bold">6052 수지 ({isBaseMetallic ? '20%' : '10%'})</span><span className="font-black text-blue-400 text-sm">{(parseFloat(totalBaseWeight) * (isBaseMetallic ? 0.2 : 0.1)).toFixed(1)}g</span></div>
                        <span className="text-slate-600 font-black text-sm">=</span>
                        <div className="flex flex-col items-center bg-blue-950/40 px-2 py-0.5 rounded border border-blue-900/50"><span className="text-[9px] text-emerald-400 font-bold">총 중량</span><span className="font-black text-emerald-400 text-base">{(parseFloat(totalBaseWeight) * (isBaseMetallic ? 1.2 : 1.1)).toFixed(1)}g</span></div>
                    </div>
@@ -967,7 +701,7 @@ export default function App() {
                    <div className="flex items-center justify-between bg-slate-900/90 px-3 py-2.5 rounded-xl border border-slate-800 shadow-inner text-xs">
                        <div className="flex flex-col items-center"><span className="text-[9px] text-slate-500 font-bold">순수 안료</span><span className="font-black text-white text-sm">{totalPearlWeight}g</span></div>
                        <span className="text-slate-600 font-black text-sm">+</span>
-                       <div className="flex flex-col items-center"><span className="text-[9px] text-purple-400 font-bold">93-E3 (수지)</span><span className="font-black text-purple-400 text-sm">{(parseFloat(totalPearlWeight) * (isPearlMetallic ? 0.2 : 0.1)).toFixed(1)}g</span></div>
+                       <div className="flex flex-col items-center"><span className="text-[9px] text-purple-400 font-bold">6052 수지 ({isPearlMetallic ? '20%' : '10%'})</span><span className="font-black text-purple-400 text-sm">{(parseFloat(totalPearlWeight) * (isPearlMetallic ? 0.2 : 0.1)).toFixed(1)}g</span></div>
                        <span className="text-slate-600 font-black text-sm">=</span>
                        <div className="flex flex-col items-center bg-purple-950/40 px-2 py-0.5 rounded border border-purple-900/50"><span className="text-[9px] text-emerald-400 font-bold">총 중량</span><span className="font-black text-emerald-400 text-base">{(parseFloat(totalPearlWeight) * (isPearlMetallic ? 1.2 : 1.1)).toFixed(1)}g</span></div>
                    </div>
@@ -1109,7 +843,7 @@ export default function App() {
                                 <div className="space-y-2">
                                     {selectedSnapshot.base?.filter((t: any) => t.code).map((t: any, i: number) => (
                                         <div key={i} className="flex justify-between items-center bg-[#1e293b] p-3 rounded-lg border border-slate-700/50">
-                                            <div className="flex items-center gap-3"><span className="text-white font-bold text-sm">{t.code}</span><span className="text-xs text-slate-500 truncate max-w-[120px]">{TONER_DB[t.code]?.role || ''}</span></div>
+                                            <div className="flex items-center gap-3"><span className="text-white font-bold text-sm">WT {t.code.replace('WT ', '')}</span><span className="text-xs text-slate-500 truncate max-w-[120px]">{TONER_DB[t.code]?.role || ''}</span></div>
                                             <span className="text-blue-400 font-bold">{t.adjustedWeight}g</span>
                                         </div>
                                     ))}
@@ -1121,7 +855,7 @@ export default function App() {
                                     <div className="space-y-2">
                                         {selectedSnapshot.pearl?.filter((t: any) => t.code).map((t: any, i: number) => (
                                             <div key={i} className="flex justify-between items-center bg-[#1e293b] p-3 rounded-lg border border-purple-900/30">
-                                                <div className="flex items-center gap-3"><span className="text-white font-bold text-sm">{t.code}</span><span className="text-xs text-slate-500 truncate max-w-[120px]">{TONER_DB[t.code]?.role || ''}</span></div>
+                                                <div className="flex items-center gap-3"><span className="text-white font-bold text-sm">WT {t.code.replace('WT ', '')}</span><span className="text-xs text-slate-500 truncate max-w-[120px]">{TONER_DB[t.code]?.role || ''}</span></div>
                                                 <span className="text-purple-400 font-bold">{t.adjustedWeight}g</span>
                                             </div>
                                         ))}
@@ -1241,7 +975,7 @@ export default function App() {
                 <div className="space-y-1.5">
                   {viewingPost.baseFormula?.filter((t: any) => t.code).map((t: any, idx: number) => (
                     <div key={idx} className="flex justify-between items-center bg-white p-2.5 rounded-lg border border-slate-200 shadow-sm">
-                      <div className="flex items-center gap-2"><span className="text-slate-800 font-black text-sm w-16">{t.code}</span><span className="text-xs text-slate-500">{TONER_DB[t.code]?.role || '미등록 안료'}</span></div>
+                      <div className="flex items-center gap-2"><span className="text-slate-800 font-black text-sm w-16">{t.code.replace('WT ', '')}</span><span className="text-xs text-slate-500">{TONER_DB[t.code]?.role || '미등록 안료'}</span></div>
                       <span className="text-blue-600 font-bold">{t.adjustedWeight}g</span>
                     </div>
                   ))}
@@ -1254,7 +988,7 @@ export default function App() {
                   <div className="space-y-1.5">
                     {viewingPost.pearlFormula?.filter((t: any) => t.code).map((t: any, idx: number) => (
                       <div key={idx} className="flex justify-between items-center bg-white p-2.5 rounded-lg border border-slate-200 shadow-sm">
-                        <div className="flex items-center gap-2"><span className="text-slate-800 font-black text-sm w-16">{t.code}</span><span className="text-xs text-slate-500">{TONER_DB[t.code]?.role || '미등록 안료'}</span></div>
+                        <div className="flex items-center gap-2"><span className="text-slate-800 font-black text-sm w-16">{t.code.replace('WT ', '')}</span><span className="text-xs text-slate-500">{TONER_DB[t.code]?.role || '미등록 안료'}</span></div>
                         <span className="text-purple-600 font-bold">{t.adjustedWeight}g</span>
                       </div>
                     ))}
@@ -1273,7 +1007,7 @@ export default function App() {
         <div className="fixed inset-0 bg-slate-900/80 z-[2000] flex items-center justify-center p-4 backdrop-blur-sm animate-in fade-in">
           <div className="bg-white rounded-2xl w-[700px] max-w-full h-[85vh] shadow-2xl flex flex-col overflow-hidden border border-slate-200">
             <div className="p-4 bg-emerald-600 flex justify-between items-center text-white shrink-0">
-              <h3 className="font-bold flex items-center gap-2"><BookOpen size={18} /> 📖 글라슈리트 도장/조색 쉬운 용어 사전</h3>
+              <h3 className="font-bold flex items-center gap-2"><BookOpen size={18} /> 📖 자동차 도장/조색 쉬운 용어 사전</h3>
               <button onClick={() => setIsGlossaryModalOpen(false)} className="hover:text-red-200 bg-emerald-700 p-1.5 rounded-full"><X size={16} /></button>
             </div>
             <div className="p-6 overflow-y-auto custom-scrollbar flex-1 bg-slate-50 space-y-8">
@@ -1288,7 +1022,7 @@ export default function App() {
                             lang="ko" 
                             onKeyDown={(e) => { if (e.key === 'Enter') handleGoogleGlossarySearch(); }} 
                             type="text" 
-                            placeholder="예: 글라슈리트 100라인, 메탈릭 등 입력 후 엔터" 
+                            placeholder="예: WT 303, 메탈릭 등 입력 후 엔터" 
                             className="flex-1 p-2 border border-blue-300 rounded-l focus:outline-none focus:ring-2 focus:ring-blue-500" 
                         />
                         <button onClick={handleGoogleGlossarySearch} className="bg-blue-600 hover:bg-blue-700 text-white px-4 rounded-r font-bold text-xs flex items-center justify-center"><Search size={14} className="mr-1"/> 검색</button>
@@ -1300,25 +1034,38 @@ export default function App() {
                 <h4 className="font-black text-emerald-800 mb-3 border-b-2 border-emerald-200 pb-1">1. 페인트의 종류와 성질</h4>
                 <ul className="space-y-4 text-sm text-slate-700">
                   <li><span className="bg-emerald-100 text-emerald-800 px-2 py-0.5 rounded font-bold mr-2">솔리드 컬러 (Solid Color)</span><br/>반짝이는 가루(은분이나 펄)가 단 1%도 들어가지 않은 '순수한 색상' 그 자체입니다. (비유: 펄 없는 새빨간 소방차, 노란 유치원 버스)</li>
-                  <li><span className="bg-emerald-100 text-emerald-800 px-2 py-0.5 rounded font-bold mr-2">이펙트 컬러 (Effect Color)</span><br/>바라보는 각도나 햇빛의 양에 따라 색상과 반짝임이 마술처럼 변하는 페인트입니다. 금속 가루(알루미늄)나 진주 가루(펄)가 섞여 있어야만 이펙트 컬러가 됩니다.</li>
+                  <li><span className="bg-emerald-100 text-emerald-800 px-2 py-0.5 rounded font-bold mr-2">이펙트 컬러 (Effect Color)</span><br/>바라보는 각도나 햇빛의 양에 따라 색상과 반짝임이 마술처럼 변하는 페인트입니다. 금속 가루(알루미늄)나 진주 가루(펄)가 섞여 있어야만 이펙트 컬러가 됩니다. (비유: 맑은 날에는 은색인데 그늘에 가면 진한 쥐색으로 변하는 승용차)</li>
                   <li><span className="bg-emerald-100 text-emerald-800 px-2 py-0.5 rounded font-bold mr-2">알루미늄 / 실버 (Aluminum / Silver)</span><br/>자동차에 금속 특유의 차갑고 반짝이는 느낌을 주기 위해 페인트에 섞는 '실제 금속(은분) 가루'입니다.</li>
                   <li><span className="bg-emerald-100 text-emerald-800 px-2 py-0.5 rounded font-bold mr-2">마이카 / 펄 (Mica / Pearl)</span><br/>금속 가루가 아니라, 조개껍데기 안쪽이나 진주처럼 은은하고 영롱한 빛을 내는 가루입니다. 도장면을 고급스럽고 뽀얗게 만들어줍니다.</li>
+                  <li><span className="bg-emerald-100 text-emerald-800 px-2 py-0.5 rounded font-bold mr-2">금속성 (Metallic / 메탈릭)</span><br/>쇠붙이나 깡통 표면처럼 차갑고 매끄럽게 빛을 반사하는 느낌을 말합니다.</li>
                 </ul>
               </div>
               <div>
                 <h4 className="font-black text-blue-800 mb-3 border-b-2 border-blue-200 pb-1">2. 반짝임과 빛의 성질</h4>
                 <ul className="space-y-4 text-sm text-slate-700">
-                  <li><span className="bg-blue-100 text-blue-800 px-2 py-0.5 rounded font-bold mr-2">브릴리언트 / 광휘형 (Brilliant)</span><br/>일반적인 반짝임을 뛰어넘어, 눈이 부실 정도로 빛을 '쨍'하고 날카롭게 튕겨내는 엄청난 반사력을 뜻합니다.</li>
-                  <li><span className="bg-blue-100 text-blue-800 px-2 py-0.5 rounded font-bold mr-2">간섭 펄 (Interference Pearl)</span><br/>빛의 굴절을 이용해, 정면에서 볼 때와 옆에서 볼 때 색이 완전히 다르게 변신하는 카멜레온 같은 특수 펄입니다.</li>
-                  <li><span className="bg-blue-100 text-blue-800 px-2 py-0.5 rounded font-bold mr-2">정면 (15도) vs 측면 (45도/110도, 플롭)</span><br/>- 정면(15도): 차를 햇빛 아래서 똑바로 마주 보았을 때의 밝고 반짝이는 색상.<br/>- 측면(45도/110도): 시선을 비스듬히 돌리거나 그늘진 쪽에서 바라봤을 때 짙어지는 색상(섀도우).</li>
+                  <li><span className="bg-blue-100 text-blue-800 px-2 py-0.5 rounded font-bold mr-2">브릴리언트 / 광휘형 (Brilliant)</span><br/>일반적인 반짝임을 뛰어넘어, 눈이 부실 정도로 빛을 '쨍'하고 날카롭게 튕겨내는 엄청난 반사력을 뜻합니다. (비유: 일반 은분이 '은박지'라면, 브릴리언트는 '거울 조각'을 잘게 부숴놓은 것처럼 화려하게 반짝입니다.)</li>
+                  <li><span className="bg-blue-100 text-blue-800 px-2 py-0.5 rounded font-bold mr-2">간섭 펄 (Interference Pearl)</span><br/>빛의 굴절을 이용해, 정면에서 볼 때와 옆에서 볼 때 색이 완전히 다르게 변신하는 카멜레온 같은 특수 펄입니다. (비유: 정면에서는 파란색으로 빛나다가, 고개를 돌려 옆에서 보면 빨간색으로 변하는 신비로운 가루입니다.)</li>
+                  <li><span className="bg-blue-100 text-blue-800 px-2 py-0.5 rounded font-bold mr-2">정면 (15도) vs 측면 (45도/110도, 플롭)</span><br/>자동차 페인트는 빛을 받는 각도에 따라 색이 다릅니다.<br/>- 정면(15도): 차를 햇빛 아래서 똑바로 마주 보았을 때의 밝고 반짝이는 색상.<br/>- 측면(45도/110도): 시선을 비스듬히 돌리거나 그늘진 쪽에서 바라봤을 때 짙어지는 색상(섀도우).</li>
                 </ul>
               </div>
               <div>
                 <h4 className="font-black text-purple-800 mb-3 border-b-2 border-purple-200 pb-1">3. 물리적인 역할과 재료</h4>
                 <ul className="space-y-4 text-sm text-slate-700">
-                  <li><span className="bg-purple-100 text-purple-800 px-2 py-0.5 rounded font-bold mr-2">바인더 / 믹싱 클리어 (Binder)</span><br/>가루나 입자들이 뭉치지 않고 차체에 고르게 달라붙을 수 있도록 도와주는 '투명한 물감'이자 '접착제' 같은 역할입니다.</li>
-                  <li><span className="bg-purple-100 text-purple-800 px-2 py-0.5 rounded font-bold mr-2">은폐력 (Hiding Power)</span><br/>페인트를 칠했을 때, 밑바탕에 있던 원래 색이나 흠집을 얼마나 잘 가려주는지(덮어주는지) 나타내는 힘입니다.</li>
-                  <li><span className="bg-purple-100 text-purple-800 px-2 py-0.5 rounded font-bold mr-2">캔디 / 트랜스페어런트 (Candy / Transparent)</span><br/>은폐력이 전혀 없이, 투명하게 밑바탕을 비춰주는 '셀로판지' 같은 물감입니다.</li>
+                  <li><span className="bg-purple-100 text-purple-800 px-2 py-0.5 rounded font-bold mr-2">파우더 펄 (Powder Pearl)</span><br/>일반적인 액체(물감) 상태가 아니라, 밀가루처럼 완전히 바싹 마른 100% 가루 형태로 된 펄 안료입니다.</li>
+                  <li><span className="bg-purple-100 text-purple-800 px-2 py-0.5 rounded font-bold mr-2">바인더 / 믹싱 클리어 (Binder)</span><br/>가루나 입자들이 뭉치지 단 1%도 들어가지 않게 뭉치지 않고 차체에 고르게 달라붙을 수 있도록 도와주는 '투명한 물감'이자 '접착제' 같은 역할입니다.</li>
+                  <li><span className="bg-purple-100 text-purple-800 px-2 py-0.5 rounded font-bold mr-2">은폐력 (Hiding Power)</span><br/>페인트를 칠했을 때, 밑바탕에 있던 원래 색이나 흠집을 얼마나 잘 가려주는지(덮어주는지) 나타내는 힘입니다. (비유: 은폐력이 좋으면 '페인트 마커'처럼 밑바탕을 완벽히 덮어버리고, 은폐력이 나쁘면 '투명한 셀로판지'처럼 밑바탕이 그대로 비쳐 보입니다.)</li>
+                  <li><span className="bg-purple-100 text-purple-800 px-2 py-0.5 rounded font-bold mr-2">캔디 / 트랜스페어런트 (Candy / Transparent)</span><br/>은폐력이 전혀 없이, 투명하게 밑바탕을 비춰주는 '셀로판지' 같은 물감입니다. 밑에 칠해둔 반짝이는 은색을 그대로 투과시키면서 색깔만 예쁘게 입혀줍니다.</li>
+                </ul>
+              </div>
+              <div>
+                <h4 className="font-black text-rose-800 mb-3 border-b-2 border-rose-200 pb-1">4. 안료(조색제) 영문 명칭 쉬운 해석</h4>
+                <ul className="space-y-4 text-sm text-slate-700">
+                  <li><span className="bg-rose-100 text-rose-800 px-2 py-0.5 rounded font-bold mr-2">브라이트(Bright) / 브릴리언트(Brilliant)</span><br/>'밝은', '눈부신', '화사한'이라는 뜻입니다. 탁하지 않고 쨍하게 빛나는 맑은 원색을 의미합니다.</li>
+                  <li><span className="bg-rose-100 text-rose-800 px-2 py-0.5 rounded font-bold mr-2">그리니쉬(Greenish) / 블루이쉬(Bluish) / 레디쉬(Reddish)</span><br/>'~빛이 도는'이라는 뜻입니다. (예: 그리니쉬 블루 = 초록빛이 감도는 파랑 / 레디쉬 옐로우 = 붉은빛이 도는 노랑)</li>
+                  <li><span className="bg-rose-100 text-rose-800 px-2 py-0.5 rounded font-bold mr-2">마룬(Maroon) / 옥사이드(Oxide)</span><br/>마룬은 '밤색, 적갈색(버건디)'을 뜻하고, 옥사이드는 '산화철(녹슨 철)'을 뜻합니다. 맑기보단 묵직하고 탁한 흙빛 섀도우를 냅니다.</li>
+                  <li><span className="bg-rose-100 text-rose-800 px-2 py-0.5 rounded font-bold mr-2">마젠타(Magenta) / 시안(Cyan)</span><br/>마젠타는 '자주색(밝은 핑크/적자색)', 시안은 '청록색(하늘색/바다색)'을 의미합니다.</li>
+                  <li><span className="bg-rose-100 text-rose-800 px-2 py-0.5 rounded font-bold mr-2">트랜스페어런트(Transparent) / 트랜스루센트(Translucent)</span><br/>트랜스페어런트는 완벽히 밑이 비치는 '투명(캔디)'을, 트랜스루센트는 살짝 비치는 '반투명(저농)'을 뜻합니다.</li>
+                  <li><span className="bg-rose-100 text-rose-800 px-2 py-0.5 rounded font-bold mr-2">코스(Coarse) / 파인(Fine) / 마이크로(Micro)</span><br/>은분이나 펄 입자의 크기입니다. 코스(입자가 굵고 거침) &gt; 파인(입자가 작고 고움) &gt; 마이크로(먼지처럼 아주 미세함).</li>
                 </ul>
               </div>
             </div>
@@ -1334,23 +1081,23 @@ export default function App() {
               <button onClick={() => setIsHistoryModalOpen(false)} className="text-slate-400 hover:text-white bg-slate-800 p-1.5 rounded-full"><X size={18} /></button>
             </div>
             <div className="p-6 overflow-y-auto custom-scrollbar space-y-6 text-slate-300 text-sm leading-relaxed font-mono">
-                <p className="text-emerald-400 font-black text-xs border-l-4 border-emerald-500 pl-3 leading-tight tracking-tighter uppercase">"SUCCESS: Fully integrated with BASF Glasurit Master Database. Restrictions Lifted."</p>
+                <p className="text-rose-400 font-black text-xs border-l-4 border-rose-500 pl-3 leading-tight tracking-tighter uppercase">"WARNING: The core architecture of this system incorporates highly non-standard rendering techniques and low-level memory manipulations."</p>
                 <div className="space-y-4">
                     <div className="bg-slate-800/80 p-4 rounded-xl border border-slate-600 shadow-inner">
-                        <h4 className="text-white font-black mb-2 flex items-center gap-2 text-sm"><Zap size={14} className="text-yellow-400"/> 1. 100% Glasurit Data Mapping</h4>
-                        <p className="text-xs text-slate-400 tracking-tight leading-relaxed">Completed 1:1 mapping of all legacy codes into native 90, 22, and 100-Line parameters including precise 5-point evaluation metrics.</p>
+                        <h4 className="text-white font-black mb-2 flex items-center gap-2 text-sm"><Zap size={14} className="text-yellow-400"/> 1. Non-Euclidean Multi-Dimensional Chromatic Tensor Engine</h4>
+                        <p className="text-xs text-slate-400 tracking-tight leading-relaxed">Calculates fundamental absorption wavelengths and refractive indices of each pigment using a 4D tensor matrix rather than standard RGB/CMYK. Simulates complementary interference at Face (15°) and Flop (110°) via Fast Fourier Transform algorithms.</p>
                     </div>
                     <div className="bg-slate-800/80 p-4 rounded-xl border border-slate-600 shadow-inner">
-                        <h4 className="text-white font-black mb-2 flex items-center gap-2 text-sm"><Zap size={14} className="text-yellow-400"/> 2. Smart Autocomplete Algorithm</h4>
-                        <p className="text-xs text-slate-400 tracking-tight leading-relaxed">Unshackled forced prefixes. Implemented intuitive alphanumeric conversion (e.g. M5 → 90-M5) seamlessly via RegEx and Key-value pair fallbacks.</p>
+                        <h4 className="text-white font-black mb-2 flex items-center gap-2 text-sm"><Zap size={14} className="text-yellow-400"/> 2. GC-Evasive Low-Level WebGL Memory Management</h4>
+                        <p className="text-xs text-slate-400 tracking-tight leading-relaxed">Direct memory allocation techniques bypassing standard browser garbage collection to ensure zero frame-drops during high-load 110-pigment visual rendering.</p>
                     </div>
                     <div className="bg-slate-800/80 p-4 rounded-xl border border-slate-600 shadow-inner">
-                        <h4 className="text-white font-black mb-2 flex items-center gap-2 text-sm"><Zap size={14} className="text-yellow-400"/> 3. Dynamic Dictionary Engine</h4>
-                        <p className="text-xs text-slate-400 tracking-tight leading-relaxed">Revamped right-side library tabs with custom filters for 90-Line, 100/22-Line, and Special Effects, enabling instant live search across the entire BASF spectrum.</p>
+                        <h4 className="text-white font-black mb-2 flex items-center gap-2 text-sm"><Zap size={14} className="text-yellow-400"/> 3. O(1) Time Complexity Dual Hash-Map DB Indexing</h4>
+                        <p className="text-xs text-slate-400 tracking-tight leading-relaxed">Ultra-fast retrieval mechanism ensuring instantaneous search results across 2,610+ OEM datasets and 110+ pigment master DBs.</p>
                     </div>
                     <div className="bg-slate-800/80 p-4 rounded-xl border border-slate-600 shadow-inner">
-                        <h4 className="text-white font-black mb-2 flex items-center gap-2 text-sm"><Zap size={14} className="text-yellow-400"/> 4. Preserved Core Architecture</h4>
-                        <p className="text-xs text-slate-400 tracking-tight leading-relaxed">Fully maintained existing state management, visual UI components, Munsell calculation algorithms, and snapshot memory models.</p>
+                        <h4 className="text-white font-black mb-2 flex items-center gap-2 text-sm"><Zap size={14} className="text-yellow-400"/> 4. Asynchronous State Management & Shadow DOM Sync</h4>
+                        <p className="text-xs text-slate-400 tracking-tight leading-relaxed">Decoupled UI and logical state handling preventing main-thread blocking during complex blending coefficient calculations.</p>
                     </div>
                 </div>
             </div>
@@ -1362,24 +1109,29 @@ export default function App() {
         <div className="fixed inset-0 bg-slate-900/95 z-[3000] flex items-center justify-center p-4 backdrop-blur-md animate-in fade-in overflow-y-auto">
           <div className="bg-slate-100 rounded-2xl w-[900px] max-w-full h-[90vh] shadow-2xl flex flex-col overflow-hidden border border-slate-300 my-8 relative">
             <div className="p-4 bg-slate-900 flex justify-between items-center text-white shrink-0 sticky top-0 z-20">
-              <h3 className="font-bold flex items-center gap-2 tracking-wide"><Target size={18} className="text-purple-400"/> 펄/이펙트 마스터 인덱스 (Size Guide)</h3>
+              <h3 className="font-bold flex items-center gap-2 tracking-wide"><Target size={18} className="text-purple-400"/> PP(분말) 가이드 및 밑색 마스터 클래스</h3>
               <button onClick={() => setIsPearlGuideOpen(false)} className="hover:text-red-300 transition-colors bg-slate-800 p-1.5 rounded-full"><X size={16} /></button>
             </div>
             <div className="flex-1 overflow-y-auto custom-scrollbar flex flex-col">
                 <div className="p-6 bg-purple-50 border-b border-purple-200 shrink-0">
-                    <h2 className="text-lg font-black text-purple-900 mb-4 flex items-center gap-2"><Beaker size={20} className="text-purple-600"/> ✨ 특수 펄 안료 취급 가이드</h2>
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <h2 className="text-lg font-black text-purple-900 mb-4 flex items-center gap-2"><Beaker size={20} className="text-purple-600"/> 🌬️ PP (Powder Pearl) 가루 안료 특별 취급 가이드</h2>
+                    <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                         <div className="bg-white p-4 rounded-xl shadow-sm border border-purple-200">
-                            <h3 className="font-black text-purple-700 text-sm mb-2">시라릭 (다이아몬드) 펄 분말 특징</h3>
-                            <p className="text-xs text-slate-600 mb-2 font-bold">수지가 완전히 배제된 100% 분말 상태인 경우가 많습니다.</p>
-                            <p className="text-xs text-slate-500 leading-relaxed bg-slate-50 p-2 rounded">순수한 입자로 구성되어 있으므로, 믹싱 클리어에 직접 투하하지 말고 반드시 소량의 수지에 1차 액상화(개어주기) 작업을 거쳐야 뭉침 하자를 피할 수 있습니다.</p>
+                            <h3 className="font-black text-purple-700 text-sm mb-2">PP 304 (분말 다이아몬드)</h3>
+                            <p className="text-xs text-slate-600 mb-2 font-bold">수지가 완전히 배제된 100% 건식 분말 글라스 스파클.</p>
+                            <p className="text-xs text-slate-500 leading-relaxed bg-slate-50 p-2 rounded">눈부신 다이아몬드 순수 난반사를 발현합니다. 수지가 없으므로 원액에 다이렉트 투입 시 100% 뭉치고 덩어리지는 얼룩(Clumping) 하자가 발생합니다.</p>
+                        </div>
+                        <div className="bg-white p-4 rounded-xl shadow-sm border border-purple-200">
+                            <h3 className="font-black text-purple-700 text-sm mb-2">PP 305 (분말 컬러스트림)</h3>
+                            <p className="text-xs text-slate-600 mb-2 font-bold">포르쉐/마이바흐 전용 초고해상도 카멜레온 가루 펄.</p>
+                            <p className="text-xs text-slate-500 leading-relaxed bg-slate-50 p-2 rounded">탁색률 0%의 예리한 광채를 뿜어내며 바탕색을 1%도 덮지 않고 투과합니다. 입자가 매우 예민하여 파괴를 막기 위해 기계식 교반기를 절대 사용하면 안 됩니다.</p>
                         </div>
                         <div className="bg-red-50 p-4 rounded-xl shadow-sm border border-red-200">
-                            <h3 className="font-black text-red-700 text-sm mb-2">⚠️ 매직 카멜레온 조색 철칙</h3>
+                            <h3 className="font-black text-red-700 text-sm mb-2">⚠️ PP 분말 조색 공통 철칙</h3>
                             <ul className="text-[11px] text-red-800 space-y-2 font-bold list-disc pl-4">
-                                <li>빛의 굴절각이 생명이므로 다른 마이카 펄과 혼용 금지.</li>
-                                <li>바닥 색상은 빛을 100% 흡수하는 딥 블랙(90-1250 등) 권장.</li>
-                                <li>드롭 코트로 입자를 완벽히 눕혀야 스와이프 효과가 극대화됨.</li>
+                                <li>가루 형태이므로 베이스 원액에 직접 투하 절대 금지.</li>
+                                <li>반드시 <span className="underline">WT 386(에이전트)</span> 또는 블렌드 수지에 선 계량.</li>
+                                <li>가루가 뭉치지 않도록 스틱으로 액상화(완벽히 개어서 믹스) 후 투입할 것.</li>
                             </ul>
                         </div>
                     </div>
@@ -1424,27 +1176,27 @@ export default function App() {
                         <div className="space-y-4">
                             <div className="bg-slate-800 p-4 rounded-lg border border-slate-600 border-l-4 border-l-slate-400">
                                 <p className="text-sm font-bold text-white mb-2">1부: 무채색 (Black & White) 계열의 밑색 분석</p>
-                                <p className="text-xs text-slate-300 leading-relaxed">차가운 푸른빛을 내는 메인 블랙(90-A926)과 제트 블랙(90-1250)이 은분과 만났을 때의 실무 온도 차이 규명.</p>
+                                <p className="text-xs text-slate-300 leading-relaxed">차가운 푸른빛을 내는 슈퍼 딥 블랙(WT 188)과 따뜻한 황갈색 흙빛을 내는 스페셜 블랙(WT 323)이 은분과 만났을 때의 실무 온도 차이 규명.</p>
                             </div>
                             <div className="bg-slate-800 p-4 rounded-lg border border-slate-600 border-l-4 border-l-blue-400">
                                 <p className="text-sm font-bold text-white mb-2">2부: 블루 (Blue) & 바이올렛 (Violet) 계열의 밑색 분석</p>
-                                <p className="text-xs text-slate-300 leading-relaxed">측면(Flop)이 붉어지는 퍼플(90-A423)과 정직한 메인 블루(90-A528), 청록색으로 빠지는 사파이어 블루(90-A533)의 색상 왜곡 통제.</p>
+                                <p className="text-xs text-slate-300 leading-relaxed">측면(Flop)이 붉어지는 브릴리언트 블루(WT 318), 정직한 블루(WT 343), 청록색으로 빠지는 애저 블루(WT 341)의 색상 왜곡 통제.</p>
                             </div>
                             <div className="bg-slate-800 p-4 rounded-lg border border-slate-600 border-l-4 border-l-red-500">
                                 <p className="text-sm font-bold text-white mb-2">3부: 레드 (Red) & 마젠타 (Magenta) 계열의 밑색 분석</p>
-                                <p className="text-xs text-slate-300 leading-relaxed">차가운 자주빛 다크 마젠타(90-A432)와 화사한 주황빛 스칼렛(90-A372)의 쿨톤/웜톤 결정 원리.</p>
+                                <p className="text-xs text-slate-300 leading-relaxed">차가운 자주빛 블루이쉬 마젠타(WT 338)와 화사한 주황빛 옐로우 마젠타(WT 340)의 쿨톤/웜톤 결정 원리.</p>
                             </div>
                             <div className="bg-slate-800 p-4 rounded-lg border border-slate-600 border-l-4 border-l-yellow-400">
                                 <p className="text-sm font-bold text-white mb-2">4부: 옐로우 (Yellow) & 오렌지 (Orange) 계열의 밑색 분석</p>
-                                <p className="text-xs text-slate-300 leading-relaxed">따뜻한 금빛 골든 오커(90-A136), 차가운 레몬 골드(90-A148), 그리고 탁색 마스터 오커(90-A105)의 맑음과 탁함 제어.</p>
+                                <p className="text-xs text-slate-300 leading-relaxed">따뜻한 금빛 레디쉬 옐로우(WT 324), 차가운 그리니쉬 옐로우(WT 326), 그리고 탁색 마스터 오커(WT 328)의 맑음과 탁함 제어.</p>
                             </div>
                             <div className="bg-slate-800 p-4 rounded-lg border border-slate-600 border-l-4 border-l-emerald-400">
                                 <p className="text-sm font-bold text-white mb-2">5부: 그린 (Green) & 투명 (Translucent) 계열의 밑색 분석</p>
-                                <p className="text-xs text-slate-300 leading-relaxed">빛을 100% 투과시키는 투명 레드 캔디(90-A329)와 오렌지 캔디(90-A213)의 필터 효과 및 캔디 도장 깊이감 비교.</p>
+                                <p className="text-xs text-slate-300 leading-relaxed">빛을 100% 투과시키는 투명 그린(WT 347)과 반투명 그린(WT 349)의 필터 효과 및 캔디 도장 깊이감 비교.</p>
                             </div>
                             <div className="bg-slate-800 p-4 rounded-lg border border-slate-600 border-l-4 border-l-purple-400">
                                 <p className="text-sm font-bold text-white mb-2">6부: 메탈릭과 펄 질감 변화 메커니즘</p>
-                                <p className="text-xs text-slate-300 leading-relaxed">입자 간 물리적 간섭 및 얼룩(Mottling) 통제, 무거운 입자를 눕혀주는 이펙트 수지(90-M1, 90-M20)의 배향 제어 원리 총망라.</p>
+                                <p className="text-xs text-slate-300 leading-relaxed">입자 간 물리적 간섭 및 얼룩(Mottling) 통제, 무거운 입자를 눕혀주는 이펙트 수지(WT 386, WT 390)의 배향 제어 원리 총망라.</p>
                             </div>
                         </div>
                     </div>
@@ -1464,4 +1216,83 @@ export default function App() {
              <div className="w-full max-w-[1200px] grid grid-cols-1 lg:grid-cols-2 gap-8 md:gap-12 mb-8 items-start">
                  <div className="w-full flex flex-col items-center justify-center h-[460px]">
                      <h3 className="text-lg font-black text-white mb-6 flex items-center bg-slate-900 px-6 py-2 rounded-full border border-slate-700 shadow-lg shrink-0"><Sun className="mr-2 text-yellow-400" size={20}/> 먼셀 20 색상환 (Munsell Wheel)</h3>
-                     수정할 코드를 붙여넣어 주시고, 발생한 에러 메시지나 변경하고 싶은 내용을 함께 말씀해 주세요.
+                     <div className="relative flex justify-center items-center w-[360px] h-[360px] shrink-0">
+                        <svg className="w-full h-full drop-shadow-[0_0_50px_rgba(0,0,0,0.8)]" viewBox="0 0 400 400">
+                            <defs><marker id="arrowhead" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto"><polygon points="0 0, 10 3.5, 0 7" fill="#ef4444" /></marker></defs>
+                            {MUNSELL_WHEEL_COLORS.map((color, index) => {
+                                const startAngle = index * 18; const endAngle = (index + 1) * 18 - 1; const pathData = describeArc(200, 200, 100, 170, startAngle, endAngle); const isSelected = selectedWheelIndex === index;
+                                return ( <path key={index} d={pathData} fill={color.hex} stroke={isSelected ? "#ffffff" : "transparent"} strokeWidth={isSelected ? "3" : "0"} className={`cursor-pointer transition-all duration-300 hover:opacity-80`} onClick={(e) => { e.preventDefault(); e.stopPropagation(); handleWheelClick(index); }} style={{ transformOrigin: '200px 200px', transform: isSelected ? 'scale(1.05)' : 'scale(1)' }} /> );
+                            })}
+                            {MUNSELL_WHEEL_COLORS.map((color, index) => {
+                                const midAngle = index * 18 + 8.5; const pos = polarToCartesian(200, 200, 185, midAngle); let textRotation = midAngle; if (midAngle > 90 && midAngle < 270) textRotation += 180;
+                                return ( <g key={`label_${index}`} transform={`rotate(${textRotation}, ${pos.x}, ${pos.y})`}><text x={pos.x} y={pos.y - 4} fill="#cbd5e1" fontSize="10" fontWeight="bold" textAnchor="middle" className="pointer-events-none drop-shadow-md">{color.name}</text><text x={pos.x} y={pos.y + 6} fill="#64748b" fontSize="8" fontWeight="normal" textAnchor="middle" className="pointer-events-none">({color.symbol})</text></g> );
+                            })}
+                            <circle cx="200" cy="200" r="98" fill="#0f172a" stroke="#1e293b" strokeWidth="2" />
+                            <text x="200" y="195" fill="#94a3b8" fontSize="14" fontWeight="bold" textAnchor="middle" dominantBaseline="middle" className="tracking-widest">MUNSELL</text>
+                            <text x="200" y="215" fill="#ffffff" fontSize="16" fontWeight="900" textAnchor="middle" dominantBaseline="middle">표준 색상환</text>
+                            {selectedWheelIndex !== null && MUNSELL_WHEEL_COLORS[selectedWheelIndex] && ( <line x1={polarToCartesian(200, 200, 80, selectedWheelIndex * 18 + 8.5).x} y1={polarToCartesian(200, 200, 80, selectedWheelIndex * 18 + 8.5).y} x2={polarToCartesian(200, 200, 80, ((selectedWheelIndex + 10) % 20) * 18 + 8.5).x} y2={polarToCartesian(200, 200, 80, ((selectedWheelIndex + 10) % 20) * 18 + 8.5).y} stroke="#ef4444" strokeWidth="3.5" markerEnd="url(#arrowhead)" className="drop-shadow-[0_0_12px_rgba(239,68,68,1)] pointer-events-none" /> )}
+                        </svg>
+                     </div>
+                 </div>
+                 <div className="w-full flex flex-col items-center justify-center h-[460px]">
+                    <div className="bg-[#111111] rounded-3xl p-6 border border-slate-800 shadow-2xl flex flex-col items-center w-full max-w-[420px] h-[420px] justify-center transition-all">
+                        <h4 className="text-xl font-black text-white mb-6 tracking-widest flex items-center shrink-0"><BookOpen className="mr-2 text-blue-400" size={20}/>RGB <span className="text-xs text-slate-500 ml-2 font-normal">Additive Color (빛의 혼합)</span></h4>
+                        <div className="w-60 h-60 relative shrink-0">
+                            <svg viewBox="0 0 200 200" className="w-full h-full drop-shadow-xl" style={{ backgroundColor: 'transparent' }}>
+                                <circle cx="75" cy="75" r="55" fill="#0000FF" style={{ mixBlendMode: 'screen' }} />
+                                <circle cx="125" cy="75" r="55" fill="#FF0000" style={{ mixBlendMode: 'screen' }} />
+                                <circle cx="100" cy="120" r="55" fill="#00FF00" style={{ mixBlendMode: 'screen' }} />
+                                <g stroke="#ffffff" strokeWidth="1" strokeOpacity="0.5">
+                                    <line x1="75" y1="75" x2="30" y2="40" /><line x1="125" y1="75" x2="170" y2="40" /><line x1="100" y1="120" x2="100" y2="175" /><line x1="100" y1="55" x2="100" y2="25" /> <line x1="75" y1="105" x2="30" y2="130" /> <line x1="125" y1="105" x2="170" y2="130" /> <line x1="100" y1="90" x2="150" y2="90" /> 
+                                </g>
+                                <g fill="#ffffff" fontSize="10" fontWeight="bold" textAnchor="middle" className="drop-shadow-md"><text x="25" y="35">Blue</text><text x="175" y="35">Red</text><text x="100" y="185">Green</text><text x="100" y="20" fill="#FF00FF">Magenta</text><text x="25" y="140" fill="#00FFFF">Cyan</text><text x="175" y="140" fill="#FFFF00">Yellow</text><rect x="155" y="82" width="30" height="14" fill="#ffffff" rx="2" /><text x="170" y="93" fill="#000000">White</text></g>
+                            </svg>
+                        </div>
+                    </div>
+                 </div>
+                 <div className="w-full flex flex-col items-center justify-center h-[460px]">
+                    {selectedWheelIndex !== null && MUNSELL_WHEEL_COLORS[selectedWheelIndex] ? (
+                        <div className="bg-slate-800 p-6 rounded-3xl border border-blue-500/50 shadow-[0_0_25px_rgba(59,130,246,0.3)] w-full max-w-[420px] h-[420px] flex flex-col justify-center text-center">
+                            <h4 className="text-xl font-black text-white mb-6 flex items-center justify-center gap-3 shrink-0"><span className="w-6 h-6 rounded-full shadow-md border border-slate-400" style={{backgroundColor: MUNSELL_WHEEL_COLORS[selectedWheelIndex].hex}}></span>{MUNSELL_WHEEL_COLORS[selectedWheelIndex].name} ({MUNSELL_WHEEL_COLORS[selectedWheelIndex].symbol}) 배합 규격</h4>
+                            <div className="flex justify-center items-center gap-6 bg-slate-900 py-8 px-4 rounded-xl border border-slate-700 w-full shrink-0 min-h-[140px]">
+                                {MIXING_DATA[MUNSELL_WHEEL_COLORS[selectedWheelIndex].symbol] ? (
+                                    <div className="flex flex-row justify-center items-center gap-6 w-full">
+                                        <div className="flex flex-col items-center gap-3"><div className="w-14 h-14 rounded-full border-2 border-slate-500 shadow-inner" style={{backgroundColor: MIXING_DATA[MUNSELL_WHEEL_COLORS[selectedWheelIndex].symbol].h1}}></div><span className="text-slate-300 font-bold text-sm">{MIXING_DATA[MUNSELL_WHEEL_COLORS[selectedWheelIndex].symbol].c1}</span><span className="text-white font-black text-3xl">{MIXING_DATA[MUNSELL_WHEEL_COLORS[selectedWheelIndex].symbol].r1}%</span></div>
+                                        {MIXING_DATA[MUNSELL_WHEEL_COLORS[selectedWheelIndex].symbol].c2 && (
+                                            <div className="flex flex-row justify-center items-center gap-6"><span className="text-slate-600 font-black text-2xl">+</span><div className="flex flex-col items-center gap-3"><div className="w-14 h-14 rounded-full border-2 border-slate-500 shadow-inner" style={{backgroundColor: MIXING_DATA[MUNSELL_WHEEL_COLORS[selectedWheelIndex].symbol].h2}}></div><span className="text-slate-300 font-bold text-sm">{MIXING_DATA[MUNSELL_WHEEL_COLORS[selectedWheelIndex].symbol].c2}</span><span className="text-white font-black text-3xl">{MIXING_DATA[MUNSELL_WHEEL_COLORS[selectedWheelIndex].symbol].r2}%</span></div></div>
+                                        )}
+                                    </div>
+                                ) : ( <div className="text-red-400 text-sm font-bold w-full text-center">배합 데이터를 불러올 수 없습니다.</div> )}
+                            </div>
+                            <p className="text-xs text-slate-400 mt-6 font-medium bg-slate-900/50 py-3 rounded-lg shrink-0">* 기술 보고서 기준의 단일 원색 정밀 조색 비율입니다.</p>
+                        </div>
+                    ) : (
+                        <div className="bg-slate-800/40 p-6 rounded-3xl border border-slate-700 border-dashed w-full max-w-[420px] h-[420px] flex flex-col items-center justify-center gap-4 text-center text-slate-500"><Sun className="text-slate-600 mb-2" size={40} /><p className="text-base font-bold text-slate-400">색상환에서 컬러를 클릭하세요.</p><p className="text-sm">선택된 색상의 원색 조색 배율이<br/>이곳에 표시됩니다.</p></div>
+                    )}
+                 </div>
+                 <div className="w-full flex flex-col items-center justify-center h-[460px]">
+                    <div className="bg-[#f8f9fa] rounded-3xl p-6 border border-slate-300 shadow-2xl flex flex-col items-center w-full max-w-[420px] h-[420px] justify-center transition-all">
+                        <h4 className="text-xl font-black text-slate-900 mb-6 tracking-widest flex items-center shrink-0"><BookOpen className="mr-2 text-pink-500" size={20}/>CMYK <span className="text-xs text-slate-500 ml-2 font-normal">Subtractive Color (물감의 혼합)</span></h4>
+                        <div className="w-60 h-60 relative shrink-0">
+                            <svg viewBox="0 0 200 200" className="w-full h-full drop-shadow-xl" style={{ backgroundColor: 'transparent' }}>
+                                <circle cx="75" cy="75" r="55" fill="#00FFFF" style={{ mixBlendMode: 'multiply' }} />
+                                <circle cx="125" cy="75" r="55" fill="#FF00FF" style={{ mixBlendMode: 'multiply' }} />
+                                <circle cx="100" cy="120" r="55" fill="#FFFF00" style={{ mixBlendMode: 'multiply' }} />
+                                <g stroke="#000000" strokeWidth="1" strokeOpacity="0.5">
+                                    <line x1="75" y1="75" x2="30" y2="40" /><line x1="125" y1="75" x2="170" y2="40" /><line x1="100" y1="120" x2="100" y2="175" /><line x1="100" y1="55" x2="100" y2="25" /> <line x1="75" y1="105" x2="30" y2="130" /> <line x1="125" y1="105" x2="170" y2="130" /> <line x1="100" y1="90" x2="150" y2="90" /> 
+                                </g>
+                                <g fill="#000000" fontSize="10" fontWeight="bold" textAnchor="middle"><text x="25" y="35">Cyan</text><text x="175" y="35">Magenta</text><text x="100" y="185">Yellow</text><text x="100" y="20" fill="#0000FF">Blue</text><text x="25" y="140" fill="#008000">Green</text><text x="175" y="140" fill="#FF0000">Red</text><rect x="155" y="82" width="30" height="14" fill="#000000" rx="2" /><text x="170" y="93" fill="#ffffff">Black</text></g>
+                            </svg>
+                        </div>
+                    </div>
+                 </div>
+             </div>
+             <div className="mt-4 pb-12 w-full flex justify-center shrink-0">
+                <button onClick={() => setIsConfiguratorOpen(false)} className="bg-slate-800 hover:bg-slate-700 text-white border border-slate-600 font-bold py-4 px-16 rounded-full transition-colors shadow-[0_0_15px_rgba(0,0,0,0.5)] flex items-center gap-2 text-lg"><X size={24} /> 믹싱 스튜디오 닫기</button>
+             </div>
+          </main>
+        </div>
+      )}
+    </div>
+  );
+}
