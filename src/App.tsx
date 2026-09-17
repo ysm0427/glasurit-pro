@@ -1158,7 +1158,6 @@ export default function App() {
                                 <div className="grid grid-cols-1 md:grid-cols-2 gap-3 mb-6">
                                    {lvl.codes.map((code: any) => {
     const tInfo = TONER_DB[code]; if(!tInfo) return null;
-                                        const tInfo = TONER_DB[code]; if(!tInfo) return null;
                                         return (
                                         <div key={code} className="bg-white border border-slate-200 rounded-xl p-3 shadow-sm flex items-center gap-3">
                                             <div className="w-12 h-12 rounded-lg shadow-inner shrink-0" style={{background: getTonerDetailBackground(code, tInfo.role, 'face')}}></div>
