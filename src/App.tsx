@@ -1,5 +1,4 @@
 import React, { useState, useEffect, useRef, useMemo } from 'react';
-import './App.css';
 import { 
   Sliders, Trash2, Plus, Minus, X, FolderOpen, Maximize, Camera, ScanLine, Beaker, Sun, Droplet, 
   Image as ImageIcon, Lock, Unlock, Layers, ChevronRight, ChevronDown, ChevronUp, BookOpen, Share2, Zap, Search, FileSpreadsheet, History, PaintBucket, Columns, Mail, Code, Users, CreditCard, AlertTriangle, ThumbsUp, Eye, Calendar, RefreshCw, MessageSquare, Send, Save, CheckCircle, Edit3, Target, Edit
@@ -7,7 +6,7 @@ import {
 
 interface TonerData { role: string; type: string; face: string; flop: string; desc: string; details?: [string, string][]; }
 
-const LAST_PATCH_DATE = "2026.09.17 (뼈대 클린 빌드 테스트용)"; 
+const LAST_PATCH_DATE = "2026.09.17 (클린 뼈대 빌드 및 자체 디자인 엔진 탑재)"; 
 
 // 💡 1. 펄 가이드 데이터 초기화 (뼈대)
 export const PEARL_LEVELS: any[] = [];
@@ -119,11 +118,8 @@ const polarToCartesian = (centerX: number, centerY: number, radius: number, angl
 const describeArc = (x: number, y: number, innerRadius: number, outerRadius: number, startAngle: number, endAngle: number) => { const startOuter = polarToCartesian(x, y, outerRadius, endAngle); const endOuter = polarToCartesian(x, y, outerRadius, startAngle); const startInner = polarToCartesian(x, y, innerRadius, endAngle); const endInner = polarToCartesian(x, y, innerRadius, startAngle); const largeArcFlag = endAngle - startAngle <= 180 ? "0" : "1"; return [ "M", startOuter.x, startOuter.y, "A", outerRadius, outerRadius, 0, largeArcFlag, 0, endOuter.x, endOuter.y, "L", endInner.x, endInner.y, "A", innerRadius, innerRadius, 0, largeArcFlag, 1, startInner.x, startInner.y, "Z" ].join(" "); };
 export default function App() {
   const [isLoaded, setIsLoaded] = useState(false);
-  
-  // 💡 Vercel 배포 에러(TS2322) 방지를 위한 <any[]> 제네릭 타입 강제 지정 완료
   const [toners, setToners] = useState<any[]>([{ id: `b_init`, code: '', adjustedWeight: "", history: [], memo: "", isExpanded: false }]);
   const [pearlToners, setPearlToners] = useState<any[]>([{ id: `p_init`, code: '', adjustedWeight: "", history: [], memo: "", isExpanded: false }]);
-  
   const [isThreeCoatMode, setIsThreeCoatMode] = useState(false); 
   const [targetColorCode, setTargetColorCode] = useState(''); 
   const [vehicleNumber, setVehicleNumber] = useState(''); 
@@ -153,7 +149,6 @@ export default function App() {
 
   const [boardSearch, setBoardSearch] = useState(''); const [boardBrandFilter, setBoardBrandFilter] = useState('전체');
   
-  // 💡 TS2322 방지
   const [snapshots, setSnapshots] = useState<any[]>([]);
   const [isSnapshotModalOpen, setIsSnapshotModalOpen] = useState(false);
   const [selectedSnapshot, setSelectedSnapshot] = useState<any>(null);
@@ -161,9 +156,8 @@ export default function App() {
   const [isPearlGuideOpen, setIsPearlGuideOpen] = useState(false);
   const [activePearlLevel, setActivePearlLevel] = useState(6);
   
-  // 💡 TS2322 방지
   const [boardPosts, setBoardPosts] = useState<any[]>([
-      { id: 1, brand: '현대', code: 'UG4', date: '2026-09-11', likes: 12, views: 45, author: '윤프로', spec: '이색 심함, 보카시 블렌딩 필수', baseFormula: [{code: 'WT 321', adjustedWeight: '15.5'}], pearlFormula: [], isThreeCoat: false }
+      { id: 1, brand: '테스트', code: 'TEST', date: '2026-09-17', likes: 0, views: 0, author: '윤프로', spec: '뼈대 빌드 테스트용 데이터', baseFormula: [], pearlFormula: [], isThreeCoat: false }
   ]);
 
   const codeRefs = useRef<{ [key: string]: HTMLInputElement | null }>({}); 
@@ -194,7 +188,16 @@ export default function App() {
       return item.code.includes(searchTxt) || item.role.toUpperCase().includes(searchTxt);
   });
 
-  useEffect(() => { document.title = "조색 Pro"; }, []);
+  // 🚨 [핵심 엔진] Vercel의 CSS 에러를 100% 우회하고 다크모드 디자인을 강제로 자동 생성하는 CDN 주입 로직
+  useEffect(() => { 
+    document.title = "조색 Pro"; 
+    if (!document.getElementById('tailwind-cdn-script')) {
+        const script = document.createElement('script');
+        script.id = 'tailwind-cdn-script';
+        script.src = "https://cdn.tailwindcss.com";
+        document.head.appendChild(script);
+    }
+  }, []);
 
   useEffect(() => {
     if (typeof window !== 'undefined') {
@@ -273,7 +276,6 @@ export default function App() {
     const rawVal = newCode.toUpperCase(); 
     const numOnly = rawVal.replace(/[^0-9]/g, '');
     let finalCode = rawVal;
-    
     if (rawVal.startsWith('90') && numOnly.length >= 4) {
         finalCode = numOnly.substring(0, 4); 
     } else if (['1051', '1500', '455', 'AXT700'].includes(numOnly) || rawVal === 'AXT700') {
@@ -281,7 +283,6 @@ export default function App() {
     } else if (numOnly) {
         finalCode = `WT ${numOnly}`; 
     }
-
     const setter = isPearl ? setPearlToners : setToners;
     setter(prev => prev.map(toner => { 
         if (toner.id === id) { 
@@ -402,6 +403,7 @@ export default function App() {
               </div>
             </div>
           </div>
+          
           <div className="p-3 bg-white">
             <div className="mb-4 bg-indigo-50 border border-indigo-100 p-2.5 rounded-lg flex flex-col sm:flex-row items-center justify-between shadow-sm gap-2">
                 <div className="flex items-center gap-2"><Beaker size={14} className="text-indigo-600" /><span className="text-xs font-bold text-indigo-800">현장 실시간 용량 배율 변환기</span></div>
@@ -579,6 +581,7 @@ export default function App() {
             )}
           </div>
         </div>
+
         <div className="lg:col-span-5 flex flex-col space-y-4 h-full">
           <div className="flex-1 bg-white border border-slate-300 rounded-xl shadow-xl overflow-hidden flex flex-col min-h-[500px]">
             <div className="p-3 shrink-0 bg-slate-50 border-b border-slate-200">
@@ -1153,8 +1156,8 @@ export default function App() {
                             <h2 className="text-2xl font-black text-slate-800 tracking-tight mb-4">{lvl.name} <span className="text-sm font-bold text-purple-600 bg-purple-100 px-2 py-0.5 rounded-full ml-2">Lv.{lvl.level} Size: {lvl.size}</span></h2>
                             {lvl.codes.length > 0 && (
                                 <div className="grid grid-cols-1 md:grid-cols-2 gap-3 mb-6">
-{lvl.codes.map((code: any) => {
-    const tInfo = TONER_DB[code]; if(!tInfo) return null;
+                                    {lvl.codes.map(code => {
+                                        const tInfo = TONER_DB[code]; if(!tInfo) return null;
                                         return (
                                         <div key={code} className="bg-white border border-slate-200 rounded-xl p-3 shadow-sm flex items-center gap-3">
                                             <div className="w-12 h-12 rounded-lg shadow-inner shrink-0" style={{background: getTonerDetailBackground(code, tInfo.role, 'face')}}></div>
