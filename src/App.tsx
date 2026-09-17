@@ -1156,7 +1156,8 @@ export default function App() {
                             <h2 className="text-2xl font-black text-slate-800 tracking-tight mb-4">{lvl.name} <span className="text-sm font-bold text-purple-600 bg-purple-100 px-2 py-0.5 rounded-full ml-2">Lv.{lvl.level} Size: {lvl.size}</span></h2>
                             {lvl.codes.length > 0 && (
                                 <div className="grid grid-cols-1 md:grid-cols-2 gap-3 mb-6">
-                                    {lvl.codes.map(code => {
+                                   {lvl.codes.map((code: any) => {
+    const tInfo = TONER_DB[code]; if(!tInfo) return null;
                                         const tInfo = TONER_DB[code]; if(!tInfo) return null;
                                         return (
                                         <div key={code} className="bg-white border border-slate-200 rounded-xl p-3 shadow-sm flex items-center gap-3">
