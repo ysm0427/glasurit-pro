@@ -4,17 +4,21 @@ import {
   Image as ImageIcon, Lock, Unlock, Layers, ChevronRight, ChevronDown, ChevronUp, BookOpen, Share2, Zap, Search, FileSpreadsheet, History, PaintBucket, Columns, Mail, Code, Users, CreditCard, AlertTriangle, ThumbsUp, Eye, Calendar, RefreshCw, MessageSquare, Send, Save, CheckCircle, Edit3, Target, Edit
 } from 'lucide-react';
 
+// 🚀 [핵심 엔진] 디자인 파일 없이도 100% 다크모드를 강제 구동하는 CDN 로더 (최상단 실행)
+if (typeof window !== 'undefined' && !document.getElementById('tailwind-script')) {
+  const script = document.createElement('script');
+  script.id = 'tailwind-script';
+  script.src = 'https://cdn.tailwindcss.com';
+  document.head.appendChild(script);
+}
+
 interface TonerData { role: string; type: string; face: string; flop: string; desc: string; details?: [string, string][]; }
 
-const LAST_PATCH_DATE = "2026.09.17 (클린 뼈대 빌드 및 자체 디자인 엔진 탑재)"; 
+const LAST_PATCH_DATE = "2026.09.18 (완벽 뼈대 빌드 및 동기화 엔진 탑재)"; 
 
-// 💡 1. 펄 가이드 데이터 초기화 (뼈대)
+// 💡 데이터 100% 비운 순수 뼈대
 export const PEARL_LEVELS: any[] = [];
-
-// 💡 2. 마스터 안료 데이터 초기화 (뼈대)
 export const TONER_DB: Record<string, TonerData> = {};
-
-// 💡 3. OEM 컬러 데이터 초기화 (뼈대)
 export const OEM_COLORS: { code: string; name: string }[] = []; 
 
 export const catalogData = Object.entries(TONER_DB).map(([code, data]) => { return { code, ...data }; });
@@ -116,8 +120,11 @@ const MIXING_DATA: Record<string, any> = {
 
 const polarToCartesian = (centerX: number, centerY: number, radius: number, angleInDegrees: number) => { const angleInRadians = (angleInDegrees - 90) * Math.PI / 180.0; return { x: centerX + (radius * Math.cos(angleInRadians)), y: centerY + (radius * Math.sin(angleInRadians)) }; };
 const describeArc = (x: number, y: number, innerRadius: number, outerRadius: number, startAngle: number, endAngle: number) => { const startOuter = polarToCartesian(x, y, outerRadius, endAngle); const endOuter = polarToCartesian(x, y, outerRadius, startAngle); const startInner = polarToCartesian(x, y, innerRadius, endAngle); const endInner = polarToCartesian(x, y, innerRadius, startAngle); const largeArcFlag = endAngle - startAngle <= 180 ? "0" : "1"; return [ "M", startOuter.x, startOuter.y, "A", outerRadius, outerRadius, 0, largeArcFlag, 0, endOuter.x, endOuter.y, "L", endInner.x, endInner.y, "A", innerRadius, innerRadius, 0, largeArcFlag, 1, startInner.x, startInner.y, "Z" ].join(" "); };
+
 export default function App() {
   const [isLoaded, setIsLoaded] = useState(false);
+  const [designReady, setDesignReady] = useState(false); // 🚨 디자인 동기화 잠금장치 상태
+
   const [toners, setToners] = useState<any[]>([{ id: `b_init`, code: '', adjustedWeight: "", history: [], memo: "", isExpanded: false }]);
   const [pearlToners, setPearlToners] = useState<any[]>([{ id: `p_init`, code: '', adjustedWeight: "", history: [], memo: "", isExpanded: false }]);
   const [isThreeCoatMode, setIsThreeCoatMode] = useState(false); 
@@ -156,9 +163,7 @@ export default function App() {
   const [isPearlGuideOpen, setIsPearlGuideOpen] = useState(false);
   const [activePearlLevel, setActivePearlLevel] = useState(6);
   
-  const [boardPosts, setBoardPosts] = useState<any[]>([
-      { id: 1, brand: '테스트', code: 'TEST', date: '2026-09-17', likes: 0, views: 0, author: '윤프로', spec: '뼈대 빌드 테스트용 데이터', baseFormula: [], pearlFormula: [], isThreeCoat: false }
-  ]);
+  const [boardPosts, setBoardPosts] = useState<any[]>([]);
 
   const codeRefs = useRef<{ [key: string]: HTMLInputElement | null }>({}); 
   const weightRefs = useRef<{ [key: string]: HTMLInputElement | null }>({});
@@ -188,15 +193,17 @@ export default function App() {
       return item.code.includes(searchTxt) || item.role.toUpperCase().includes(searchTxt);
   });
 
-  // 🚨 [핵심 엔진] Vercel의 CSS 에러를 100% 우회하고 다크모드 디자인을 강제로 자동 생성하는 CDN 주입 로직
-  useEffect(() => { 
-    document.title = "조색 Pro"; 
-    if (!document.getElementById('tailwind-cdn-script')) {
-        const script = document.createElement('script');
-        script.id = 'tailwind-cdn-script';
-        script.src = "https://cdn.tailwindcss.com";
-        document.head.appendChild(script);
-    }
+  // 🚀 [핵심 로직] 디자인 엔진이 완벽하게 로딩될 때까지 기다리는 동기화 잠금장치
+  useEffect(() => {
+    let attempts = 0;
+    const timer = setInterval(() => {
+      if ((window as any).tailwind || attempts > 30) {
+        clearInterval(timer);
+        setDesignReady(true);
+      }
+      attempts++;
+    }, 100);
+    return () => clearInterval(timer);
   }, []);
 
   useEffect(() => {
@@ -276,6 +283,7 @@ export default function App() {
     const rawVal = newCode.toUpperCase(); 
     const numOnly = rawVal.replace(/[^0-9]/g, '');
     let finalCode = rawVal;
+    
     if (rawVal.startsWith('90') && numOnly.length >= 4) {
         finalCode = numOnly.substring(0, 4); 
     } else if (['1051', '1500', '455', 'AXT700'].includes(numOnly) || rawVal === 'AXT700') {
@@ -283,6 +291,7 @@ export default function App() {
     } else if (numOnly) {
         finalCode = `WT ${numOnly}`; 
     }
+
     const setter = isPearl ? setPearlToners : setToners;
     setter(prev => prev.map(toner => { 
         if (toner.id === id) { 
@@ -356,6 +365,17 @@ export default function App() {
       if(!val) { alert("사전 검색창에 뜻이 궁금한 용어를 직접 입력하세요!"); return; }
       window.open(`https://www.google.com/search?q=스피스헥커+${val}+뜻`, '_blank');
   };
+
+  // 🚀 [핵심 방어막] 디자인(Tailwind CDN)이 로드되지 않았으면 뼈대를 절대 보여주지 않고 로딩창을 띄움
+  if (!designReady) {
+    return (
+      <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', height: '100vh', backgroundColor: '#0f172a', color: '#38bdf8', fontFamily: 'sans-serif' }}>
+        <h2 style={{ fontSize: '24px', fontWeight: 'bold' }}>🎨 디자인 엔진 초기화 중...</h2>
+        <p style={{ marginTop: '10px', color: '#94a3b8' }}>인터넷 환경에 따라 최대 3~4초 정도 소요될 수 있습니다.</p>
+      </div>
+    );
+  }
+
   return (
     <div className="min-h-screen bg-slate-100 text-slate-800 font-sans flex flex-col relative overflow-x-hidden pb-[320px] lg:pb-[140px] notranslate" translate="no">
       <header className="bg-slate-900 flex flex-col sm:flex-row justify-between items-center p-4 border-b border-slate-800 shadow-md shrink-0 gap-3">
@@ -1156,8 +1176,8 @@ export default function App() {
                             <h2 className="text-2xl font-black text-slate-800 tracking-tight mb-4">{lvl.name} <span className="text-sm font-bold text-purple-600 bg-purple-100 px-2 py-0.5 rounded-full ml-2">Lv.{lvl.level} Size: {lvl.size}</span></h2>
                             {lvl.codes.length > 0 && (
                                 <div className="grid grid-cols-1 md:grid-cols-2 gap-3 mb-6">
-                                   {lvl.codes.map((code: any) => {
-    const tInfo = TONER_DB[code]; if(!tInfo) return null;
+                                    {lvl.codes.map(code => {
+                                        const tInfo = TONER_DB[code]; if(!tInfo) return null;
                                         return (
                                         <div key={code} className="bg-white border border-slate-200 rounded-xl p-3 shadow-sm flex items-center gap-3">
                                             <div className="w-12 h-12 rounded-lg shadow-inner shrink-0" style={{background: getTonerDetailBackground(code, tInfo.role, 'face')}}></div>
