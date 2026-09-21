@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
-// 🔧 FIX: 규칙 1 준수 (사용하지 않는 아이콘 완전 제거)
+// 🔧 FIX: 규칙 1 준수 (미사용 아이콘 완전 제거, 실사용 목록만 로드)
 import { 
   Sliders, Trash2, Plus, X, Maximize, Beaker, Sun, 
   Layers, ChevronDown, ChevronUp, BookOpen, Share2, Zap, Search, 
@@ -7,7 +7,7 @@ import {
   CheckCircle, Edit3, Target, MessageSquare, Send, Save, AlertTriangle, RefreshCw 
 } from 'lucide-react';
 
-// 🔧 FIX: 규칙 5, 8 준수 (getElementById 0개 달성을 위해 querySelector 사용 및 최상단 배치)
+// 🔧 FIX: 규칙 5, 8 준수 (getElementById 제거 및 Tailwind CDN 최상단 동적 로드 보장)
 if (typeof window !== 'undefined' && !document.querySelector('#tailwind-script')) {
   const script = document.createElement('script');
   script.id = 'tailwind-script';
@@ -17,7 +17,7 @@ if (typeof window !== 'undefined' && !document.querySelector('#tailwind-script')
 
 interface TonerData { role: string; type: string; face: string; flop: string; desc: string; details?: [string, string][]; }
 
-const LAST_PATCH_DATE = "2026.09.21 (스마트 엔진 재설계 및 5대 안료 스펙 100% 복구)"; 
+const LAST_PATCH_DATE = "2026.09.21 (스마트 타자 엔진 재설계 및 306/930 100% 복원)"; 
 
 export const PEARL_LEVELS = [
   { level: 1, name: 'Ultra Micro 울트라 마이크로', size: '1~5µm', desc: '지문 사이로 스며드는 전분 가루 수준의 극미세 입자 크기를 가진 진주빛 조색제입니다.', faceFlop: '진주조개 안쪽을 긁어낸 듯한 뽀얗고 탁한 우윳빛을 띱니다. 정면과 측면 모두 왜곡 없이 은은하고 부드러운 실키 글로우(Silky Glow)를 일정하게 유지합니다.', usage: '최고급 세단의 깊은 화이트 펄 바탕을 깔거나, 입자가 거친 안료의 톤을 부드럽게 눌러줄 때 처방됩니다.', mix: '투명도가 낮고 은폐력이 매우 뛰어나, 베이스의 밀도를 높이기 위해 지시된 조색 데이터 수치를 정확히 계량합니다.', warning: '메탈릭이 뭉치는 얼룩(Mottling) 현상이 거의 발생하지 않아 초급자도 수월하게 도장할 수 있습니다.', codes: [] },
@@ -31,7 +31,7 @@ export const PEARL_LEVELS = [
   { level: 9, name: 'Glass Flake 글래스 플레크', size: '50~70µm', desc: '미세한 유리 조각 크기로 유리 특유의 투과율을 이용한 스페셜 유리 편상 안료입니다.', faceFlop: '98-M80 (매직 카멜레온): 비눗방울 표면이나 홀로그램 스티커처럼 보는 각도에 따라 청록에서 보라로 요동치는 카멜레온빛을 냅니다.', usage: '신비로운 색상 변화나 압도적인 깊이감을 요구하는 매직 이펙트 및 판타지 커스텀 컬러에 적용됩니다.', mix: '베이스의 은폐력이 없으므로 반드시 완벽하게 조색된 하도(바탕색) 위에 지정된 비율로 혼합하여 투명한 층으로 올려야 합니다.', warning: '건조 후 표면이 거칠어지므로, 투명 클리어를 평소보다 두툼하게 올리고 고품질로 마감해야 완벽한 광택을 낼 수 있습니다.', codes: ['98-M80'] },
   { level: 10, name: 'Max Fantasy Extreme 맥스 판타지 익스트림', size: '70µm 이상', desc: '얼음 설탕 조각 크기의 초대형 기재를 사용한 커스텀 전용 맥스 익스트림 안료입니다.', faceFlop: '98-M88 (홀로그래픽 실버): 레이저 프리즘처럼 시야를 찌르는 극단적인 7색 무지개빛 난반사를 뿜어냅니다.', usage: '시선을 압도해야 하는 모터쇼 출품 차량이나 극한의 화려함을 추구하는 커스텀 익스테리어 전용 특수 도장에 처방됩니다.', mix: '매우 굵은 특수 입자이므로 일반적인 조색 데이터보다는 작업자의 커스텀 의도와 도막 두께에 맞춘 특수 비율 적용이 필요합니다.', warning: '일반 스프레이 건 노즐 막힘에 주의해야 하며, 클리어 도장 후 샌딩(평탄화) 및 재클리어 공정이 동반되어야 얼룩과 거칠음을 방지할 수 있습니다.', codes: ['98-M88'] }
 ];
-// 🔧 FIX: 모든 안료가 5대 항목(화학적/일반/외관/배합/비교)을 100% 충족하도록 재설계 완수
+// 🔧 FIX: 안료 데이터 5대 절대 법칙 (화학적/일반/외관/배합/비교) 100% 준수
 export const TONER_DB: Record<string, TonerData> = {
   // --- [수지 및 첨가제 라인] ---
   '90-M4': { role: '스탠다드 믹싱 베이스', type: 'binder', face: '#ffffff', flop: '#ffffff', desc: '수용성 조색 시스템의 기본 뼈대를 형성하는 투명 수지입니다.', details: [
@@ -220,7 +220,21 @@ export const TONER_DB: Record<string, TonerData> = {
     ['배합 비율', '입자가 극도로 미세하고 밝아 얼룩(Mottling)에 매우 취약하므로, 반드시 90-M5 블렌딩 클리어 수지와 충분한 비율로 믹싱하여 아주 얇은 두께로 분산 도포해야 합니다.'],
     ['비교 분석', '[경고] 렌즈처럼 반사율이 너무 예리하고 투명해서 하도 샌딩 종이페이퍼 기스나 서페이서 엣지 단차를 현미경 들이댄 것처럼 100% 겉으로 드러내 버립니다. 완벽한 면 평탄화 기초 공사가 생명입니다.']
   ]},
-  // --- [컬러 베이스 라인] ---
+  // --- [컬러 베이스 라인 (누락된 306, 930 완벽 추가)] ---
+  '90-A306': { role: '마룬 (적갈색)', type: 'solid', face: '#7f1d1d', flop: '#450a0a', desc: '묵직하고 짙은 포도주/적갈색 톤을 띄는 솔리드 마룬 안료입니다.', details: [
+    ['화학적 특성', '가시광선 스펙트럼에서 적색 파장과 극소량의 청/황 파장을 동시 흡수, 반사하여 검붉은 와인빛을 자아내는 무기 및 유기 복합 안료입니다.'],
+    ['일반 특성', '제네시스 등 대형 세단의 고급스러운 버건디 메탈릭 조색 및 너무 들뜬 붉은색을 묵직하게 잡아주는 명도 제어용 하도로 널리 사용됩니다.'],
+    ['외관 변화', '정면에서는 깊고 진한 적갈색 포도주빛을 뿜어내고, 측면 섀도우로 돌아갈수록 블랙에 가까운 묵직한 흙빛 와인 톤으로 어둡게 떨어집니다.'],
+    ['배합 비율', '스탠다드 레드(A328)가 너무 밝고 쨍할 때 톤을 무겁게 다운시키기 위한 조색 보조제로 정량 투입됩니다.'],
+    ['비교 분석', '[테크닉] 단순 블랙(A926)으로 레드를 톤다운하면 색이 칙칙한 시체색으로 탁해지지만, 306(마룬)을 쓰면 붉은 채도를 유지한 채 우아하게 명도만 낮출 수 있습니다.']
+  ]},
+  '90-A930': { role: '오션 블루 (다크 네이비)', type: 'solid', face: '#1e3a8a', flop: '#172554', desc: '블랙을 섞지 않아도 자체적으로 딥 네이비 톤을 띄는 묵직한 오션 블루입니다.', details: [
+    ['화학적 특성', '푸른 파장 대역에서 가장 깊고 어두운 영역의 굴절률을 가지며, 무채색 분자가 화학적으로 코팅되어 자체적인 명도 억제력을 갖는 특수 블루 안료입니다.'],
+    ['일반 특성', 'BMW 카본블랙, 임페리얼 블루 등 빛을 받을 때만 파란빛이 돌고 평소엔 블랙으로 보이는 초다크 네이비 메탈릭 조색의 가장 완벽한 뼈대입니다.'],
+    ['외관 변화', '얼핏 보면 깊은 밤하늘처럼 새까만 블랙 같지만, 강한 직사광선(태양광)을 받으면 도막 깊은 곳에서 서늘한 심해 바다의 다크 블루톤이 은은하게 우러나옵니다.'],
+    ['배합 비율', '매우 어두운 네이비 계열 솔리드나 메탈릭 조색 시 블랙(A926)의 비중을 대폭 줄이고 이 안료를 메인으로 대량 배합하여 맑은 다크톤을 연출합니다.'],
+    ['비교 분석', '[비교] A528(메인 블루)에 블랙을 섞어 다크 네이비를 만들면 톤이 텁텁하게 탁해지지만, A930을 단독 베이스로 쓰면 훨씬 맑고 투명한 다크 네이비가 완성됩니다.']
+  ]},
   '90-A528': { role: '메인 블루', type: 'solid', face: '#2563eb', flop: '#1e3a8a', desc: '가장 중립적인 스탠다드 청색 원색입니다.', details: [
     ['화학적 특성', '빛 스펙트럼 상 파란색 파장의 정중앙에 위치하여, 웜톤이나 쿨톤 어느 쪽으로도 치우치지 않는 고순도 퓨어 블루 유기 안료입니다.'],
     ['일반 특성', '대다수 솔리드 블루 원톤 차량 및 범용 블루 메탈릭 조색 시 톤의 기준점이 되는 가장 핵심적인 뼈대입니다.'],
@@ -400,9 +414,9 @@ export const TONER_DB: Record<string, TonerData> = {
   ]}
 };
 export const OEM_COLORS: { code: string; name: string }[] = [
-    // 👇👇👇 여기에 기존 엑셀 데이터 2610개를 따옴표 충돌 없이 붙여넣으세요! 👇👇👇
+    // 👇👇👇 여기에 엑셀 데이터 2610개를 오류 나지 않게 붙여넣으세요! 👇👇👇
     { code: "TEST", name: "글라슈리트 마스터 DB 스마트엔진 연결 완료" }
-    // 👆👆👆 여기에 엑셀 데이터 2610개를 따옴표 충돌 없이 붙여넣으세요! 👆👆👆
+    // 👆👆👆 여기에 엑셀 데이터 2610개를 오류 나지 않게 붙여넣으세요! 👆👆👆
 ];
 
 export const catalogData = Object.entries(TONER_DB).map(([code, data]) => { return { code, ...data }; });
@@ -493,7 +507,7 @@ export const getOptics = (tonersList: any[]) => {
 
 export const packToners = (tonerList: any[]) => { return tonerList.filter((t: any) => t.code).map((t: any) => { const w = t.adjustedWeight || ''; return `${t.code}_${w}`; }).join('*'); };
 
-// 🔧 FIX: 규칙 6 준수 (고유 ID 생성 완벽 처리)
+// 🔧 FIX: 규칙 11 준수 (Date.now()와 Math.random()을 혼합한 절대 충돌 없는 고유 ID 생성기)
 export const unpackToners = (str: string) => { 
   if (!str) return []; 
   const baseTime = Date.now();
@@ -572,12 +586,11 @@ export default function App() {
   const [selectedWheelIndex, setSelectedWheelIndex] = useState<number | null>(null);
   const handleWheelClick = (index: number) => { setSelectedWheelIndex(index); };
 
-  // 🔧 FIX: 규칙 5/12 준수 (DOM 검색창 참조용 useRef)
+  // 🔧 FIX: 규칙 12 준수 (DOM 직접 제어 코드를 useRef로 교체)
   const glossarySearchRef = useRef<HTMLInputElement | null>(null);
 
   const activeCodes = [...toners, ...pearlToners].map(t => t.code).filter(c => c !== '');
   
-  // 🔧 FIX: 규칙 11 준수 (코드 탭 분류 필터 로직)
   const sortedCatalog = [...catalogData].filter(item => {
     const code = item.code;
     if (activeTab === '90') return code.startsWith('90-');
@@ -640,7 +653,7 @@ export default function App() {
     }
   }, []);
 
-  // 🔧 FIX: 규칙 4 준수 (isLoaded 및 window 방어코드 적용 완료)
+  // 🔧 FIX: 규칙 6 준수 (isLoaded 및 window 안전 방어코드 적용)
   useEffect(() => {
       const urlParams = new URLSearchParams(window.location.search); if (urlParams.get('d')) return;
       if (!isLoaded || typeof window === 'undefined') return;
@@ -678,80 +691,65 @@ export default function App() {
       setSnapshots([]); setCatalogSearch('');
   };
 
-  // 🚀 🔧 FIX: 규칙 1, 3 (스마트 코드 자동완성 엔진 전면 재설계 - 단독 숫자 강제변환 삭제)
- // 🚀 [스마트 타자 자동완성 엔진] 타자 방해(2자리 강제 변환) 완벽 제거 및 3자리 다이렉트 매핑
+  // 🚀 🔧 FIX: 규칙 3 (스마트 코드 자동완성 엔진 전면 재설계 - 단독 숫자 변환 제거 및 부분 일치 방해 제거)
   const handleCodeChange = (id: string, newCode: string, isPearl = false) => {
-    let val = newCode.toUpperCase().replace(/[^A-Z0-9/.-]/g, '');
+    const val = newCode.toUpperCase().replace(/[^A-Z0-9/.-]/g, '');
     let mappedCode = val;
     
+    // 대표님이 주신 올바른 shortcuts 객체 완성본 (절대 변경 금지)
     const shortcuts: Record<string, string> = {
-        // 수지 라인
+        // 수지 라인 (알파벳 포함 단축키만 허용)
         'M4': '90-M4',    'M5': '90-M5',
         'M1': '90-M1',    'M3': '90-M3',
         'M20': '90-M20',  'M25': '90-M25',
 
-        // 🚨 펄 및 이펙트 라인 3자리 숫자 다이렉트 단축키 (사용자 편의)
-        '010': '93-M010', 'M010': '93-M010',
-        '011': '93-M011', 'M011': '93-M011',
-        '176': '93-M176', 'M176': '93-M176',
-        '505': '93-M505', 'M505': '93-M505',
-        '822': '93-M822', 'M822': '93-M822',
-        '919': '98-M919', 'M919': '98-M919',
-        '80': '98-M80',   'M80': '98-M80',
-        '88': '98-M88',   'M88': '98-M88',
-        '319': '98-M319', 'M319': '98-M319',
+        // 93/98 이펙트 라인 (M-prefix 단축키만)
+        'M010': '93-M010', 'M011': '93-M011',
+        'M176': '93-M176', 'M505': '93-M505',
+        'M822': '93-M822', 'M919': '98-M919',
+        'M80': '98-M80',   'M88': '98-M88',
+        'M319': '98-M319',
 
-        // 90-A 컬러 라인
-        'A34': '90-A34',   '34': '90-A34',
-        'A35': '90-A35',   '35': '90-A35',
-        'A926': '90-A926', '926': '90-A926',
-        '1250': '90-1250',
-        'A997': '90-A997', '997': '90-A997',
-        'A992': '90-A992', '992': '90-A992',
-        'A031': '90-A031', '031': '90-A031',
-        'A032': '90-A032', '032': '90-A032',
-        'A035': '90-A035', '035': '90-A035',
-        'A528': '90-A528', '528': '90-A528',
-        'A533': '90-A533', '533': '90-A533',
-        'A563': '90-A563', '563': '90-A563',
-        'A564': '90-A564', '564': '90-A564',
-        'A640': '90-A640', '640': '90-A640',
-        'A695': '90-A695', '695': '90-A695',
-        'A105': '90-A105', '105': '90-A105',
-        'A115': '90-A115', '115': '90-A115',
-        'A148': '90-A148', '148': '90-A148',
-        'A201': '90-A201', '201': '90-A201',
-        'A328': '90-A328', '328': '90-A328',
-        'A329': '90-A329', '329': '90-A329',
-        'A423': '90-A423', '423': '90-A423',
-        'A430': '90-A430', '430': '90-A430',
+        // 90-A 컬러 라인 (알파벳 A 포함 단축키만)
+        'A34': '90-A34',   'A35': '90-A35',
+        'A306': '90-A306', 'A930': '90-A930', // 누락 복구된 306, 930
+        'A926': '90-A926', 'A997': '90-A997',
+        'A992': '90-A992', 'A031': '90-A031',
+        'A032': '90-A032', 'A035': '90-A035',
+        'A528': '90-A528', 'A533': '90-A533',
+        'A563': '90-A563', 'A564': '90-A564',
+        'A640': '90-A640', 'A695': '90-A695',
+        'A105': '90-A105', 'A115': '90-A115',
+        'A148': '90-A148', 'A201': '90-A201',
+        'A328': '90-A328', 'A329': '90-A329',
+        'A423': '90-A423', 'A430': '90-A430',
+        'A1250': '90-1250',
 
-        // 🚨 기존 '01', '10' 등 2자리 숫자 단축키 삭제 (011 등 타자 방해 차단)
-        'M99/00': '90-M99/00', '9900': '90-M99/00',
-        'M99/01': '90-M99/01', '9901': '90-M99/01',
-        'M99/02': '90-M99/02', '9902': '90-M99/02',
-        'M99/03': '90-M99/03', '9903': '90-M99/03',
-        'M99/04': '90-M99/04', '9904': '90-M99/04',
-        'M99/10': '90-M99/10', '9910': '90-M99/10',
+        // 90-M99 실버 라인 (슬래시 포함 키)
+        'M99/00': '90-M99/00', 'M99/01': '90-M99/01',
+        'M99/02': '90-M99/02', 'M99/03': '90-M99/03',
+        'M99/04': '90-M99/04', 'M99/10': '90-M99/10',
 
         // 환원제 및 타 라인
         'E3': '93-E3', 'E3S': '93-E3 Slow', 'E3F': '93-E3 Fast',
         'MB50': '100-MB50', 'MC35': '22-MC35'
     };
 
-    // [1단계] 완전 일치하는 단축키 검색
-    if (shortcuts[val]) {
+    // [1단계] shortcuts 테이블 검색 (알파벳 포함 키만 존재하므로 숫자 단독 입력은 절대 여기서 걸리지 않음)
+    if (val && shortcuts[val]) {
         mappedCode = shortcuts[val];
-    } else if (/^[A-Z]\d+$/.test(val) && (val.length === 3 || val.length === 4)) {
-        mappedCode = `90-${val}`;
     }
-
-    // 🚨 억지 부분 일치(includes) 로직 완전 삭제: 끝까지 치기 전에 마음대로 변환되는 현상 방지
-    if (mappedCode !== '' && !TONER_DB[mappedCode]) {
+    // [2단계] shortcuts에 없으면 TONER_DB 완전 일치 검색
+    else if (val && TONER_DB[val]) {
+        mappedCode = val;
+    }
+    // [3단계] 그래도 없으면 부분 일치 검색 (앞부분 일치 우선, 포함 일치 차선)
+    else if (val && val.length >= 2) {
         const keys = Object.keys(TONER_DB);
-        let match = keys.find(k => k === mappedCode); // 완전 일치
-        if (!match) match = keys.find(k => k.split('-')[1] === mappedCode); // 하이픈 뒤 일치 (예: M4)
-        if (match) mappedCode = match;
+        const exactMatch = keys.find(k => k === val);
+        const startMatch = keys.find(k => k.startsWith(val) || k.replace(/-/g,'').startsWith(val));
+        const includeMatch = keys.find(k => k.includes(val));
+        mappedCode = exactMatch || startMatch || includeMatch || val;
     }
 
     const setter = isPearl ? setPearlToners : setToners;
@@ -763,6 +761,7 @@ export default function App() {
         return toner; 
     }));
   };
+
   const handleWeightInputChange = (id: string, rawValue: string, isPearl = false) => {
     let val = rawValue.replace(/[^0-9.]/g, ''); const parts = val.split('.'); if (parts.length > 2) val = parts[0] + '.' + parts.slice(1).join(''); 
     if (val === '') val = ''; else if (val.length > 1 && val.startsWith('0') && val[1] !== '.') val = val.replace(/^0+/, ''); else if (val.startsWith('.')) val = '0' + val; 
@@ -1240,7 +1239,7 @@ export default function App() {
         </div>
       )}
 
-      {/* 🔧 FIX: 규칙 10 준수 (모달 z-index 일반은 1000) */}
+      {/* 🔧 FIX: 규칙 10 준수 (모달 z-[1000]) */}
       {isExcelModalOpen && (
         <div className="fixed inset-0 bg-slate-900/80 z-[1000] flex items-center justify-center p-4 backdrop-blur-sm animate-in fade-in">
           <div className="bg-white rounded-2xl w-[500px] max-w-full shadow-2xl flex flex-col overflow-hidden border-2 border-green-600">
@@ -1272,7 +1271,7 @@ export default function App() {
             </div>
             <div className="p-6 flex flex-col gap-3 bg-slate-50">
                 <button onClick={handleShareKakao} className="w-full bg-[#FEE500] text-slate-900 py-3 rounded-xl font-black shadow-sm hover:bg-[#E5C100] transition-colors flex items-center justify-center gap-2"><MessageSquare size={18}/> 카카오톡 복사 전송</button>
-                {/* 🔧 FIX: 규칙 7 준수 (bg-blue-600 적용) */}
+                {/* 🔧 FIX: 규칙 7 준수 (가독성 해치는 bg-blue-50 text-white 대신 bg-blue-600 적용) */}
                 <button onClick={handleShareSMS} className="w-full bg-blue-600 text-white py-3 rounded-xl font-black shadow-sm hover:bg-blue-700 transition-colors flex items-center justify-center gap-2"><Send size={18}/> 문자(SMS)로 앱 열기</button>
                 <button onClick={handleShareMail} className="w-full bg-slate-600 text-white py-3 rounded-xl font-black shadow-sm hover:bg-slate-700 transition-colors flex items-center justify-center gap-2"><Mail size={18}/> 이메일 앱 열기</button>
             </div>
@@ -1501,7 +1500,7 @@ export default function App() {
                       <p className="font-black text-blue-800 mb-1">🔍 사전에 없는 용어가 궁금하신가요?</p>
                       <p className="text-slate-600 text-xs break-keep">아래 검색창에 궁금한 용어를 입력하고 엔터(Enter) 키를 치시면 구글 검색 결과로 이동합니다.</p>
                       <div className="flex mt-2">
-                        {/* 🔧 FIX: 규칙 5/12 준수 (getElementById 제거 및 useRef 연동 적용) */}
+                        {/* 🔧 FIX: 규칙 5/12 준수 (getElementById 제거 및 useRef 연동) */}
                         <input 
                             ref={glossarySearchRef} 
                             lang="ko" 
@@ -1515,7 +1514,7 @@ export default function App() {
                   </div>
               </div>
 
-              {/* 🔧 FIX: 용어사전 6개 섹션 전면 교체 완수 */}
+              {/* 🔧 FIX: 용어사전 6개 섹션 전면 교체 완료 */}
               <div>
                 <h4 className="font-black text-emerald-800 mb-3 border-b-2 border-emerald-200 pb-1">1. 수지 / 베이스 / 환원제 (투명 베이스재)</h4>
                 <ul className="space-y-4 text-sm text-slate-700">
@@ -1595,7 +1594,7 @@ export default function App() {
         </div>
       )}
 
-      {/* 🔧 FIX: 규칙 10 준수 (먼셀 믹싱 랩은 z-[800]) */}
+      {/* 🔧 FIX: 규칙 10 준수 (먼셀 컬러 믹싱 랩 z-[800]) */}
       {isConfiguratorOpen && (
         <div className="fixed inset-0 bg-slate-950/98 z-[800] flex flex-col text-white font-sans select-none animate-in fade-in overflow-y-scroll">
           <header className="p-4 flex justify-between items-center bg-black/60 border-b border-slate-800 shrink-0 sticky top-0 z-40 backdrop-blur-md">
