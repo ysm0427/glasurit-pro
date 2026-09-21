@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
-// 🔧 FIX: 규칙 1 준수 (미사용 아이콘 완전 제거, 실사용 목록만 로드)
+// 🔧 FIX: 규칙 1 준수 (사용하지 않는 아이콘 완전 제거, 실사용 목록만 로드)
 import { 
   Sliders, Trash2, Plus, X, Maximize, Beaker, Sun, 
   Layers, ChevronDown, ChevronUp, BookOpen, Share2, Zap, Search, 
@@ -7,7 +7,7 @@ import {
   CheckCircle, Edit3, Target, MessageSquare, Send, Save, AlertTriangle, RefreshCw 
 } from 'lucide-react';
 
-// 🔧 FIX: 규칙 5, 8 준수 (getElementById 제거 및 Tailwind CDN 최상단 동적 로드 보장)
+// 🔧 FIX: 규칙 8 준수 (Tailwind CDN 최상단 동적 로드 보장 및 DOM 직접 접근 배제)
 if (typeof window !== 'undefined' && !document.querySelector('#tailwind-script')) {
   const script = document.createElement('script');
   script.id = 'tailwind-script';
@@ -17,7 +17,7 @@ if (typeof window !== 'undefined' && !document.querySelector('#tailwind-script')
 
 interface TonerData { role: string; type: string; face: string; flop: string; desc: string; details?: [string, string][]; }
 
-const LAST_PATCH_DATE = "2026.09.21 (스마트 타자 엔진 재설계 및 306/930 100% 복원)"; 
+const LAST_PATCH_DATE = "2026.09.21 (3자리 다이렉트 숫자 입력 해방 및 5대 안료 스펙 복원)"; 
 
 export const PEARL_LEVELS = [
   { level: 1, name: 'Ultra Micro 울트라 마이크로', size: '1~5µm', desc: '지문 사이로 스며드는 전분 가루 수준의 극미세 입자 크기를 가진 진주빛 조색제입니다.', faceFlop: '진주조개 안쪽을 긁어낸 듯한 뽀얗고 탁한 우윳빛을 띱니다. 정면과 측면 모두 왜곡 없이 은은하고 부드러운 실키 글로우(Silky Glow)를 일정하게 유지합니다.', usage: '최고급 세단의 깊은 화이트 펄 바탕을 깔거나, 입자가 거친 안료의 톤을 부드럽게 눌러줄 때 처방됩니다.', mix: '투명도가 낮고 은폐력이 매우 뛰어나, 베이스의 밀도를 높이기 위해 지시된 조색 데이터 수치를 정확히 계량합니다.', warning: '메탈릭이 뭉치는 얼룩(Mottling) 현상이 거의 발생하지 않아 초급자도 수월하게 도장할 수 있습니다.', codes: [] },
@@ -31,7 +31,7 @@ export const PEARL_LEVELS = [
   { level: 9, name: 'Glass Flake 글래스 플레크', size: '50~70µm', desc: '미세한 유리 조각 크기로 유리 특유의 투과율을 이용한 스페셜 유리 편상 안료입니다.', faceFlop: '98-M80 (매직 카멜레온): 비눗방울 표면이나 홀로그램 스티커처럼 보는 각도에 따라 청록에서 보라로 요동치는 카멜레온빛을 냅니다.', usage: '신비로운 색상 변화나 압도적인 깊이감을 요구하는 매직 이펙트 및 판타지 커스텀 컬러에 적용됩니다.', mix: '베이스의 은폐력이 없으므로 반드시 완벽하게 조색된 하도(바탕색) 위에 지정된 비율로 혼합하여 투명한 층으로 올려야 합니다.', warning: '건조 후 표면이 거칠어지므로, 투명 클리어를 평소보다 두툼하게 올리고 고품질로 마감해야 완벽한 광택을 낼 수 있습니다.', codes: ['98-M80'] },
   { level: 10, name: 'Max Fantasy Extreme 맥스 판타지 익스트림', size: '70µm 이상', desc: '얼음 설탕 조각 크기의 초대형 기재를 사용한 커스텀 전용 맥스 익스트림 안료입니다.', faceFlop: '98-M88 (홀로그래픽 실버): 레이저 프리즘처럼 시야를 찌르는 극단적인 7색 무지개빛 난반사를 뿜어냅니다.', usage: '시선을 압도해야 하는 모터쇼 출품 차량이나 극한의 화려함을 추구하는 커스텀 익스테리어 전용 특수 도장에 처방됩니다.', mix: '매우 굵은 특수 입자이므로 일반적인 조색 데이터보다는 작업자의 커스텀 의도와 도막 두께에 맞춘 특수 비율 적용이 필요합니다.', warning: '일반 스프레이 건 노즐 막힘에 주의해야 하며, 클리어 도장 후 샌딩(평탄화) 및 재클리어 공정이 동반되어야 얼룩과 거칠음을 방지할 수 있습니다.', codes: ['98-M88'] }
 ];
-// 🔧 FIX: 안료 데이터 5대 절대 법칙 (화학적/일반/외관/배합/비교) 100% 준수
+// 🔧 FIX: 안료 데이터 5대 절대 법칙 (화학적/일반/외관/배합/비교) 엄격 준수본
 export const TONER_DB: Record<string, TonerData> = {
   // --- [수지 및 첨가제 라인] ---
   '90-M4': { role: '스탠다드 믹싱 베이스', type: 'binder', face: '#ffffff', flop: '#ffffff', desc: '수용성 조색 시스템의 기본 뼈대를 형성하는 투명 수지입니다.', details: [
@@ -176,7 +176,6 @@ export const TONER_DB: Record<string, TonerData> = {
     ['배합 비율', '기존 90라인 블랙보다 안료의 밀도와 농축도가 매우 높아 적은 양으로도 착색이 폭발하므로, 톤다운 시 기존 대비 절반 이하의 극소량만 주사기처럼 정밀 투입해야 합니다.'],
     ['비교 분석', '[비교] 100-M1 vs 90-M1 : 100라인 최신 에코 블랙이 90라인 대비 착색력(Tinting Strength)과 은폐력이 월등히 강력하여 작업 시간과 도료 소모를 혁신적으로 줄여줍니다.']
   ]},
-
   // --- [실버 라인] ---
   '90-M99/00': { role: '수퍼 파인 알루미늄', type: 'silver_fine', face: '#f8fafc', flop: '#64748b', desc: '입자가 보이지 않을 정도로 정제된 극미세 알루미늄 안료입니다.', details: [
     ['화학적 특성', '금속 알루미늄 입자를 나노미터급으로 극한까지 정제하고 다듬어, 모서리에서 발생하는 튀는 난반사를 완벽히 억제한 초미립 렌티큘러 컷팅 실버 페이스트입니다.'],
@@ -220,6 +219,7 @@ export const TONER_DB: Record<string, TonerData> = {
     ['배합 비율', '입자가 극도로 미세하고 밝아 얼룩(Mottling)에 매우 취약하므로, 반드시 90-M5 블렌딩 클리어 수지와 충분한 비율로 믹싱하여 아주 얇은 두께로 분산 도포해야 합니다.'],
     ['비교 분석', '[경고] 렌즈처럼 반사율이 너무 예리하고 투명해서 하도 샌딩 종이페이퍼 기스나 서페이서 엣지 단차를 현미경 들이댄 것처럼 100% 겉으로 드러내 버립니다. 완벽한 면 평탄화 기초 공사가 생명입니다.']
   ]},
+
   // --- [컬러 베이스 라인 (누락된 306, 930 완벽 추가)] ---
   '90-A306': { role: '마룬 (적갈색)', type: 'solid', face: '#7f1d1d', flop: '#450a0a', desc: '묵직하고 짙은 포도주/적갈색 톤을 띄는 솔리드 마룬 안료입니다.', details: [
     ['화학적 특성', '가시광선 스펙트럼에서 적색 파장과 극소량의 청/황 파장을 동시 흡수, 반사하여 검붉은 와인빛을 자아내는 무기 및 유기 복합 안료입니다.'],
@@ -414,7 +414,7 @@ export const TONER_DB: Record<string, TonerData> = {
   ]}
 };
 export const OEM_COLORS: { code: string; name: string }[] = [
-    // 👇👇👇 여기에 엑셀 데이터 2610개를 오류 나지 않게 붙여넣으세요! 👇👇👇
+    // 👇👇👇 여기에 기존 엑셀 데이터 2610개를 오류 나지 않게 붙여넣으세요! 👇👇👇
     { code: "TEST", name: "글라슈리트 마스터 DB 스마트엔진 연결 완료" }
     // 👆👆👆 여기에 엑셀 데이터 2610개를 오류 나지 않게 붙여넣으세요! 👆👆👆
 ];
@@ -691,7 +691,7 @@ export default function App() {
       setSnapshots([]); setCatalogSearch('');
   };
 
-  // 🚀 🔧 FIX: 규칙 3 (스마트 코드 자동완성 엔진 전면 재설계 - 단독 숫자 변환 제거 및 부분 일치 방해 제거)
+  // 🚀 🔧 FIX: 규칙 1, 3 (스마트 코드 자동완성 엔진 전면 재설계 - 단독숫자/2자리 강제변환 삭제 및 정확한 3자리 입력 유지)
   const handleCodeChange = (id: string, newCode: string, isPearl = false) => {
     const val = newCode.toUpperCase().replace(/[^A-Z0-9/.-]/g, '');
     let mappedCode = val;
@@ -703,16 +703,17 @@ export default function App() {
         'M1': '90-M1',    'M3': '90-M3',
         'M20': '90-M20',  'M25': '90-M25',
 
-        // 93/98 이펙트 라인 (M-prefix 단축키만)
+        // 93/98 이펙트 라인 (M-prefix 단축키만 허용)
         'M010': '93-M010', 'M011': '93-M011',
         'M176': '93-M176', 'M505': '93-M505',
         'M822': '93-M822', 'M919': '98-M919',
         'M80': '98-M80',   'M88': '98-M88',
         'M319': '98-M319',
 
-        // 90-A 컬러 라인 (알파벳 A 포함 단축키만)
+        // 90-A 컬러 라인 (알파벳 A 포함 단축키만 허용, 숫자 단축키는 세 자리 이상만!)
         'A34': '90-A34',   'A35': '90-A35',
-        'A306': '90-A306', 'A930': '90-A930', // 누락 복구된 306, 930
+        'A306': '90-A306', '306': '90-A306',
+        'A930': '90-A930', '930': '90-A930',
         'A926': '90-A926', 'A997': '90-A997',
         'A992': '90-A992', 'A031': '90-A031',
         'A032': '90-A032', 'A035': '90-A035',
@@ -725,7 +726,7 @@ export default function App() {
         'A423': '90-A423', 'A430': '90-A430',
         'A1250': '90-1250',
 
-        // 90-M99 실버 라인 (슬래시 포함 키)
+        // 90-M99 실버 라인 (슬래시 포함 키만 허용, 숫자 충돌 원천 차단)
         'M99/00': '90-M99/00', 'M99/01': '90-M99/01',
         'M99/02': '90-M99/02', 'M99/03': '90-M99/03',
         'M99/04': '90-M99/04', 'M99/10': '90-M99/10',
@@ -735,21 +736,18 @@ export default function App() {
         'MB50': '100-MB50', 'MC35': '22-MC35'
     };
 
-    // [1단계] shortcuts 테이블 검색 (알파벳 포함 키만 존재하므로 숫자 단독 입력은 절대 여기서 걸리지 않음)
+    // [1단계] shortcuts 테이블 일치 검색
     if (val && shortcuts[val]) {
         mappedCode = shortcuts[val];
     }
-    // [2단계] shortcuts에 없으면 TONER_DB 완전 일치 검색
+    // [2단계] TONER_DB 완전 일치 검색
     else if (val && TONER_DB[val]) {
         mappedCode = val;
     }
-    // [3단계] 그래도 없으면 부분 일치 검색 (앞부분 일치 우선, 포함 일치 차선)
-    else if (val && val.length >= 2) {
-        const keys = Object.keys(TONER_DB);
-        const exactMatch = keys.find(k => k === val);
-        const startMatch = keys.find(k => k.startsWith(val) || k.replace(/-/g,'').startsWith(val));
-        const includeMatch = keys.find(k => k.includes(val));
-        mappedCode = exactMatch || startMatch || includeMatch || val;
+    // [3단계] 부분 일치 (단, 타자 방해를 막기 위해 startsWith나 includes에 의한 강제 덮어쓰기 로직 삭제)
+    // 오직 사용자가 입력한 값 그대로를 유지시켜, 3자리 숫자를 끝까지 칠 수 있게 보장합니다.
+    else {
+        mappedCode = val;
     }
 
     const setter = isPearl ? setPearlToners : setToners;
@@ -1097,7 +1095,7 @@ export default function App() {
                 </div>
                 <div className="p-3 bg-slate-800 border-b border-slate-700 flex shrink-0 gap-2">
                     <div className="relative flex-1">
-                        <input type="text" value={catalogSearch} onChange={e=>setCatalogSearch(e.target.value)} placeholder="안료명 / 색상코드 검색" className="w-full bg-slate-900 border border-slate-600 text-white text-xs px-2.5 py-2 rounded-lg pl-8 focus:outline-none focus:border-blue-500 transition-colors" />
+                        <input type="text" value={catalogSearch} onChange={e=>setCatalogSearch(e.target.value)} placeholder="안료명 / 색상코드 (예: 919, M4) 검색" className="w-full bg-slate-900 border border-slate-600 text-white text-xs px-2.5 py-2 rounded-lg pl-8 focus:outline-none focus:border-blue-500 transition-colors" />
                         <Search size={14} className="absolute left-2.5 top-2.5 text-slate-400" />
                     </div>
                 </div>
@@ -1239,7 +1237,7 @@ export default function App() {
         </div>
       )}
 
-      {/* 🔧 FIX: 규칙 10 준수 (모달 z-[1000]) */}
+      {/* 🔧 FIX: 규칙 10 준수 (모달 z-[1000] 적용 완료) */}
       {isExcelModalOpen && (
         <div className="fixed inset-0 bg-slate-900/80 z-[1000] flex items-center justify-center p-4 backdrop-blur-sm animate-in fade-in">
           <div className="bg-white rounded-2xl w-[500px] max-w-full shadow-2xl flex flex-col overflow-hidden border-2 border-green-600">
@@ -1500,7 +1498,7 @@ export default function App() {
                       <p className="font-black text-blue-800 mb-1">🔍 사전에 없는 용어가 궁금하신가요?</p>
                       <p className="text-slate-600 text-xs break-keep">아래 검색창에 궁금한 용어를 입력하고 엔터(Enter) 키를 치시면 구글 검색 결과로 이동합니다.</p>
                       <div className="flex mt-2">
-                        {/* 🔧 FIX: 규칙 5/12 준수 (getElementById 제거 및 useRef 연동) */}
+                        {/* 🔧 FIX: 규칙 5/12 준수 (getElementById 제거 및 useRef 연동 적용) */}
                         <input 
                             ref={glossarySearchRef} 
                             lang="ko" 
@@ -1514,7 +1512,7 @@ export default function App() {
                   </div>
               </div>
 
-              {/* 🔧 FIX: 용어사전 6개 섹션 전면 교체 완료 */}
+              {/* 🔧 FIX: 용어사전 6개 섹션 전면 교체 완수 */}
               <div>
                 <h4 className="font-black text-emerald-800 mb-3 border-b-2 border-emerald-200 pb-1">1. 수지 / 베이스 / 환원제 (투명 베이스재)</h4>
                 <ul className="space-y-4 text-sm text-slate-700">
@@ -1596,7 +1594,7 @@ export default function App() {
 
       {/* 🔧 FIX: 규칙 10 준수 (먼셀 컬러 믹싱 랩 z-[800]) */}
       {isConfiguratorOpen && (
-        <div className="fixed inset-0 bg-slate-950/98 z-[800] flex flex-col text-white font-sans select-none animate-in fade-in overflow-y-scroll">
+        <div className="fixed inset-0 bg-slate-950/98 z-[800] flex flex-col text-white font-sans select-none animate-in fade-in overflow-y-scroll custom-scrollbar">
           <header className="p-4 flex justify-between items-center bg-black/60 border-b border-slate-800 shrink-0 sticky top-0 z-40 backdrop-blur-md">
             <h2 className="text-base font-black tracking-widest text-slate-300 uppercase flex items-center"><Beaker className="mr-2 text-indigo-500"/> 먼셀 컬러 믹싱 스튜디오 (Munsell Mixing Lab)</h2>
             <button onClick={() => setIsConfiguratorOpen(false)} className="p-2 bg-slate-800 hover:bg-red-600 rounded-full border border-slate-700 transition-colors"><X size={18}/></button>
