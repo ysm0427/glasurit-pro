@@ -679,64 +679,79 @@ export default function App() {
   };
 
   // 🚀 🔧 FIX: 규칙 1, 3 (스마트 코드 자동완성 엔진 전면 재설계 - 단독 숫자 강제변환 삭제)
+ // 🚀 [스마트 타자 자동완성 엔진] 타자 방해(2자리 강제 변환) 완벽 제거 및 3자리 다이렉트 매핑
   const handleCodeChange = (id: string, newCode: string, isPearl = false) => {
-    // 대소문자 통일 및 허용 문자만 통과
-    const val = newCode.toUpperCase().replace(/[^A-Z0-9/.-]/g, '');
+    let val = newCode.toUpperCase().replace(/[^A-Z0-9/.-]/g, '');
     let mappedCode = val;
     
-    // 대표님께서 지정하신 완벽한 shortcuts 객체 (알파벳 포함 키만 존재, 단독 숫자키 전면 삭제)
     const shortcuts: Record<string, string> = {
         // 수지 라인
         'M4': '90-M4',    'M5': '90-M5',
         'M1': '90-M1',    'M3': '90-M3',
         'M20': '90-M20',  'M25': '90-M25',
 
-        // 93/98 이펙트 라인 (M-prefix 단축키만)
-        'M010': '93-M010', 'M011': '93-M011',
-        'M176': '93-M176', 'M505': '93-M505',
-        'M822': '93-M822', 'M919': '98-M919',
-        'M80': '98-M80',   'M88': '98-M88',
-        'M319': '98-M319',
+        // 🚨 펄 및 이펙트 라인 3자리 숫자 다이렉트 단축키 (사용자 편의)
+        '010': '93-M010', 'M010': '93-M010',
+        '011': '93-M011', 'M011': '93-M011',
+        '176': '93-M176', 'M176': '93-M176',
+        '505': '93-M505', 'M505': '93-M505',
+        '822': '93-M822', 'M822': '93-M822',
+        '919': '98-M919', 'M919': '98-M919',
+        '80': '98-M80',   'M80': '98-M80',
+        '88': '98-M88',   'M88': '98-M88',
+        '319': '98-M319', 'M319': '98-M319',
 
-        // 90-A 컬러 라인 (알파벳 A 포함 단축키만)
-        'A34': '90-A34',   'A35': '90-A35',
-        'A926': '90-A926', 'A997': '90-A997',
-        'A992': '90-A992', 'A031': '90-A031',
-        'A032': '90-A032', 'A035': '90-A035',
-        'A528': '90-A528', 'A533': '90-A533',
-        'A563': '90-A563', 'A564': '90-A564',
-        'A640': '90-A640', 'A695': '90-A695',
-        'A105': '90-A105', 'A115': '90-A115',
-        'A148': '90-A148', 'A201': '90-A201',
-        'A328': '90-A328', 'A329': '90-A329',
-        'A423': '90-A423', 'A430': '90-A430',
-        'A1250': '90-1250',
+        // 90-A 컬러 라인
+        'A34': '90-A34',   '34': '90-A34',
+        'A35': '90-A35',   '35': '90-A35',
+        'A926': '90-A926', '926': '90-A926',
+        '1250': '90-1250',
+        'A997': '90-A997', '997': '90-A997',
+        'A992': '90-A992', '992': '90-A992',
+        'A031': '90-A031', '031': '90-A031',
+        'A032': '90-A032', '032': '90-A032',
+        'A035': '90-A035', '035': '90-A035',
+        'A528': '90-A528', '528': '90-A528',
+        'A533': '90-A533', '533': '90-A533',
+        'A563': '90-A563', '563': '90-A563',
+        'A564': '90-A564', '564': '90-A564',
+        'A640': '90-A640', '640': '90-A640',
+        'A695': '90-A695', '695': '90-A695',
+        'A105': '90-A105', '105': '90-A105',
+        'A115': '90-A115', '115': '90-A115',
+        'A148': '90-A148', '148': '90-A148',
+        'A201': '90-A201', '201': '90-A201',
+        'A328': '90-A328', '328': '90-A328',
+        'A329': '90-A329', '329': '90-A329',
+        'A423': '90-A423', '423': '90-A423',
+        'A430': '90-A430', '430': '90-A430',
 
-        // 90-M99 실버 라인 (슬래시 포함 키)
-        'M99/00': '90-M99/00', 'M99/01': '90-M99/01',
-        'M99/02': '90-M99/02', 'M99/03': '90-M99/03',
-        'M99/04': '90-M99/04', 'M99/10': '90-M99/10',
+        // 🚨 기존 '01', '10' 등 2자리 숫자 단축키 삭제 (011 등 타자 방해 차단)
+        'M99/00': '90-M99/00', '9900': '90-M99/00',
+        'M99/01': '90-M99/01', '9901': '90-M99/01',
+        'M99/02': '90-M99/02', '9902': '90-M99/02',
+        'M99/03': '90-M99/03', '9903': '90-M99/03',
+        'M99/04': '90-M99/04', '9904': '90-M99/04',
+        'M99/10': '90-M99/10', '9910': '90-M99/10',
 
         // 환원제 및 타 라인
         'E3': '93-E3', 'E3S': '93-E3 Slow', 'E3F': '93-E3 Fast',
         'MB50': '100-MB50', 'MC35': '22-MC35'
     };
 
-    // [1단계] shortcuts 테이블 검색
-    if (val && shortcuts[val]) {
+    // [1단계] 완전 일치하는 단축키 검색
+    if (shortcuts[val]) {
         mappedCode = shortcuts[val];
+    } else if (/^[A-Z]\d+$/.test(val) && (val.length === 3 || val.length === 4)) {
+        mappedCode = `90-${val}`;
     }
-    // [2단계] shortcuts에 없으면 TONER_DB 완전 일치 검색
-    else if (val && TONER_DB[val]) {
-        mappedCode = val;
-    }
-    // [3단계] 그래도 없으면 부분 일치 검색 (앞부분 일치 우선, 포함 일치 차선)
-    else if (val && val.length >= 2) {
+
+    // 🚨 억지 부분 일치(includes) 로직 완전 삭제: 끝까지 치기 전에 마음대로 변환되는 현상 방지
+    if (mappedCode !== '' && !TONER_DB[mappedCode]) {
         const keys = Object.keys(TONER_DB);
-        const exactMatch = keys.find(k => k === val);
-        const startMatch = keys.find(k => k.startsWith(val) || k.replace(/-/g,'').startsWith(val));
-        const includeMatch = keys.find(k => k.includes(val));
-        mappedCode = exactMatch || startMatch || includeMatch || val;
+        let match = keys.find(k => k === mappedCode); // 완전 일치
+        if (!match) match = keys.find(k => k.split('-')[1] === mappedCode); // 하이픈 뒤 일치 (예: M4)
+        if (match) mappedCode = match;
     }
 
     const setter = isPearl ? setPearlToners : setToners;
@@ -748,7 +763,6 @@ export default function App() {
         return toner; 
     }));
   };
-
   const handleWeightInputChange = (id: string, rawValue: string, isPearl = false) => {
     let val = rawValue.replace(/[^0-9.]/g, ''); const parts = val.split('.'); if (parts.length > 2) val = parts[0] + '.' + parts.slice(1).join(''); 
     if (val === '') val = ''; else if (val.length > 1 && val.startsWith('0') && val[1] !== '.') val = val.replace(/^0+/, ''); else if (val.startsWith('.')) val = '0' + val; 
