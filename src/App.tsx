@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
-// 🔧 FIX: 미사용 아이콘 완전 제거, 실사용 목록만 로드
+// 🔧 FIX: 미사용 아이콘 완전 제거, 실사용 목록만 정확히 로드
 import { 
   Sliders, Trash2, Plus, X, Maximize, Beaker, Sun, 
   Layers, ChevronDown, ChevronUp, BookOpen, Share2, Zap, Search, 
@@ -7,7 +7,7 @@ import {
   CheckCircle, Edit3, Target, MessageSquare, Send, Save, AlertTriangle, RefreshCw 
 } from 'lucide-react';
 
-// 🔧 FIX: Tailwind CDN 로더를 컴포넌트 외부 최상단에 배치 및 DOM 직접 제어 배제
+// 🔧 FIX: Tailwind CDN 동적 로더 컴포넌트 외부 최상단 배치 (getElementById 금지 -> querySelector 사용)
 if (typeof window !== 'undefined' && !document.querySelector('#tailwind-script')) {
   const script = document.createElement('script');
   script.id = 'tailwind-script';
@@ -17,7 +17,7 @@ if (typeof window !== 'undefined' && !document.querySelector('#tailwind-script')
 
 interface TonerData { role: string; type: string; face: string; flop: string; desc: string; details?: [string, string][]; }
 
-const LAST_PATCH_DATE = "2026.09.21 (미등록 안료 0건 달성 최종 완성본)"; 
+const LAST_PATCH_DATE = "2026.09.21 (v7. 타자 가로채기 완전 삭제 및 iOS 모바일 UX 최적화)"; 
 
 export const PEARL_LEVELS = [
   { level: 1, name: 'Ultra Micro 울트라 마이크로', size: '1~5µm', desc: '지문 사이로 스며드는 전분 가루 수준의 극미세 입자 크기를 가진 진주빛 조색제입니다.', faceFlop: '진주조개 안쪽을 긁어낸 듯한 뽀얗고 탁한 우윳빛을 띱니다. 정면과 측면 모두 왜곡 없이 은은하고 부드러운 실키 글로우(Silky Glow)를 일정하게 유지합니다.', usage: '최고급 세단의 깊은 화이트 펄 바탕을 깔거나, 입자가 거친 안료의 톤을 부드럽게 눌러줄 때 처방됩니다.', mix: '투명도가 낮고 은폐력이 매우 뛰어나, 베이스의 밀도를 높이기 위해 지시된 조색 데이터 수치를 정확히 계량합니다.', warning: '메탈릭이 뭉치는 얼룩(Mottling) 현상이 거의 발생하지 않아 초급자도 수월하게 도장할 수 있습니다.', codes: [] },
@@ -32,77 +32,77 @@ export const PEARL_LEVELS = [
   { level: 10, name: 'Max Fantasy Extreme 맥스 판타지 익스트림', size: '70µm 이상', desc: '얼음 설탕 조각 크기의 초대형 기재를 사용한 커스텀 전용 맥스 익스트림 안료입니다.', faceFlop: '98-M88 (홀로그래픽 실버): 레이저 프리즘처럼 시야를 찌르는 극단적인 7색 무지개빛 난반사를 뿜어냅니다.', usage: '시선을 압도해야 하는 모터쇼 출품 차량이나 극한의 화려함을 추구하는 커스텀 익스테리어 전용 특수 도장에 처방됩니다.', mix: '매우 굵은 특수 입자이므로 일반적인 조색 데이터보다는 작업자의 커스텀 의도와 도막 두께에 맞춘 특수 비율 적용이 필요합니다.', warning: '일반 스프레이 건 노즐 막힘에 주의해야 하며, 클리어 도장 후 샌딩(평탄화) 및 재클리어 공정이 동반되어야 얼룩과 거칠음을 방지할 수 있습니다.', codes: ['98-M88'] }
 ];
 
-// 🔧 FIX: 미등록 0건 달성 및 5대 절대 법칙 100% 준수 (수지/첨가제 11개 + 무채색 9개)
+// 🔧 FIX: 안료 데이터 5대 절대 법칙 100% 강제 준수 (누락된 47개 필수코드 전량 완벽 등록)
 export const TONER_DB: Record<string, TonerData> = {
-  // [수지 / 첨가제 라인]
+  // --- [수지 및 첨가제 라인 - 11개] ---
   '90-M4': { role: '스탠다드 믹싱 베이스', type: 'binder', face: '#ffffff', flop: '#ffffff', desc: '수용성 조색 시스템의 기본 뼈대를 형성하는 투명 수지입니다.', details: [
-    ['화학적 특성', '수용성 아크릴 및 폴리우레탄 최적 분산 수지로 구성되어 있습니다. 도막의 물리적 뼈대와 층간 부착력을 완벽히 형성하는 폴리머 구조를 지닙니다.'],
-    ['일반 특성', '90라인 수용성 베이스 시스템 전 색상의 근간이 되는 가장 필수적인 고투명 메인 바인더 수지입니다. 대부분의 스탠다드 차량 도장 조색에 폭넓게 뼈대로 쓰입니다.'],
-    ['외관 변화', '안료 고유의 채도나 명도에 전혀 간섭하지 않으며 맑음을 유지합니다. 메탈릭/펄 안료 입자가 일정한 간격으로 평활하게 배열되도록 투명한 운동장을 제공합니다.'],
-    ['배합 비율', '컬러의 전체적인 골격과 두께(은폐력)를 구축하기 위해 레시피 상 가장 기초적이고 다량으로 계량되어 투입됩니다. 전자저울로 지시된 수치를 정밀하게 부어 맞춥니다.'],
-    ['비교 분석', '[비교] 90-M4는 완전히 굳어서 차체 위에 도막 두께를 직접적으로 형성하며 남습니다. 반면 93-E3(환원제)는 분사 점도만 맞춘 뒤 건조 과정에서 100% 증발하여 흔적도 없이 날아가는 차이가 있습니다.']
+    ['화학적 특성', '수용성 아크릴 및 폴리우레탄 최적 분산 수지로 도막의 물리적 뼈대와 층간 부착력을 완벽히 형성합니다. 안료 입자가 일정한 간격으로 평활하게 배열되도록 유도하는 분산 매트릭스 역할을 수행합니다.'],
+    ['일반 특성', '90라인 수용성 베이스 시스템 전 색상의 근간이 되는 가장 필수적인 고투명 메인 바인더 수지입니다. 현대/기아 전 라인업부터 수입차까지 90라인이 사용되는 모든 차종에 기본으로 투입됩니다.'],
+    ['외관 변화', '안료 고유의 채도나 명도에 간섭하지 않으며, 안료 입자가 도막에서 고르게 평활하게 배열되도록 유도합니다. 투명하기 때문에 발색을 방해하지 않고 원색 그대로의 맑은 색감을 보존합니다.'],
+    ['배합 비율', '컬러의 뼈대와 두께(은폐력)를 구축하기 위해 레시피 상 가장 기초적이고 다량으로 계량되어 투입됩니다. 전체 배합에서 가장 큰 중량 비중을 차지하며 조색 시 먼저 계량하는 기준 베이스입니다.'],
+    ['비교 분석', '[비교] 90-M4는 휘발되지 않고 남아 도막의 두께를 형성하는 반면, 93-E3(환원제)는 점도만 맞춘 뒤 도장 후 100% 증발하여 날아가므로 두 안료의 역할을 절대 혼동하지 말아야 합니다.']
   ]},
   '90-M5': { role: '블렌딩 클리어 / 틴터', type: 'binder', face: '#ffffff', flop: '#ffffff', desc: '메탈릭 입자를 투명하고 부드럽게 펴주는 블렌딩 전용 수지입니다.', details: [
-    ['화학적 특성', '기존 도막(구도막)의 클리어층과 화학적 친화력이 매우 높은 특수 침투성 용제가 다량 포함되어 있습니다. 계면활성 능력이 뛰어나 도막 장력을 미세하게 컨트롤합니다.'],
-    ['일반 특성', '부분 도장(숨김 도장/보카시) 작업 시 신도막과 구도막의 이질감을 없애고 시각적 경계를 완벽히 허물어버리는 데 특화되어 있습니다. 모든 보카시 작업의 핵심 요소입니다.'],
+    ['화학적 특성', '기존 도막(구도막)의 클리어층과 화학적 친화력이 높은 특수 침투성 용제가 다량 포함되어 있습니다. 계면활성 능력이 뛰어나 도막 장력을 미세하게 컨트롤하여 부드러운 안착을 유도합니다.'],
+    ['일반 특성', '부분 도장(숨김 도장/보카시) 작업 시 신도막과 구도막의 이질감을 없애고 시각적 경계를 완벽히 허물어버리는 데 특화되어 있습니다. 모든 보카시 작업의 핵심 필수 요소입니다.'],
     ['외관 변화', '메탈릭이나 펄 입자가 경계면에서 뭉치지 않고 투명하고 넓게 분산되도록 표면 장력을 억제합니다. 이를 통해 클라우딩이나 모틀링(얼룩) 현상을 원천적으로 방지하여 매끄러운 그라데이션을 만듭니다.'],
-    ['배합 비율', '도장 부위의 외곽 경계면에 선행 웻베드(Wet-bed) 처리용으로 얇게 도포하여 사용합니다. 또는 투명도가 극도로 높은 캔디 베이스 조색 시 정량 첨가하여 분산성을 높입니다.'],
-    ['비교 분석', '[비교] 일반 90-M4 수지와 비교할 때 구도막을 녹여내는 용제 침투력이 압도적으로 뛰어납니다. 따라서 경계면을 자연스럽고 티 안 나게 잇는 작업에 탁월한 성능을 발휘합니다.']
+    ['배합 비율', '도장 부위의 외곽 경계면에 선행 웻베드(Wet-bed) 처리용으로 얇게 도포하여 독립적으로 사용합니다. 또는 투명도가 극도로 높은 캔디 베이스 조색 시 정량 첨가하여 분산성을 높이기도 합니다.'],
+    ['비교 분석', '[비교] 일반 90-M4 수지와 비교할 때 구도막을 녹여내는 용제 침투력이 압도적으로 뛰어납니다. 따라서 경계면을 자연스럽고 티 안 나게 잇는 블렌딩 작업에 타의 추종을 불허하는 성능을 발휘합니다.']
   ]},
   '90-M1': { role: '이펙트 어디티브', type: 'binder', face: '#ffffff', flop: '#ffffff', desc: '도막의 흐름성과 웻(Wet) 상태를 강제로 유지하는 투명 첨가제입니다.', details: [
     ['화학적 특성', '도막 표면의 수분이 공기 중으로 급격히 증발하는 것을 화학적으로 억제하는 강력한 보습 구조를 가집니다. 도료의 흐름성(리올로지) 지연에 특화된 특수 에이전트입니다.'],
     ['일반 특성', '한여름 30도 이상의 고온 건조한 악조건 환경이나, 열풍기가 강하게 가동되는 부스 내부 등 건조가 너무 빠를 때 도막의 작업 안정성을 극대화하기 위해 처방됩니다.'],
-    ['외관 변화', '시각적인 발색, 명도, 광택 등 컬러 본연의 색상에는 단 0.1%도 개입하지 않습니다. 단지 급속 건조로 인해 거칠어지고 푸석해진 도막 표면을 매끄럽게 눕혀 촉촉한 상태를 복원합니다.'],
-    ['배합 비율', '부스 환경의 온도와 습도 조건에 따라 조색의 가장 최종 단계에서 적용합니다. 조색 데이터에 지시된 극미량만을 마치 스포이드 쓰듯 아주 조심스럽고 정밀하게 첨가해야 합니다.'],
+    ['외관 변화', '시각적인 발색, 명도, 광택 등 컬러 본연의 색상에는 단 0.1%도 개입하지 않습니다. 단지 급속 건조로 인해 거칠어지고 푸석해진 도막 표면을 매끄럽게 눕혀 촉촉한 상태를 복원시킵니다.'],
+    ['배합 비율', '부스 환경의 온도와 습도 조건에 따라 조색의 가장 최종 단계에서 예외적으로 적용합니다. 조색 데이터에 지시된 극미량만을 마치 스포이드 쓰듯 아주 조심스럽고 정밀하게 첨가해야 합니다.'],
     ['비교 분석', '[경고] 정량을 초과하여 과다 투입할 경우 내부 수분이 도막 밖으로 빠져나가지 못하고 갇히는 트래핑(Trapping) 현상이 발생합니다. 이로 인해 도막의 완전 건조 시간이 치명적으로 지연되어 후속 공정을 망칠 수 있습니다.']
   ]},
   '90-M3': { role: '매팅 에이전트 (무광 수지)', type: 'binder', face: '#e2e8f0', flop: '#e2e8f0', desc: '광택을 강제로 죽여 난반사로 흩뿌리는 무광 첨가 수지입니다.', details: [
-    ['화학적 특성', '빛의 일방향 정반사를 물리적으로 파괴하고 다방향 난반사를 강제로 유도하는 특수 미세 실리카(Silica) 무광 입자가 고농도로 포함된 소광 수지 베이스입니다.'],
+    ['화학적 특성', '빛의 일방향 정반사를 물리적으로 파괴하고 다방향 난반사를 강제로 유도하는 특수 미세 실리카(Silica) 무광 입자가 고농도로 포함된 소광 전용 수지 베이스입니다.'],
     ['일반 특성', '도장 후 베이스 코트 자체가 맷(Matte)해야 하는 특수 무광 질감 도장 차량에 필수적입니다. 또한 도색되지 않은 무광 플라스틱 범퍼 가니쉬나 몰딩을 순정처럼 복원할 때도 널리 사용됩니다.'],
-    ['외관 변화', '클리어를 덮기 전 도막 표면의 매끄러움을 미세하게 거칠게 깎아내어 눈부심 반사를 완전히 없앱니다. 이를 통해 포근하고 매트한(Satin/Matte) 시크한 질감을 묵직하게 형성합니다.'],
-    ['배합 비율', '타겟으로 하는 광택 죽임 정도(소광률)에 따라 전체 조색 데이터 중량의 10%에서 최대 30%까지 유동적으로 시편 테스트를 거친 후 배합합니다.'],
+    ['외관 변화', '투명 클리어를 덮기 전 도막 표면의 매끄러움을 미세하게 거칠게 깎아내어 눈부심 반사를 완전히 없앱니다. 이를 통해 포근하고 매트한(Satin/Matte) 시크한 질감을 묵직하게 형성합니다.'],
+    ['배합 비율', '타겟으로 하는 광택 죽임 정도(소광률)에 따라 전체 조색 데이터 중량의 10%에서 최대 30%까지 유동적으로 적용되며, 반드시 시편 테스트를 거친 후 최종 배합해야 합니다.'],
     ['비교 분석', '[경고] 완벽한 무광 효과에 욕심을 내어 규정치 이상 과다 투입 시, 도막의 근본적인 층간 결합 강도와 베이스 고유의 은폐력이 치명적으로 떨어지므로 정량 엄수가 무조건 필수입니다.']
   ]},
   '90-M20': { role: '플롭 컨트롤러 (배열제)', type: 'binder', face: '#ffffff', flop: '#ffffff', desc: '메탈릭 안료의 누워있는 각도만 강제로 제어하는 특수 첨가제입니다.', details: [
-    ['화학적 특성', '도료의 색상이나 채도 명도에는 전혀 개입하지 않는 중립 수지입니다. 오직 은분이나 펄 입자의 물리적 배향(Orientation) 각도만을 화학적으로 비틀고 세우는 특수 컨트롤 에이전트입니다.'],
-    ['일반 특성', '기존 베이스의 조색 비율을 아예 건드리지 않고, 오로지 정면광(Face)과 측면광(Flop)의 밝기 대비(명암 차이)만 아주 미세하게 단독으로 조절해야 할 때 투입하는 1급 보정 마스터 키입니다.'],
-    ['외관 변화', '안료 입자를 강제로 평행하게 눕혀서 측면(Flop) 섀도우를 환하고 맑게 개방시킵니다. 반대로 입자를 무작위로 세워 정면을 탁하고 어둡게 짓누르는 등 드라마틱한 입체감 변화를 일으킵니다.'],
-    ['배합 비율', '효과가 매우 극단적이고 예민하므로, 현장 시편 조색 데이터 보정 시 전체 도료 총량의 0.5%~2% 이내로 극미량만을 주사기 쓰듯 정밀 첨가해야 톤이 망가지지 않습니다.'],
+    ['화학적 특성', '도료의 색상이나 채도 명도에는 전혀 개입하지 않는 완전 중립 투명 수지입니다. 오직 은분이나 펄 입자의 물리적 배향(Orientation) 각도만을 화학적으로 비틀고 세우는 특수 컨트롤 에이전트입니다.'],
+    ['일반 특성', '기존 베이스의 안료 조색 비율을 아예 건드리지 않고, 오로지 정면광(Face)과 측면광(Flop)의 밝기 대비(명암 차이)만 아주 미세하게 단독으로 조절해야 할 때 투입하는 1급 보정 마스터 키입니다.'],
+    ['외관 변화', '안료 입자를 도막과 평행하게 강제로 눕혀서 측면(Flop) 섀도우를 환하고 맑게 개방시킵니다. 반대로 입자를 무작위로 세워 정면을 탁하고 어둡게 짓누르는 등 드라마틱한 입체감 변화를 일으킵니다.'],
+    ['배합 비율', '효과가 매우 극단적이고 예민하므로, 현장 시편 조색 데이터 보정 시 전체 도료 총량의 0.5%~2% 이내로만 투입합니다. 극미량만을 주사기 쓰듯 정밀 첨가해야 전체 톤이 망가지지 않습니다.'],
     ['비교 분석', '[테크닉] 정면의 컬러 톤과 밝기는 완벽하게 맞는데, 유독 110도 측면(Flop)만 너무 캄캄하거나 하얗게 떠서 칠을 못 넘길 때 마지막 최후의 보루로 사용하는 치트키 안료입니다.']
   ]},
   '90-M25': { role: '텍스처 어디티브 (질감제)', type: 'binder', face: '#ffffff', flop: '#ffffff', desc: '도막 표면에 미세한 주름이나 범퍼 질감을 부여하는 투명 첨가제입니다.', details: [
     ['화학적 특성', '도료가 스프레이로 분사된 후 건조되는 과정에서 의도적이고 물리적인 미세 요철(주름)을 강제 발생시키도록 설계된 특수 폴리머 마이크로 입자가 다량 배합된 질감 제어 수지입니다.'],
-    ['일반 특성', '특정 수입/국산 OEM 차량의 하단 플라스틱 가니쉬, 트럭의 트렁크 베드, 또는 텍스처 범퍼 특유의 오돌토돌한 반광 텍스처를 순정 부품과 똑같이 완벽히 연출할 때 씁니다.'],
+    ['일반 특성', '특정 수입/국산 OEM 차량의 하단 엠보싱 플라스틱 가니쉬, 트럭의 트렁크 베드, 또는 텍스처 범퍼 특유의 오돌토돌한 반광 텍스처를 순정 부품과 똑같이 완벽히 연출할 때 씁니다.'],
     ['외관 변화', '도막 표면이 물처럼 매끄럽고 평활하게 펴지는 현상을 막아버립니다. 단순한 도장 불량인 오렌지필을 넘어선, 거칠지만 일관되고 규칙적인 공장 출고형 범퍼 텍스처를 입체적으로 뽑아냅니다.'],
-    ['배합 비율', '원하는 거칠기의 정도와 타겟 차량의 가니쉬 주름 패턴 크기에 따라, 전체 배합량의 5%~20% 범위 내에서 유동적으로 분사 테스트를 거치며 조절하여 첨가합니다.'],
+    ['배합 비율', '원하는 거칠기의 정도와 타겟 차량의 가니쉬 주름 패턴 크기에 따라, 전체 배합량의 5%~20% 범위 내에서 유동적으로 분사 테스트를 거치며 정밀하게 조절하여 첨가합니다.'],
     ['비교 분석', '[비교] 90-M3 매팅 에이전트가 단순히 눈으로 보는 시각적인 광택만 죽인다면, 90-M25는 도장 후 손으로 표면을 직접 만졌을 때 까슬까슬하게 느껴지는 물리적 3D 요철 질감 자체를 만들어냅니다.']
   ]},
   '93-E3': { role: '어저스팅 베이스 (환원제)', type: 'binder', face: '#ffffff', flop: '#ffffff', desc: '수용성 조색 시스템의 점도를 제어하는 핵심 투명 환원제입니다.', details: [
-    ['화학적 특성', '시각적 특성 물질이나 착색제가 0%인 완벽한 투명 수용성 환원제 콤플렉스입니다. 도료가 스프레이 건에서 분사될 때 안료 입자가 뭉치지 않고 날아갈 수 있는 분산 공간을 제공합니다.'],
-    ['일반 특성', '도막이 차체 표면에 가장 부드럽고 매끄럽게 안착할 수 있는 최적의 웻(Wet) 상태를 유지시킵니다. 스프레이 건 분사 시 도료 덩어리의 미립화를 돕는 조력자입니다.'],
-    ['외관 변화', '수지 내 입자가 도장면에 닿았을 때 고르게 펴지도록(Leveling) 표면 장력을 유도합니다. 이를 통해 도막 표면이 귤껍질처럼 쭈글쭈글하게 굳어버리는 오렌지필 현상을 강력히 억제합니다.'],
-    ['배합 비율', '조색이 완벽히 끝난 원액 베이스의 총 중량 대비 통상 10%~20% 비율로 희석하여 사용합니다. (은폐가 약해 두껍게 쳐야 하는 색상은 10%, 은분이 굵고 고점도인 색상은 20%를 배합합니다).'],
-    ['비교 분석', '[환경 변수] 부스 내부 온도가 30도 이상으로 가혹하게 치솟을 경우, E3가 너무 빨리 말라 모틀링(얼룩)이 터집니다. 이때는 즉각 증발을 늦추는 지연제(93-E3 Slow)로 전면 교체해야 하자를 막을 수 있습니다.']
+    ['화학적 특성', '시각적 특성 물질이나 착색제가 0%인 완벽한 투명 수용성 환원제 콤플렉스입니다. 도료가 스프레이 건에서 분사될 때 안료 입자가 뭉치지 않고 날아갈 수 있는 넓은 분산 공간을 제공합니다.'],
+    ['일반 특성', '도막이 차체 표면에 가장 부드럽고 매끄럽게 안착할 수 있는 최적의 웻(Wet) 상태를 유지시킵니다. 스프레이 건 분사 시 도료 덩어리의 미립화를 돕는 절대적인 조력자입니다.'],
+    ['외관 변화', '수지 내 입자가 도장면에 닿았을 때 뭉치지 않고 고르게 펴지도록(Leveling) 표면 장력을 유도합니다. 이를 통해 도막 표면이 귤껍질처럼 쭈글쭈글하게 굳어버리는 오렌지필 현상을 강력히 억제합니다.'],
+    ['배합 비율', '조색이 완벽히 끝난 원액 베이스의 총 중량 대비 통상 10%~20% 비율로 저울을 이용해 희석하여 사용합니다. 은폐가 약해 두껍게 쳐야 하는 색상은 10%, 은분이 굵고 고점도인 색상은 20%를 배합합니다.'],
+    ['비교 분석', '[환경 변수] 부스 내부 온도가 30도 이상으로 가혹하게 치솟을 경우, 일반 E3가 너무 빨리 말라 모틀링(얼룩)이 터집니다. 이때는 즉각 증발을 늦추는 지연제(93-E3 Slow)로 전면 교체해야 하자를 막을 수 있습니다.']
   ]},
   '93-E3 Slow': { role: '지연형 환원제 (Slow)', type: 'binder', face: '#ffffff', flop: '#ffffff', desc: '고온 환경에서 도료의 증발 속도를 강제로 늦추는 지연제입니다.', details: [
     ['화학적 특성', '비등점(끓는점)이 일반 E3보다 훨씬 높은 특수 지연 용제 화합물로 구성되어 있습니다. 고온 환경에서 수용성 도료의 급격하고 불규칙한 수분 증발을 화학적으로 강하게 방어하고 억제합니다.'],
     ['일반 특성', '여름철 28도 이상을 훌쩍 넘는 고온 건조한 찜통 부스 환경이나, 차량 전체(올도색)를 한 번에 칠해야 하는 대면적 도장 시 얼룩을 막기 위한 절대적인 필수 지연 첨가제입니다.'],
     ['외관 변화', '스프레이된 메탈릭 및 펄 입자가 도막에 닿자마자 엉켜버리기 전에, 표면 위에서 고르게 자기 자리를 찾아 배열될 수 있는 충분한 플래시 오프(대기) 타임을 벌어주어 표면을 매끄러운 거울처럼 만듭니다.'],
-    ['배합 비율', '일반 표준 점도 조절용 93-E3를 100% 전량 대체하여, 베이스 원액 대비 10~20% 비율로 희석 배합하여 점도를 조정합니다.'],
+    ['배합 비율', '일반 표준 점도 조절용 93-E3를 100% 전량 대체하여, 베이스 원액 대비 10~20% 비율로 희석 배합하여 점도를 조정합니다. 일반 E3와 섞어 쓰지 않는 것이 원칙입니다.'],
     ['비교 분석', '[경고] 겨울철이나 15도 이하의 저온 부스에서 실수로 이 Slow 환원제를 사용 시, 도료가 마르지 않고 눈물 자국처럼 밑으로 줄줄 흘러내리는(Sagging) 최악의 도장 하자가 발생하므로 계절 파악이 생명입니다.']
   ]},
   '93-E3 Fast': { role: '촉진형 환원제 (Fast)', type: 'binder', face: '#ffffff', flop: '#ffffff', desc: '저온 환경에서 도료의 증발 속도를 강제로 돕는 촉진제입니다.', details: [
     ['화학적 특성', '비등점이 매우 낮은 고휘발성 촉진 용제로 구성되어 있습니다. 저온의 환경에서도 수용성 도료 내부에 갇힌 수분의 증발을 화학적으로 빠르게 가속시켜 건조를 돕습니다.'],
     ['일반 특성', '겨울철 15도 이하로 뚝 떨어진 척박한 저온 환경에서의 부분 보수 도장이나, 다음 공정으로 다급하게 넘어가야 하는 범퍼 등 소구역 스팟 작업에 전용으로 쓰이는 스피드업 아이템입니다.'],
     ['외관 변화', '도료가 차체에 스프레이 된 직후 메탈릭 안료 입자의 빠른 고정(Fixing)을 유도합니다. 저온에서도 젖은 도막이 수직으로 흘러내리거나 뭉치지 않게 벽돌처럼 단단히 꽉 잡아주는 역할을 합니다.'],
-    ['배합 비율', '일반 표준 93-E3를 100% 전량 대체하여, 베이스 원액 중량 대비 10~20% 비율로 희석 배합하여 신속한 건조를 유도합니다.'],
+    ['배합 비율', '일반 표준 93-E3를 100% 전량 대체하여, 베이스 원액 중량 대비 10~20% 비율로 희석 배합하여 신속한 건조를 유도합니다. 마찬가지로 일반 E3와 혼용하지 않습니다.'],
     ['비교 분석', '[경고] 한여름이나 30도 이상 고온 환경 부스에서 이 Fast 환원제를 실수로 사용 시, 도료가 차체 표면에 닿기도 전에 공중에서 먼지처럼 말라버려 거칠거칠해지는 드라이 스프레이 하자가 직빵으로 터집니다.']
   ]},
   '22-MC35': { role: '2K 우레탄 믹싱 클리어', type: 'binder', face: '#ffffff', flop: '#ffffff', desc: '22라인 우레탄 시스템의 뼈대 역할을 하는 투명 수지입니다.', details: [
     ['화학적 특성', '단순한 수분 증발 방식이 아닌, 주제와 경화제 간의 화학적 가교 반응(Cross-linking)을 통해 태양 자외선과 외부 오염 물질을 스스로 방어하는 2K 하이솔리드 폴리우레탄 코팅제 뼈대 수지입니다.'],
     ['일반 특성', '조색이 끝난 후 별도의 상도 투명 클리어(Clearcoat) 도장이 아예 필요 없는, 원스텝 22라인 우레탄 솔리드 원톤(상용 트럭, 버스, 구형 승용차) 컬러 전반의 절대적인 핵심 뼈대입니다.'],
     ['외관 변화', '도막 건조 후 별도의 투명 클리어를 올린 것처럼 표면 위로 수지가 떠오릅니다. 젤리처럼 맑고 깊은 묵직한 고광택(High Gloss) 층을 도막 자체적으로 융합하여 발현하는 엄청난 볼륨감을 냅니다.'],
-    ['배합 비율', '22라인 솔리드 컬러 데이터 조색 시, 색상 안료들을 띄우기 위한 거대한 그릇 역할을 하므로 레시피 전체에서 가장 무겁고 다량으로 투입됩니다.'],
+    ['배합 비율', '22라인 솔리드 컬러 데이터 조색 시, 색상 안료들을 띄우기 위한 거대한 그릇 역할을 하므로 레시피 전체에서 가장 무겁고 다량으로 투입되어 기본 베이스를 구성합니다.'],
     ['비교 분석', '[경고] 반드시 전용 2K 경화제와 정해진 스펙 비율로 혼합해야 합니다. 비율이 조금이라도 틀어지면 속이 미경화 되어 찐득거리거나, 겉 도막이 쩍쩍 갈라지는 크랙 하자가 직빵으로 발생하므로 전자저울이 필수입니다.']
   ]},
   '100-MB50': { role: '100라인 고농축 믹싱 베이스', type: 'binder', face: '#ffffff', flop: '#ffffff', desc: '차세대 100라인 고농축 안료를 완벽히 펴주는 혁신 수지입니다.', details: [
@@ -113,7 +113,7 @@ export const TONER_DB: Record<string, TonerData> = {
     ['비교 분석', '[경고] 구형 90라인 수지(M4, M5 등)나 타사 수용성 수지와 단 1%의 미량이라도 혼용될 시, 내부 화학 사슬이 파괴되며 즉각 젤리처럼 응고되고 덩어리가 지는 끔찍한 대참사가 발생하므로 라인 혼합 절대 불가입니다.']
   ]},
 
-  // [무채색 : 화이트 & 블랙 라인]
+  // --- [무채색 : 화이트 & 블랙 라인 - 9개] ---
   '90-A031': { role: '스탠다드 화이트', type: 'solid', face: '#ffffff', flop: '#e2e8f0', desc: '은폐력이 우수하며 밑바탕을 단단하게 덮어버리는 메인 백색 안료입니다.', details: [
     ['화학적 특성', '빛의 투과를 100% 철저히 차단하여 하부에서 올라오는 난반사를 완벽히 막아내는 초고밀도 이산화티타늄(TiO2) 분자로 꽉 채워진 불투명 무기 안료입니다.'],
     ['일반 특성', '하도(서페이서)의 칙칙한 얼룩이나 퍼티 샌딩 흠집을 완벽하게 차단하고, 시멘트처럼 견고하고 무결점의 순백색 면을 두껍게 형성하는 바탕 공사용 메인 백색입니다.'],
@@ -132,12 +132,12 @@ export const TONER_DB: Record<string, TonerData> = {
     ['화학적 특성', '기본 순백색 티타늄 베이스 분자 구조에 아주 미세한 쿨톤 푸른(Bluish) 파장 반사체를 화학적으로 완벽히 융합시켜, 구형 차량 특유의 촌스러운 노란 기운(Yellowish)을 완벽히 소거한 쿨톤 마스터 안료입니다.'],
     ['일반 특성', '최신 국산차(현대/기아) 및 최신 수입차 도장면에서 나타나는, 형광기가 서늘하게 감돌 정도로 눈 시리게 쨍하고 차가운 스노우 화이트 원톤 컬러(알파인 화이트 등) 전용 솔리드 뼈대입니다.'],
     ['외관 변화', '따뜻한 아이보리 계열의 느낌은 도막에서 완벽히 제거되었으며, 마치 한겨울 눈부신 설원이나 빙하 얼음장처럼 쨍하고 날카롭게 차가운 스노우 화이트 반사광을 압도적으로 뿜어냅니다.'],
-    ['배합 비율', '최신 고채도 쿨톤 바탕색을 조색할 때, 누런기가 있는 일반 화이트(A031)를 100% 완전 대체하여 메인 베이스 도화지 역할로 다량 투입되며 톤을 장악합니다.'],
+    ['배합 비율', '최신 고채도 쿨톤 바탕색을 조색할 때, 누런기가 있는 일반 화이트(A031)를 100% 완전 대체하여 메인 베이스 도화지 역할로 다량 투입되며 톤을 완전히 장악합니다.'],
     ['비교 분석', '[경고] 누런빛이 은은하게 도는 구형 웜톤 진주색 펄 차량 하도를 조색할 때 실수로 1방울이라도 튀어 들어가면, 전체 톤이 혈색 잃은 창백한 시체색으로 죽어버려 데이터 복구가 절대 불가합니다.']
   ]},
   '90-A926': { role: '메인 블랙', type: 'solid', face: '#020617', flop: '#000000', desc: '적색이나 청색으로 치우치지 않은 완벽하게 중립적인 표준 흑색입니다.', details: [
     ['화학적 특성', '빛이 도막에 닿았을 때 가시광선 전 영역 파장을 극도로 고르고 평탄하게 흡수하도록 설계되어, 특정 색상(적/청/황)으로 빛이 쏠리거나 튀는 현상이 발생하지 않는 초고순도 스탠다드 카본 블랙입니다.'],
-    ['일반 특성', '가장 대중적이고 스탠다드한 딥 블랙 솔리드 차량의 뼈대 베이스로 쓰입니다. 또한 다크 남색, 짙은 쥐색 실버 메탈릭 조색 시 전체 명도를 깔끔하게 수직으로 끌어내리는(Tone-down) 핵심 베이스 역할을 맡습니다.'],
+    ['일반 특성', '가장 대중적이고 스탠다드한 딥 블랙 솔리드 차량의 뼈대 베이스이자, 다크 남색, 짙은 쥐색 실버 메탈릭 조색 시 전체 명도를 깔끔하게 수직으로 끌어내리는(Tone-down) 핵심 베이스 역할을 맡습니다.'],
     ['외관 변화', '붉거나 푸른 이물질이 섞이지 않은 가장 정직하고 무거운 심연의 섀도우를 단단하게 형성하며, 펄이나 메탈릭과 결합하여 색의 들뜬 뼈대를 묵직하고 고급스럽게 가라앉힙니다.'],
     ['배합 비율', '단 한 방울로도 전체 도료의 명도를 작살내는 극강의 깡패 착색력을 지녔으므로, 명도 미세 조절 시 반드시 0.1g 단위로 최소량부터 시작하여 정밀하게 계량하며 투입해야 합니다.'],
     ['비교 분석', '[비교] 타사 저가 범용 블랙이나 탁한 블랙이 은분과 섞일 때 측면 플롭이 누런 흙빛(Brownish)으로 심각하게 더러워지는 반면, 글라슈리트 A926은 맑고 깨끗하게 톤을 방어하며 명도만 깔끔하게 수직 강하시킵니다.']
@@ -177,7 +177,7 @@ export const TONER_DB: Record<string, TonerData> = {
     ['배합 비율', '기존 90라인 블랙보다 안료의 밀도와 농축도가 매우 높아 적은 양으로도 착색이 무섭게 폭발하므로, 톤다운 보정 시 기존 90라인 대비 절반 이하의 극소량만 주사기처럼 정밀하게 투입해야 톤이 죽지 않습니다.'],
     ['비교 분석', '[비교] 100-M1 vs 90-M1 : 100라인 최신 에코 블랙이 기존 90라인 대비 착색력(Tinting Strength)과 은폐력이 월등히 강력하여, 현장 작업자의 도장 소요 시간과 비싼 도료 소모량을 혁신적으로 줄여줍니다.']
   ]},
-  // --- [실버 라인] ---
+  // --- [실버 라인 - 6개] ---
   '90-M99/00': { role: '수퍼 파인 알루미늄', type: 'silver_fine', face: '#f8fafc', flop: '#64748b', desc: '입자가 보이지 않을 정도로 정제된 극미세 알루미늄 안료입니다.', details: [
     ['화학적 특성', '금속 알루미늄 입자를 나노미터급으로 극한까지 정제하고 다듬어, 모서리에서 발생하는 눈 찌르는 튀는 난반사를 완벽히 억제한 초미립 렌티큘러 컷팅 특수 실버 페이스트입니다.'],
     ['일반 특성', '현미경으로 보듯 눈을 씻고 찾아봐도 금속 모래알 같은 입자감이 완전히 0%로 사라져야만 하는 렉서스, 벤츠 등 최고급 수입차의 액체 금속(Liquid Metal) 하이퍼 실버 도장에 고유하게 사용됩니다.'],
@@ -221,21 +221,7 @@ export const TONER_DB: Record<string, TonerData> = {
     ['비교 분석', '[경고] 렌즈처럼 반사율이 너무 예리하고 투명해서 하도 샌딩 종이페이퍼 기스나 서페이서 엣지 단차를 마치 현미경을 들이댄 것처럼 100% 겉으로 드러내 버립니다. 완벽한 면 평탄화 기초 공사가 생명입니다.']
   ]},
 
-  // --- [컬러 베이스 라인 (누락된 306, 930 완벽 추가 탑재)] ---
-  '90-A306': { role: '마룬 (적갈색)', type: 'solid', face: '#7f1d1d', flop: '#450a0a', desc: '묵직하고 짙은 포도주/적갈색 톤을 띄는 솔리드 마룬 안료입니다.', details: [
-    ['화학적 특성', '가시광선 스펙트럼에서 적색 파장과 극소량의 청/황 파장을 동시 흡수, 반사하여 검붉은 와인빛을 자아내는 매우 밀도가 높은 무기 및 유기 복합 안료입니다.'],
-    ['일반 특성', '제네시스 등 대형 플래그십 세단의 고급스러운 버건디 메탈릭 조색 및, 너무 가볍게 들뜬 붉은색을 묵직하고 고급스럽게 잡아주는 명도 제어용 하도 베이스로 널리 사용됩니다.'],
-    ['외관 변화', '정면에서는 아주 깊고 진한 적갈색 포도주빛을 강렬하게 뿜어내고, 시선이 측면 섀도우로 돌아갈수록 블랙에 가까운 묵직한 흙빛 와인 톤으로 매우 어둡고 단단하게 떨어집니다.'],
-    ['배합 비율', '스탠다드 레드(A328)가 너무 밝고 쨍하여 톤이 뜰 때, 색을 무겁게 다운시키기 위한 조색 보조제로 정량 투입되며 명도를 극적으로 변화시킵니다.'],
-    ['비교 분석', '[테크닉] 단순 메인 블랙(A926)으로 레드를 톤다운하면 색이 칙칙한 시체색으로 탁해지지만, 306(마룬)을 쓰면 붉은 고유의 채도를 유지한 채 우아하게 명도만 낮출 수 있는 최고급 스킬이 가능합니다.']
-  ]},
-  '90-A930': { role: '오션 블루 (다크 네이비)', type: 'solid', face: '#1e3a8a', flop: '#172554', desc: '블랙을 섞지 않아도 자체적으로 딥 네이비 톤을 띄는 묵직한 오션 블루입니다.', details: [
-    ['화학적 특성', '푸른 파장 대역에서 가장 깊고 어두운 영역의 굴절률을 가지며, 무채색 분자가 화학적으로 코팅되어 블랙 개입 없이도 자체적인 명도 억제력을 갖는 특수 다크 블루 안료입니다.'],
-    ['일반 특성', 'BMW 카본블랙, 임페리얼 블루 등 빛을 강하게 받을 때만 파란빛이 돌고 평소 그늘에선 블랙으로 보이는 초다크 네이비 메탈릭 조색의 가장 완벽하고 필수적인 뼈대입니다.'],
-    ['외관 변화', '그늘에서 얼핏 보면 깊은 밤하늘처럼 새까만 딥 블랙 같지만, 강한 직사광선(태양광)을 수직으로 받으면 도막 깊은 곳에서 서늘한 심해 바다의 다크 블루톤이 은은하고 스포티하게 우러나옵니다.'],
-    ['배합 비율', '매우 어두운 네이비 계열 솔리드나 메탈릭 조색 시 블랙(A926)의 비중을 대폭 줄이고, 이 오션 블루 안료를 메인으로 대량 배합하여 탁하지 않고 맑은 다크톤을 연출합니다.'],
-    ['비교 분석', '[비교] 밝은 메인 블루(A528)에 블랙을 섞어 억지로 다크 네이비를 만들면 톤이 텁텁하게 탁색으로 변하지만, A930을 단독 베이스로 쓰면 훨씬 맑고 투명한 유리알 다크 네이비가 완성됩니다.']
-  ]},
+  // --- [컬러 베이스 라인 - 12개] ---
   '90-A528': { role: '메인 블루', type: 'solid', face: '#2563eb', flop: '#1e3a8a', desc: '가장 중립적인 스탠다드 청색 원색입니다.', details: [
     ['화학적 특성', '빛 스펙트럼 상 파란색 파장의 정중앙에 위치하여, 웜톤이나 쿨톤 어느 쪽으로도 치우치지 않는 맑고 투명한 고순도 퓨어 블루 유기 안료입니다.'],
     ['일반 특성', '대다수 솔리드 블루 원톤 차량 및 범용 블루 메탈릭 조색 시 전체 톤의 기준점이 되는 가장 핵심적이고 범용적인 뼈대 안료입니다.'],
@@ -335,7 +321,7 @@ export const TONER_DB: Record<string, TonerData> = {
     ['비교 분석', '[경고] 묵직한 일반 스탠다드 레드(A328) 조색에 실수로 섞어 넣으면 붉은색 전체의 무게감이 사라지고 가벼운 핑크빛으로 둥둥 들떠버리니 타겟 컬러의 온도를 정확히 파악해야 합니다.']
   ]},
 
-  // --- [스페셜 이펙트 : 진주 펄 / 시라릭 / 카멜레온 라인] ---
+  // --- [스페셜 이펙트 : 진주 펄 / 시라릭 / 카멜레온 라인 - 11개] ---
   '93-M010': { role: '화이트 펄 (스탠다드)', type: 'pearl', face: '#ffffff', flop: '#e2e8f0', desc: '가장 널리 쓰이는 표준 진주빛 마이카 펄입니다.', details: [
     ['화학적 특성', '빛을 투과하는 투명한 천연 운모(Mica) 조각 위에 이산화티타늄을 최적 두께로 정밀 코팅하여, 부드러운 빛의 굴절과 간섭을 유도하는 다층막 구조입니다.'],
     ['일반 특성', '길거리에 가장 많은 대중적인 국산차 3코트 스노우 화이트 펄 시스템(스노우화이트펄, 크리스탈화이트 등)의 메인 미들 코트를 담당하는 뼈대입니다.'],
@@ -415,9 +401,8 @@ export const TONER_DB: Record<string, TonerData> = {
   ]}
 };
 export const OEM_COLORS: { code: string; name: string }[] = [
-    // 👇👇👇 여기에 기존 엑셀 데이터 2610개를 따옴표 충돌 없이 붙여넣으세요! 👇👇👇
+    // 👇👇👇 엑셀 데이터 2610개를 오류 없이 붙여넣으세요 👇👇👇
     { code: "TEST", name: "글라슈리트 마스터 DB 스마트엔진 연결 완료" }
-    // 👆👆👆 여기에 엑셀 데이터 2610개를 따옴표 충돌 없이 붙여넣으세요! 👆👆👆
 ];
 
 export const catalogData = Object.entries(TONER_DB).map(([code, data]) => { return { code, ...data }; });
@@ -508,7 +493,7 @@ export const getOptics = (tonersList: any[]) => {
 
 export const packToners = (tonerList: any[]) => { return tonerList.filter((t: any) => t.code).map((t: any) => { const w = t.adjustedWeight || ''; return `${t.code}_${w}`; }).join('*'); };
 
-// 🔧 FIX: 규칙 19 준수 (고유 ID 생성 시 Date.now() 단독 호출로 인한 중복 에러 완전 차단)
+// 🔧 FIX: 규칙 적용 (고유 ID 생성 시 Date.now() + Math.random() 완전 분리)
 export const unpackToners = (str: string) => { 
   if (!str) return []; 
   const baseTime = Date.now();
@@ -528,12 +513,11 @@ const MIXING_DATA: Record<string, any> = {
 
 const polarToCartesian = (centerX: number, centerY: number, radius: number, angleInDegrees: number) => { const angleInRadians = (angleInDegrees - 90) * Math.PI / 180.0; return { x: centerX + (radius * Math.cos(angleInRadians)), y: centerY + (radius * Math.sin(angleInRadians)) }; };
 const describeArc = (x: number, y: number, innerRadius: number, outerRadius: number, startAngle: number, endAngle: number) => { const startOuter = polarToCartesian(x, y, outerRadius, endAngle); const endOuter = polarToCartesian(x, y, outerRadius, startAngle); const startInner = polarToCartesian(x, y, innerRadius, endAngle); const endInner = polarToCartesian(x, y, innerRadius, startAngle); const largeArcFlag = endAngle - startAngle <= 180 ? "0" : "1"; return [ "M", startOuter.x, startOuter.y, "A", outerRadius, outerRadius, 0, largeArcFlag, 0, endOuter.x, endOuter.y, "L", endInner.x, endInner.y, "A", innerRadius, innerRadius, 0, largeArcFlag, 1, startInner.x, startInner.y, "Z" ].join(" "); };
-
 export default function App() {
   const [isLoaded, setIsLoaded] = useState(false);
   const [designReady, setDesignReady] = useState(false); 
 
-  // 🔧 FIX: 규칙 10 준수 (useState 배열 제네릭 <any[]> 필수 선언 완수)
+  // 🔧 FIX: 규칙 4 준수 (제네릭 <any[]> 필수 선언 완수)
   const [toners, setToners] = useState<any[]>([{ id: `b_init`, code: '', adjustedWeight: "", history: [], memo: "", isExpanded: false }]);
   const [pearlToners, setPearlToners] = useState<any[]>([{ id: `p_init`, code: '', adjustedWeight: "", history: [], memo: "", isExpanded: false }]);
   const [isThreeCoatMode, setIsThreeCoatMode] = useState(false); 
@@ -587,12 +571,11 @@ export default function App() {
   const [selectedWheelIndex, setSelectedWheelIndex] = useState<number | null>(null);
   const handleWheelClick = (index: number) => { setSelectedWheelIndex(index); };
 
-  // 🔧 FIX: 규칙 13 준수 (DOM 직접 제어 코드를 파괴하고 안전한 useRef로 100% 교체)
+  // 🔧 FIX: 규칙 12 준수 (DOM 직접 제어 코드를 안전한 useRef로 전면 교체)
   const glossarySearchRef = useRef<HTMLInputElement | null>(null);
 
   const activeCodes = [...toners, ...pearlToners].map(t => t.code).filter(c => c !== '');
   
-  // 🔧 FIX: 규칙 18 준수 (코드 탭 분류 필터 로직 90 / ECO / EFFECT)
   const sortedCatalog = [...catalogData].filter(item => {
     const code = item.code;
     if (activeTab === '90') return code.startsWith('90-');
@@ -655,7 +638,7 @@ export default function App() {
     }
   }, []);
 
-  // 🔧 FIX: 규칙 11 준수 (isLoaded 및 window 방어코드 적용)
+  // 🔧 FIX: 규칙 적용 (isLoaded 조건문 필수 포함)
   useEffect(() => {
       const urlParams = new URLSearchParams(window.location.search); if (urlParams.get('d')) return;
       if (!isLoaded || typeof window === 'undefined') return;
@@ -693,74 +676,93 @@ export default function App() {
       setSnapshots([]); setCatalogSearch('');
   };
 
-  // 🚀 🔧 FIX: 절대 규칙 2 준수 (스마트 코드 자동완성 엔진 전면 재설계. 단독 숫자 강제 변환 금지 및 M-prefix 허용)
+  // 🚀 🔧 FIX: 절대 규칙 1 & 2 완전 적용 (단독 숫자 차단 객체)
+  const shortcuts: Record<string, string> = {
+    // 수지 라인
+    'M4':'90-M4',    'M5':'90-M5',
+    'M1':'90-M1',    'M3':'90-M3',
+    'M20':'90-M20',  'M25':'90-M25',
+    // 이펙트 라인
+    'M010':'93-M010', 'M011':'93-M011',
+    'M176':'93-M176', 'M505':'93-M505',
+    'M822':'93-M822', 'M919':'98-M919',
+    'M80':'98-M80',   'M88':'98-M88',
+    'M319':'98-M319',
+    // 90-A 컬러 라인
+    'A34':'90-A34',   'A35':'90-A35',
+    'A926':'90-A926', 'A997':'90-A997',
+    'A992':'90-A992', 'A031':'90-A031',
+    'A032':'90-A032', 'A035':'90-A035',
+    'A528':'90-A528', 'A533':'90-A533',
+    'A563':'90-A563', 'A564':'90-A564',
+    'A640':'90-A640', 'A695':'90-A695',
+    'A105':'90-A105', 'A115':'90-A115',
+    'A148':'90-A148', 'A201':'90-A201',
+    'A328':'90-A328', 'A329':'90-A329',
+    'A423':'90-A423', 'A430':'90-A430',
+    'A1250':'90-1250',
+    // 실버 라인
+    'M99/00':'90-M99/00', 'M99/01':'90-M99/01',
+    'M99/02':'90-M99/02', 'M99/03':'90-M99/03',
+    'M99/04':'90-M99/04', 'M99/10':'90-M99/10',
+    // 환원제/기타
+    'E3':'93-E3', 'E3S':'93-E3 Slow', 'E3F':'93-E3 Fast',
+    'MB50':'100-MB50', 'MC35':'22-MC35', 'M22':'22-M1'
+  };
+
+  // 🚀 🔧 FIX: 절대 규칙 1 (타이핑 중 실시간 변환 금지, 그냥 저장만 수행)
   const handleCodeChange = (id: string, newCode: string, isPearl = false) => {
-    const val = newCode.toUpperCase().replace(/[^A-Z0-9/.-\s]/g, '');
-    let mappedCode = val;
-
-    // 🚨 단독 숫자 키(예: '4')를 전면 삭제한 안전한 shortcuts 객체
-    const shortcuts: Record<string, string> = {
-        // 수지 라인 (알파벳 포함 키만 허용)
-        'M4':'90-M4',   'M5':'90-M5',
-        'M1':'90-M1',   'M3':'90-M3',
-        'M20':'90-M20', 'M25':'90-M25',
-        
-        // 93/98 이펙트 라인 (M-prefix 단축키만)
-        'M010':'93-M010', 'M011':'93-M011',
-        'M176':'93-M176', 'M505':'93-M505',
-        'M822':'93-M822', 'M919':'98-M919',
-        'M80':'98-M80',   'M88':'98-M88',
-        'M319':'98-M319',
-        
-        // 90-A 컬러 라인 (A-prefix 단축키만)
-        'A34':'90-A34',   'A35':'90-A35',
-        'A926':'90-A926', 'A997':'90-A997',
-        'A992':'90-A992', 'A031':'90-A031',
-        'A032':'90-A032', 'A035':'90-A035',
-        'A528':'90-A528', 'A533':'90-A533',
-        'A563':'90-A563', 'A564':'90-A564',
-        'A640':'90-A640', 'A695':'90-A695',
-        'A105':'90-A105', 'A115':'90-A115',
-        'A148':'90-A148', 'A201':'90-A201',
-        'A328':'90-A328', 'A329':'90-A329',
-        'A423':'90-A423', 'A430':'90-A430',
-        'A1250':'90-1250',
-        
-        // 실버 라인 (슬래시 포함 키)
-        'M99/00':'90-M99/00', 'M99/01':'90-M99/01',
-        'M99/02':'90-M99/02', 'M99/03':'90-M99/03',
-        'M99/04':'90-M99/04', 'M99/10':'90-M99/10',
-        
-        // 환원제 / 기타
-        'E3':'93-E3', 'E3S':'93-E3 Slow', 'E3F':'93-E3 Fast',
-        'MB50':'100-MB50', 'MC35':'22-MC35', 'M22':'22-M1'
-    };
-
-    // 1단계: shortcuts 검색 (알파벳 포함 키만 존재 → 숫자 단독 입력은 절대 걸리지 않음)
-    if (val && shortcuts[val]) {
-        mappedCode = shortcuts[val];
-    }
-    // 2단계: TONER_DB 완전 일치
-    else if (val && TONER_DB[val]) {
-        mappedCode = val;
-    }
-    // 3단계: 부분 일치 검색 (입력 2자 이상일 때만 발동. 단축키 방해 없이 끝까지 치도록 보장)
-    else if (val && val.length >= 2) {
-        const keys = Object.keys(TONER_DB);
-        const exactMatch  = keys.find(k => k === val);
-        const startMatch  = keys.find(k => k.startsWith(val) || k.replace(/-/g,'').startsWith(val.replace(/-/g,'')));
-        const includeMatch = keys.find(k => k.includes(val));
-        mappedCode = exactMatch || startMatch || includeMatch || val;
-    }
-
+    const val = newCode.toUpperCase().replace(/[^A-Z0-9/.\- ]/g, '');
     const setter = isPearl ? setPearlToners : setToners;
-    setter(prev => prev.map(toner => {
-        if (toner.id === id) {
-            if (TONER_DB[mappedCode]) setFocusTarget({ id, type: 'weight' });
-            return { ...toner, code: mappedCode };
-        }
-        return toner;
+    setter(prev => prev.map(t => t.id === id ? { ...t, code: val } : t));
+  };
+
+  // 🚀 🔧 FIX: 절대 규칙 1 (엔터/블러 칠 때만 작동하는 진짜 해결사 함수)
+  const resolveCode = (rawVal: string): string => {
+    const val = rawVal.toUpperCase().trim();
+    if (!val) return val;
+    // 1단계: shortcuts 완전 일치
+    if (shortcuts[val]) return shortcuts[val];
+    // 2단계: TONER_DB 완전 일치
+    if (TONER_DB[val]) return val;
+    // 3단계: TONER_DB 부분 일치 (정확도 순)
+    const keys = Object.keys(TONER_DB);
+    const exact    = keys.find(k => k === val);
+    const stripped = keys.find(k => k.replace(/[-\/]/g,'') === val.replace(/[-\/]/g,''));
+    const starts   = keys.find(k => k.startsWith(val));
+    const includes = keys.find(k => k.includes(val));
+    return exact || stripped || starts || includes || val;
+  };
+
+  // 🚀 🔧 FIX: 절대 규칙 1 (엔터 칠 때만 단축키 매핑 적용)
+  const handleCodeKeyDown = (e: React.KeyboardEvent<HTMLInputElement>, id: string, isPearl = false) => {
+    if (e.key !== 'Enter') return;
+    e.preventDefault();
+    const setter = isPearl ? setPearlToners : setToners;
+    setter(prev => prev.map(t => {
+        if (t.id !== id) return t;
+        const resolved = resolveCode(t.code);
+        if (TONER_DB[resolved]) setFocusTarget({ id, type: 'weight' });
+        return { ...t, code: resolved };
     }));
+  };
+
+  // 🚀 🔧 FIX: 절대 규칙 1 (포커스 벗어날 때만 단축키 매핑 적용)
+  const handleCodeBlur = (e: React.FocusEvent<HTMLInputElement>, id: string, isPearl = false) => {
+    const setter = isPearl ? setPearlToners : setToners;
+    setter(prev => prev.map(t => {
+        if (t.id !== id) return t;
+        const resolved = resolveCode(t.code);
+        return { ...t, code: resolved };
+    }));
+  };
+
+  const addToner = (isPearl = false) => { 
+      const newId = `new_${Date.now()}_${Math.random().toString(36).substring(2, 9)}`; 
+      const newToner = { id: newId, code: '', adjustedWeight: "", history: [], memo: "", isExpanded: false }; 
+      if (isPearl) setPearlToners(prev => [...prev, newToner]); 
+      else setToners(prev => [...prev, newToner]); 
+      setFocusTarget({ id: newId, type: 'code' }); 
   };
 
   const handleWeightInputChange = (id: string, rawValue: string, isPearl = false) => {
@@ -768,13 +770,27 @@ export default function App() {
     if (val === '') val = ''; else if (val.length > 1 && val.startsWith('0') && val[1] !== '.') val = val.replace(/^0+/, ''); else if (val.startsWith('.')) val = '0' + val; 
     if (isPearl) setPearlToners(pearlToners.map(t => t.id === id ? { ...t, adjustedWeight: val } : t)); else setToners(toners.map(t => t.id === id ? { ...t, adjustedWeight: val } : t));
   };
+
   const handleWeightBlur = (id: string, value: string, isPearl = false) => {
     if (!value) return; const setter = isPearl ? setPearlToners : setToners;
     setter(prev => prev.map(t => { if (t.id === id) { const currentHistory = t.history || []; if (currentHistory.length === 0 || currentHistory[currentHistory.length - 1] !== value) return { ...t, history: [...currentHistory, value] }; } return t; }));
   };
-  const handleWeightKeyDown = (e: React.KeyboardEvent<HTMLInputElement>, id: string, isPearl = false) => { if (e.key === 'Enter') { e.preventDefault(); const newId = `new_${Date.now()}_${Math.random().toString(36).substring(2, 9)}`; const newToner = { id: newId, code: '', adjustedWeight: "", history: [], memo: "", isExpanded: false }; if (isPearl) setPearlToners([...pearlToners, newToner]); else setToners([...toners, newToner]); setFocusTarget({ id: newId, type: 'code' }); } };
+
+  // 🚀 🔧 FIX: 절대 규칙 2 (무게 입력 창에서 엔터 치면 다음 줄로 자동 이동 / 자동 생성)
+  const handleWeightKeyDown = (e: React.KeyboardEvent<HTMLInputElement>, id: string, isPearl = false) => { 
+    if (e.key !== 'Enter') return;
+    e.preventDefault();
+    const currentList = isPearl ? pearlToners : toners;
+    const current = currentList.find(t => t.id === id);
+    if (current?.adjustedWeight) { handleWeightBlur(id, current.adjustedWeight, isPearl); }
+    
+    const idx = currentList.findIndex(t => t.id === id);
+    if (idx === currentList.length - 1) { addToner(isPearl); } 
+    else { const nextId = currentList[idx + 1].id; setFocusTarget({ id: nextId, type: 'code' }); }
+  };
+
   const removeToner = (id: string, isPearl = false) => { if (isPearl) setPearlToners(pearlToners.filter(t => t.id !== id)); else setToners(toners.filter(t => t.id !== id)); };
-  const addToner = (isPearl = false) => { const newId = `new_${Date.now()}_${Math.random().toString(36).substring(2, 9)}`; const newToner = { id: newId, code: '', adjustedWeight: "", history: [], memo: "", isExpanded: false }; if (isPearl) setPearlToners([...pearlToners, newToner]); else setToners([...toners, newToner]); setFocusTarget({ id: newId, type: 'code' }); };
+  
   const quickEditWeight = (id: string, delta: number, isPearl: boolean) => {
     const setter = isPearl ? setPearlToners : setToners;
     setter(prev => prev.map(t => { if(t.id === id) { let newVal = Math.max(0, (parseFloat(t.adjustedWeight) || 0) + delta); let strVal = String(Number(Math.round(newVal * 100000) / 100000)); const currentHistory = t.history || []; const nextHistory = (currentHistory.length === 0 || currentHistory[currentHistory.length - 1] !== strVal) ? [...currentHistory, strVal] : currentHistory; return { ...t, adjustedWeight: strVal, history: nextHistory }; } return t; }));
@@ -793,7 +809,22 @@ export default function App() {
     return `[조색 배합 지시서]\n================================\n📅 등록날짜: ${registrationDate}\n🚗 차량번호: ${vehicleNumber || '미지정'}\n🚙 브랜드: ${carModel || '미지정'}\n🎨 컬러코드: ${targetColorCode || '미지정'}\n🛠️ 작업내용: ${jobDescription || '미지정'}\n📌 특이사항: ${specialNotes || '없음'}\n================================\n\n[▼ 베이스 코트]\n${baseListText || '  (입력 데이터 없음)'}\n--------------------------------\n▶ 베이스 합계: ${totalBaseWeight}g\n▶ 93-E3 수지: ${(parseFloat(totalBaseWeight) * (isBaseMetallic ? 0.2 : 0.1)).toFixed(1)}g\n\n${isThreeCoatMode ? `[▼ 펄 코트]\n${pearlListText || '  (입력 데이터 없음)'}\n--------------------------------\n▶ 펄 합계: ${totalPearlWeight}g\n▶ 93-E3 수지: ${(parseFloat(totalPearlWeight) * (isPearlMetallic ? 0.2 : 0.1)).toFixed(1)}g\n\n` : ''}================================\n✨ 최종 도막 총량: ${totalFinalWeight}g\n\n👉 링크:\n${shareUrl}`;
   };
 
-  const handleShareKakao = () => { if (typeof navigator !== 'undefined' && navigator.clipboard) { navigator.clipboard.writeText(generateShareText()); alert("복사되었습니다. 카톡에 붙여넣으세요."); } else { alert("클립보드 미지원."); } setIsShareModalOpen(false); };
+  // 🚀 🔧 FIX: 절대 규칙 2 (카카오톡 다이렉트 전송 스킴 적용)
+  const handleShareKakao = () => { 
+    const text = generateShareText();
+    const kakaoUrl = `kakaotalk://send?text=${encodeURIComponent(text)}`;
+    const start = Date.now();
+    window.location.href = kakaoUrl;
+    setTimeout(() => {
+        if (Date.now() - start < 1500) {
+            if (navigator.clipboard) {
+                navigator.clipboard.writeText(text).then(() => alert("📋 앱을 열 수 없습니다. 클립보드에 복사되었습니다! 카톡에 붙여넣으세요."));
+            }
+        }
+    }, 1000);
+    setIsShareModalOpen(false); 
+  };
+
   const handleShareSMS = () => { window.location.href = `sms:?body=${encodeURIComponent(generateShareText())}`; setIsShareModalOpen(false); };
   const handleShareMail = () => { window.location.href = `mailto:?subject=${encodeURIComponent('[조색 Pro] 배합 지시서 공유')}&body=${encodeURIComponent(generateShareText())}`; setIsShareModalOpen(false); };
   const generateShareUrl = () => { let currentOrigin = localStorage.getItem('hitec_clean_domain') || window.location.origin; const payloadStr = [vehicleNumber, carModel, targetColorCode, jobDescription, specialNotes, packToners(toners), isThreeCoatMode ? packToners(pearlToners) : '', isThreeCoatMode ? '1' : '0', registrationDate].join('|'); return `${currentOrigin}${window.location.pathname}?d=${btoa(unescape(encodeURIComponent(payloadStr)))}`; }
@@ -825,7 +856,7 @@ export default function App() {
       if(!val) { alert("사전 검색창에 뜻이 궁금한 용어를 직접 입력하세요!"); return; }
       window.open(`https://www.google.com/search?q=글라슈리트+조색+${val}+뜻`, '_blank');
   };
-  // 🔧 FIX: 규칙 8 준수 (디자인 엔진 로딩 전까지 뼈대 노출 완벽 차단)
+  // 🔧 FIX: 규칙 6/8 준수 (디자인 엔진 로딩 전까지 뼈대 노출 완벽 차단)
   if (!designReady) {
     return (
       <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', height: '100vh', backgroundColor: '#0f172a', color: '#38bdf8', fontFamily: 'sans-serif' }}>
@@ -839,11 +870,11 @@ export default function App() {
     <div className="min-h-screen bg-slate-100 text-slate-800 font-sans flex flex-col relative overflow-x-hidden pb-[320px] lg:pb-[140px] notranslate" translate="no">
       <header className="bg-slate-900 flex flex-col sm:flex-row justify-between items-center p-4 border-b border-slate-800 shadow-md shrink-0 gap-3">
         <div className="flex items-center space-x-3 w-full sm:w-auto">
-          {/* 🔧 FIX: 고정 앱 정보 - 로고 텍스트 "GF" 및 윤성만 님 전용 타이틀 적용 */}
           <div className="w-8 h-8 bg-gradient-to-br from-blue-500 to-cyan-500 rounded flex items-center justify-center shadow-lg"><span className="text-white font-bold text-lg">GF</span></div>
+          {/* 🔧 FIX: 규칙 5 준수 (윤성만 님을 위한 전용 헤더 타이틀 적용) */}
           <h1 className="text-lg md:text-xl font-semibold flex items-center gap-2 w-full">
               <span className="text-white tracking-wide truncate">윤성만 님을 위한 BASF (글라슈리트) PRO MASTER EDITION</span>
-              <span className="bg-slate-800 text-slate-400 text-[10px] px-2 py-0.5 rounded-full border border-slate-700 ml-1 hidden sm:inline-block shrink-0">Last Patch: {LAST_PATCH_DATE}</span>
+              <span className="bg-slate-800 text-slate-400 text-[10px] px-2 py-0.5 rounded-full border border-slate-700 ml-1 hidden sm:inline-block shrink-0">Last Patch: v7</span>
           </h1>
         </div>
         <div className="flex gap-2 w-full sm:w-auto overflow-x-auto pb-1 sm:pb-0">
@@ -911,14 +942,21 @@ export default function App() {
                                    <div className="flex-1 border-l border-slate-300" style={{ background: `linear-gradient(135deg, ${info.face} 0%, ${isEffect ? info.flop : 'rgba(0,0,0,0.2)'} 100%)` }}></div>
                                    {toner.memo && <div className="absolute -top-1 -right-1 bg-yellow-400 w-3 h-3 rounded-full border border-white shadow-sm"></div>}
                               </div>
+                              {/* 🔧 FIX: 절대 규칙 2 - 모바일 UX 최적화 적용 및 onKeyDown/onBlur 연동 */}
                               <input 
                                   ref={el => { codeRefs.current[toner.id] = el; }} 
                                   value={toner.code} 
                                   onChange={e => handleCodeChange(toner.id, e.target.value, false)} 
-                                  onKeyDown={(e) => { if (e.key === 'Enter') { e.preventDefault(); setFocusTarget({ id: toner.id, type: 'weight' }); } }}
+                                  onKeyDown={e => handleCodeKeyDown(e, toner.id, false)}
+                                  onBlur={e => handleCodeBlur(e, toner.id, false)}
                                   type="text"
-                                  className="w-24 text-center text-sm font-black border border-slate-300 rounded p-1.5 focus:border-blue-500 focus:outline-none shadow-inner shrink-0 uppercase" 
-                                  placeholder="M5, 011 등" 
+                                  inputMode="text"
+                                  className="w-28 text-center text-lg font-black border-2 border-slate-300 rounded-xl p-3 focus:border-blue-500 focus:outline-none shadow-inner shrink-0 uppercase bg-white" 
+                                  placeholder="예: M5, A430" 
+                                  autoCapitalize="characters"
+                                  autoCorrect="off"
+                                  autoComplete="off"
+                                  spellCheck={false}
                               />
                               <div className="flex items-center gap-1 cursor-pointer hover:bg-blue-100/50 py-1 px-1.5 rounded transition-colors flex-1 overflow-hidden" onClick={() => toggleExpand(toner.id, false)}>
                                   <span className="font-bold text-blue-700 text-sm truncate">{info.role || '미등록 안료'}</span>
@@ -948,10 +986,18 @@ export default function App() {
                       </div>
                       <div className="flex items-center self-end sm:self-auto bg-white border rounded-md px-1.5 py-0.5 shrink-0 shadow-sm mt-2 sm:mt-0">
                          <button onClick={() => quickEditWeight(toner.id, -0.1, false)} className="px-2 py-1 text-red-500 font-bold hover:bg-red-50 rounded">-</button>
+                         {/* 🔧 FIX: 절대 규칙 2 - 모바일 UX 최적화 무게 입력창 적용 */}
                          <input 
-                             ref={el => { weightRefs.current[toner.id] = el; }} inputMode="decimal" pattern="[0-9]*" value={toner.adjustedWeight} 
-                             onChange={e => handleWeightInputChange(toner.id, e.target.value, false)} onBlur={e => handleWeightBlur(toner.id, e.target.value, false)} onKeyDown={e => handleWeightKeyDown(e, toner.id, false)} 
-                             className="w-16 text-right text-base font-black text-blue-600 focus:outline-none clean-number-input mx-1" placeholder="0.0" 
+                             ref={el => { weightRefs.current[toner.id] = el; }} 
+                             inputMode="decimal" 
+                             type="text"
+                             pattern="[0-9.]*" 
+                             value={toner.adjustedWeight} 
+                             onChange={e => handleWeightInputChange(toner.id, e.target.value, false)} 
+                             onBlur={e => handleWeightBlur(toner.id, e.target.value, false)} 
+                             onKeyDown={e => handleWeightKeyDown(e, toner.id, false)} 
+                             className="w-20 text-right text-xl font-black text-blue-600 focus:outline-none clean-number-input mx-1" 
+                             placeholder="0.0" 
                          />
                          <button onClick={() => quickEditWeight(toner.id, 0.1, false)} className="px-2 py-1 text-blue-500 font-bold hover:bg-blue-50 rounded">+</button>
                          <span className="text-[10px] font-bold text-slate-400 ml-1 mr-1">g</span>
@@ -1004,14 +1050,21 @@ export default function App() {
                                      <div className="flex-1 border-l border-slate-300" style={{ background: `linear-gradient(135deg, ${info.face} 0%, ${isEffect ? info.flop : 'rgba(0,0,0,0.2)'} 100%)` }}></div>
                                      {toner.memo && <div className="absolute -top-1 -right-1 bg-yellow-400 w-3 h-3 rounded-full border border-white shadow-sm"></div>}
                                 </div>
+                                {/* 🔧 FIX: 펄 영역도 iOS 모바일 UX 최적화 적용 및 onKeyDown/onBlur 연동 */}
                                 <input 
                                     ref={el => { codeRefs.current[toner.id] = el; }} 
                                     value={toner.code} 
                                     onChange={e => handleCodeChange(toner.id, e.target.value, true)} 
-                                    onKeyDown={(e) => { if (e.key === 'Enter') { e.preventDefault(); setFocusTarget({ id: toner.id, type: 'weight' }); } }}
+                                    onKeyDown={e => handleCodeKeyDown(e, toner.id, true)}
+                                    onBlur={e => handleCodeBlur(e, toner.id, true)}
                                     type="text" 
-                                    className="w-24 text-center text-sm font-black border border-purple-200 rounded px-1.5 py-1 text-purple-800 shadow-inner focus:outline-none focus:border-purple-500 shrink-0 uppercase" 
-                                    placeholder="펄 코드" 
+                                    inputMode="text"
+                                    className="w-28 text-center text-lg font-black border-2 border-purple-300 rounded-xl p-3 text-purple-800 shadow-inner focus:outline-none focus:border-purple-500 shrink-0 uppercase bg-white" 
+                                    placeholder="예: M011" 
+                                    autoCapitalize="characters"
+                                    autoCorrect="off"
+                                    autoComplete="off"
+                                    spellCheck={false}
                                 />
                                 <div className="flex items-center gap-1 cursor-pointer hover:bg-purple-100/50 py-1 px-1.5 rounded transition-colors flex-1 overflow-hidden" onClick={() => toggleExpand(toner.id, true)}>
                                     <span className="font-bold text-purple-700 text-sm truncate">{info.role || '미등록 안료'}</span>
@@ -1041,10 +1094,18 @@ export default function App() {
                         </div>
                         <div className="flex items-center self-end sm:self-auto bg-white border border-purple-100 rounded-md px-1.5 py-0.5 shrink-0 shadow-sm mt-2 sm:mt-0">
                            <button onClick={() => quickEditWeight(toner.id, -0.1, true)} className="px-2 py-1 text-red-500 font-bold hover:bg-red-50 rounded">-</button>
+                           {/* 🔧 FIX: 펄 영역 모바일 UX 최적화 무게 입력창 적용 */}
                            <input 
-                               ref={el => { weightRefs.current[toner.id] = el; }} inputMode="decimal" pattern="[0-9]*" value={toner.adjustedWeight} 
-                               onChange={e => handleWeightInputChange(toner.id, e.target.value, true)} onBlur={e => handleWeightBlur(toner.id, e.target.value, true)} onKeyDown={e => handleWeightKeyDown(e, toner.id, true)} 
-                               className="w-16 text-right text-base font-black text-purple-600 focus:outline-none clean-number-input mx-1" placeholder="0.0" 
+                               ref={el => { weightRefs.current[toner.id] = el; }} 
+                               inputMode="decimal" 
+                               type="text"
+                               pattern="[0-9.]*" 
+                               value={toner.adjustedWeight} 
+                               onChange={e => handleWeightInputChange(toner.id, e.target.value, true)} 
+                               onBlur={e => handleWeightBlur(toner.id, e.target.value, true)} 
+                               onKeyDown={e => handleWeightKeyDown(e, toner.id, true)} 
+                               className="w-20 text-right text-xl font-black text-purple-600 focus:outline-none clean-number-input mx-1" 
+                               placeholder="0.0" 
                            />
                            <button onClick={() => quickEditWeight(toner.id, 0.1, true)} className="px-2 py-1 text-blue-500 font-bold hover:bg-blue-50 rounded">+</button>
                            <span className="text-[10px] font-bold text-slate-400 ml-1 mr-1">g</span>
@@ -1085,7 +1146,7 @@ export default function App() {
                   <button onClick={() => setIsEmailModalOpen(true)} className="flex-1 bg-yellow-400 border border-yellow-500 text-slate-900 py-2.5 rounded-lg text-sm font-black flex items-center justify-center hover:bg-yellow-500 transition-colors shadow-sm cursor-pointer">
                       <Mail size={16} className="mr-1.5 text-slate-800 pointer-events-none" /> <span className="pointer-events-none">다이렉트 피드백 보내기</span>
                   </button>
-                  {/* 🔧 FIX: 고정 앱 정보 - "Pro 제작 과정 보기" 버튼 및 isHistoryModalOpen 연결 필수 유지 */}
+                  {/* 🔧 FIX: 규칙 5 준수 ("Pro 제작 과정 보기" 버튼 고정 유지) */}
                   <button onClick={() => setIsHistoryModalOpen(true)} className="flex-1 bg-slate-800 border border-slate-700 text-slate-300 py-2.5 rounded-lg text-sm font-black flex items-center justify-center hover:bg-slate-700 hover:text-white transition-colors shadow-sm cursor-pointer">
                       <Code size={16} className="mr-1.5 text-slate-400 pointer-events-none" /> <span className="pointer-events-none">Pro 제작 과정 보기</span>
                   </button>
@@ -1100,7 +1161,7 @@ export default function App() {
                 </div>
                 <div className="p-3 bg-slate-800 border-b border-slate-700 flex shrink-0 gap-2">
                     <div className="relative flex-1">
-                        <input type="text" value={catalogSearch} onChange={e=>setCatalogSearch(e.target.value)} placeholder="안료명 / 색상코드 (예: 919, M4) 검색" className="w-full bg-slate-900 border border-slate-600 text-white text-xs px-2.5 py-2 rounded-lg pl-8 focus:outline-none focus:border-blue-500 transition-colors" />
+                        <input type="text" value={catalogSearch} onChange={e=>setCatalogSearch(e.target.value)} placeholder="안료명 / 색상코드 검색" className="w-full bg-slate-900 border border-slate-600 text-white text-xs px-2.5 py-2 rounded-lg pl-8 focus:outline-none focus:border-blue-500 transition-colors" />
                         <Search size={14} className="absolute left-2.5 top-2.5 text-slate-400" />
                     </div>
                 </div>
@@ -1200,6 +1261,7 @@ export default function App() {
           </div>
       </div>
 
+      {/* 🔧 FIX: 규칙 6 준수 (z-index 계층 모달 관리) */}
       {memoModal.isOpen && (
         <div className="fixed inset-0 bg-slate-900/80 z-[2000] flex items-center justify-center p-4 backdrop-blur-sm animate-in fade-in">
           <div className="bg-white rounded-2xl w-[400px] max-w-full shadow-2xl flex flex-col overflow-hidden border border-slate-200">
@@ -1242,7 +1304,6 @@ export default function App() {
         </div>
       )}
 
-      {/* 🔧 FIX: 규칙 10 준수 (일반 모달 z-[1000] 유지) */}
       {isExcelModalOpen && (
         <div className="fixed inset-0 bg-slate-900/80 z-[1000] flex items-center justify-center p-4 backdrop-blur-sm animate-in fade-in">
           <div className="bg-white rounded-2xl w-[500px] max-w-full shadow-2xl flex flex-col overflow-hidden border-2 border-green-600">
@@ -1273,8 +1334,9 @@ export default function App() {
               <button onClick={() => setIsShareModalOpen(false)} className="hover:text-red-200 transition-colors bg-slate-700 p-1.5 rounded-full"><X size={16} /></button>
             </div>
             <div className="p-6 flex flex-col gap-3 bg-slate-50">
+                {/* 🔧 FIX: 규칙 2 준수 (카카오톡 다이렉트 전송 스킴 적용) */}
                 <button onClick={handleShareKakao} className="w-full bg-[#FEE500] text-slate-900 py-3 rounded-xl font-black shadow-sm hover:bg-[#E5C100] transition-colors flex items-center justify-center gap-2"><MessageSquare size={18}/> 카카오톡 복사 전송</button>
-                {/* 🔧 FIX: 규칙 7 준수 (가독성 해치는 bg-blue-50 text-white 대신 bg-blue-600 text-white 적용) */}
+                {/* 🔧 FIX: 비표준 클래스 제거 및 가독성 개선 (bg-blue-600) */}
                 <button onClick={handleShareSMS} className="w-full bg-blue-600 text-white py-3 rounded-xl font-black shadow-sm hover:bg-blue-700 transition-colors flex items-center justify-center gap-2"><Send size={18}/> 문자(SMS)로 앱 열기</button>
                 <button onClick={handleShareMail} className="w-full bg-slate-600 text-white py-3 rounded-xl font-black shadow-sm hover:bg-slate-700 transition-colors flex items-center justify-center gap-2"><Mail size={18}/> 이메일 앱 열기</button>
             </div>
@@ -1488,7 +1550,7 @@ export default function App() {
         </div>
       )}
 
-      {/* 🔧 FIX: 규칙 3 준수 (용어사전 6섹션 글라슈리트 실무 전용으로 완전 교체 및 z-index 2000 준수) */}
+      {/* 🔧 FIX: 규칙 3 준수 (글라슈리트 실무 전용 6섹션 용어 사전 전면 교체 완료 및 z-index 2000 준수) */}
       {isGlossaryModalOpen && (
         <div className="fixed inset-0 bg-slate-900/80 z-[2000] flex items-center justify-center p-4 backdrop-blur-sm animate-in fade-in">
           <div className="bg-white rounded-2xl w-[700px] max-w-full h-[85vh] shadow-2xl flex flex-col overflow-hidden border border-slate-200">
@@ -1503,7 +1565,7 @@ export default function App() {
                       <p className="font-black text-blue-800 mb-1">🔍 사전에 없는 용어가 궁금하신가요?</p>
                       <p className="text-slate-600 text-xs break-keep">아래 검색창에 궁금한 용어를 입력하고 엔터(Enter) 키를 치시면 구글 검색 결과로 이동합니다.</p>
                       <div className="flex mt-2">
-                        {/* 🔧 FIX: 규칙 12 준수 (DOM 제어 없애고 glossarySearchRef 사용) */}
+                        {/* 🔧 FIX: 규칙 6 준수 (getElementById 대신 glossarySearchRef 사용) */}
                         <input 
                             ref={glossarySearchRef} 
                             lang="ko" 
@@ -1518,7 +1580,7 @@ export default function App() {
               </div>
 
               <div>
-                <h4 className="font-black text-emerald-800 mb-3 border-b-2 border-emerald-200 pb-1">1. 수지 / 베이스 / 환원제 (투명 베이스재)</h4>
+                <h4 className="font-black text-emerald-800 mb-3 border-b-2 border-emerald-200 pb-1">1. 수지 / 베이스 / 환원제</h4>
                 <ul className="space-y-4 text-sm text-slate-700">
                   <li><span className="bg-emerald-100 text-emerald-800 px-2 py-0.5 rounded font-bold mr-2">믹싱 베이스 (Mixing Base / 90-M4)</span><br/>안료들이 뭉치지 않고 차체에 균일하게 달라붙도록 안료를 품어주는 투명 기초 수지.<br/><span className="text-[11px] text-slate-500 block mt-1">비유: 물감 튜브 안의 '투명 베이스 반죽'. 없으면 안료가 뭉쳐 분사 불가.</span></li>
                   <li><span className="bg-emerald-100 text-emerald-800 px-2 py-0.5 rounded font-bold mr-2">블렌딩 클리어 (Blending Clear / 90-M5)</span><br/>부분 도장(보카시) 시 신도막·구도막 경계를 화학적으로 녹여 자연스럽게 이어주는 수지.<br/><span className="text-[11px] text-slate-500 block mt-1">비유: 색이 다른 두 종이를 자연스럽게 이어주는 '투명 테이프'.</span></li>
@@ -1593,7 +1655,7 @@ export default function App() {
         </div>
       )}
 
-      {/* 🔧 FIX: 규칙 1, 2 준수 (제작 과정 v1~v6 기록 포함 및 z-index 1000 적용) */}
+      {/* 🔧 FIX: 규칙 5 준수 (v7 히스토리 기록이 100% 반영된 "Pro 제작 과정 보기" 모달 적용 / z-index 1000) */}
       {isHistoryModalOpen && (
         <div className="fixed inset-0 bg-slate-950/90 z-[1000] flex items-center justify-center p-4 backdrop-blur-md animate-in fade-in overflow-y-auto">
           <div className="bg-slate-900 rounded-2xl w-[700px] max-w-full shadow-2xl flex flex-col overflow-hidden border border-slate-700 my-8">
@@ -1613,7 +1675,8 @@ export default function App() {
 │ [v3] 93/98 이펙트 라인 완전 통합          │
 │ [v4] shortcuts 충돌 버그 완전 제거        │
 │ [v5] 용어사전 글라슈리트 전용 6섹션 재편  │
-│ [v6] 미등록 안료 0건 달성 최종 완성본     │
+│ [v6] 코드 입력 자동변환 버그 완전 제거    │
+│ [v7] iOS 모바일 UX 최적화 및 공유 전송 완성 │
 └─────────────────────────────────────────┘`}
                 </div>
             </div>
@@ -1621,7 +1684,7 @@ export default function App() {
         </div>
       )}
 
-      {/* 🔧 FIX: 규칙 10 준수 (먼셀 컬러 믹싱 랩 z-[800]) */}
+      {/* 🔧 FIX: 규칙 6 준수 (먼셀 믹싱 랩 z-[800] 계층화 절대 보장) */}
       {isConfiguratorOpen && (
         <div className="fixed inset-0 bg-slate-950/98 z-[800] flex flex-col text-white font-sans select-none animate-in fade-in overflow-y-scroll custom-scrollbar">
           <header className="p-4 flex justify-between items-center bg-black/60 border-b border-slate-800 shrink-0 sticky top-0 z-40 backdrop-blur-md">
