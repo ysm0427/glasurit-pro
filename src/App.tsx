@@ -6,8 +6,9 @@ import {
   FileSpreadsheet, History, Mail, Code, Calendar, Eye, ThumbsUp, 
   CheckCircle, Edit3, Target, MessageSquare, Send, Save, RefreshCw 
 } from 'lucide-react';
-// 🔧 FIX: 절대 원칙 1 준수 (DB와 로직 분리) - 외부 파일에서 데이터 임포트
-import { TONER_DB, shortcuts, PEARL_LEVELS, OEM_COLORS } from './data/tonerDB';
+
+// 🔧 대표님이 만드신 파일 위치에 딱 맞게 경로 수정 완료! ('./tonerDB')
+import { TONER_DB, shortcuts, PEARL_LEVELS, OEM_COLORS } from './tonerDB';
 
 if (typeof window !== 'undefined' && !document.querySelector('#tailwind-script')) {
   const script = document.createElement('script');
@@ -240,14 +241,12 @@ export default function App() {
       setSnapshots([]); setCatalogSearch('');
   };
 
-  // 🚀 🔧 FIX: 절대 원칙 2 (타이핑 실시간 변환 금지. 대문자만 통일)
   const handleCodeChange = (id: string, newCode: string, isPearl = false) => {
     const val = newCode.toUpperCase().replace(/[^A-Z0-9/.\- ]/g, '');
     const setter = isPearl ? setPearlToners : setToners;
     setter(prev => prev.map(t => t.id === id ? { ...t, code: val } : t));
   };
 
-  // 🚀 🔧 FIX: 절대 원칙 2 (Enter/Blur 시 완벽한 스마트 매핑 엔진)
   const resolveCode = (rawVal: string): string => {
     const val = rawVal.toUpperCase().trim();
     if (!val) return val;
@@ -414,7 +413,7 @@ export default function App() {
         <div className="lg:col-span-7 flex flex-col bg-white border border-slate-300 rounded-xl shadow-xl overflow-hidden">
           <div className="p-3 border-b border-slate-200 bg-slate-50 flex flex-col gap-3">
             <div className="flex items-center justify-between">
-              <h2 className="text-sm font-bold text-slate-800 flex items-center shrink-0"><Sliders className="text-blue-600 mr-2" size={16} />공식 배합 워크 시트</h2>
+              <h2 className="text-sm font-bold text-slate-800 flex items-center shrink-0"><Sliders className="text-blue-600 mr-2" size={16} />공식 배합 워 시트</h2>
               <button onClick={handleClearAllInfo} className="text-[11px] font-bold text-slate-500 hover:text-red-600 flex items-center transition-colors bg-white hover:bg-red-50 px-2.5 py-1.5 rounded-md border border-slate-200 shadow-sm shrink-0"><Trash2 size={14} className="mr-1"/> 전체 초기화</button>
             </div>
             <div className="flex flex-col gap-3">
@@ -1288,4 +1287,3 @@ export default function App() {
     </div>
   );
 }
-// src/data/tonerDB.ts
