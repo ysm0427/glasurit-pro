@@ -796,21 +796,3 @@ export const shortcuts: Record<string, string> = {
   'M10': '100-M10', 'M10P': '100-M10P', 'M11': '100-M11', 'M12': '100-M12', 'M13': '100-M13', 'M20': '100-M20', 'M10X': '100-M10X', 'M20X': '100-M20X',
   'MB50': '100-MB50', 'E5': '100-E5', 'E5X': '100-E5X'
 };
-
-export const PEARL_LEVELS = [
-  { level: 1, name: '초미립', desc: '입자감이 거의 없는 실크 같은 질감' },
-  { level: 2, name: '미립', desc: '고급스럽고 부드러운 진주광' },
-  { level: 3, name: '중미립', desc: '가장 표준적인 입자 크기' },
-  { level: 4, name: '중립', desc: '약간 거칠고 뚜렷한 스파클링' },
-  { level: 5, name: '조립', desc: '햇빛에서 강하게 부서지는 질감' },
-  { level: 6, name: '특조립', desc: '눈을 찌르는 거친 다이아몬드 난반사' }
-];
-
-export const OEM_COLORS = [
-  { brand: '현대/기아', code: 'SWP', name: '스노우 화이트 펄' },
-  { brand: '현대/기아', code: 'ABP', name: '오로라 블랙 펄' },
-  { brand: '벤츠', code: '149', name: '폴라 화이트' },
-  { brand: '벤츠', code: '197', name: '옵시디안 블랙' },
-  { brand: 'BMW', code: '300', name: '알파인 화이트' },
-  { brand: 'BMW', code: '475', name: '블랙 사파이어' }
-];
