@@ -15,6 +15,15 @@ export const OEM_COLORS: { code: string; name: string }[] = [
   { code: "TEST", name: "글라슈리트 마스터 DB 스마트엔진 연결 완료" }
 ];
 
+export interface TonerData {
+  role: string;
+  type: string;
+  face: string;
+  flop: string;
+  desc: string;
+  details?: [string, string][];
+}
+
 // 🔧 FIX: 절대 원칙 4 준수 (모든 안료 스펙 5대 항목 필수 / 2문장 이상 강제)
 export const TONER_DB: Record<string, TonerData> = {
   // ━━━━━━━━ [그룹 A] 90라인 — 수지 / 첨가제 / 무채색 안료 ━━━━━━━━
