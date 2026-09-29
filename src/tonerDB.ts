@@ -997,7 +997,3 @@ export const shortcuts: Record<string, string> = {
   // 내부 도장
   'IC440':'90-IC440'
 };
-
-export const OEM_COLORS: { code: string; name: string }[] = [
-  { code: "TEST", name: "글라슈리트 마스터 DB 스마트엔진 연결 완료" }
-];
