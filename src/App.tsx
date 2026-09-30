@@ -852,7 +852,27 @@ export default function App() {
             <div className="p-6 flex flex-col gap-3 bg-slate-50">
                 <button onClick={handleShareKakao} className="w-full bg-[#FEE500] text-slate-900 py-3 rounded-xl font-black shadow-sm hover:bg-[#E5C100] transition-colors flex items-center justify-center gap-2"><MessageSquare size={18}/> 카카오톡 복사 전송</button>
                 <button onClick={handleShareSMS} className="w-full bg-blue-600 text-white py-3 rounded-xl font-black shadow-sm hover:bg-blue-700 transition-colors flex items-center justify-center gap-2"><Send size={18}/> 문자(SMS)로 앱 열기</button>
-                <button onClick={handleShareMail} className="w-full bg-slate-600 text-white py-3 rounded-xl font-black shadow-sm hover:bg-slate-700 transition-colors flex items-center justify-center gap-2"><Mail size={18}/> 이메일 앱 열기</button>
+                {/* ✨ 네이버 / 구글 메일 쪼개기 + 배합 데이터 자동 입력 */}
+                    <div className="flex gap-2 w-full mt-1">
+                        <button 
+                            onClick={() => {
+                                window.open(`https://mail.naver.com/v2/new?subject=${encodeURIComponent('[조색 Pro] 배합 지시서 공유')}&body=${encodeURIComponent(generateShareText())}`, '_blank');
+                                setIsShareModalOpen(false);
+                            }} 
+                            className="flex-1 bg-[#03C75A] text-white py-3 rounded-xl font-black shadow-sm hover:bg-[#02b350] transition-colors flex items-center justify-center gap-1.5 text-sm"
+                        >
+                            <Mail size={16}/> 네이버 메일
+                        </button>
+                        <button 
+                            onClick={() => {
+                                window.open(`https://mail.google.com/mail/?view=cm&fs=1&su=${encodeURIComponent('[조색 Pro] 배합 지시서 공유')}&body=${encodeURIComponent(generateShareText())}`, '_blank');
+                                setIsShareModalOpen(false);
+                            }} 
+                            className="flex-1 bg-white border border-slate-300 text-slate-700 py-3 rounded-xl font-black shadow-sm hover:bg-slate-50 transition-colors flex items-center justify-center gap-1.5 text-sm"
+                        >
+                            <Mail size={16}/> 구글 메일
+                        </button>
+                    </div>
             </div>
           </div>
         </div>
