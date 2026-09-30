@@ -1,4 +1,4 @@
-import React, { useState, useRef } from 'react';
+import React, { useState } from 'react';
 import emailjs from '@emailjs/browser';
 
 interface FeedbackModalProps {
@@ -8,23 +8,13 @@ interface FeedbackModalProps {
 }
 
 export const FeedbackModal: React.FC<FeedbackModalProps> = ({ isOpen, onClose, targetColorCode }) => {
-  const form = useRef<HTMLFormElement>(null); // ✨ sendForm을 위한 폼 참조 변수
   const [name, setName] = useState('');
+  const [position, setPosition] = useState(''); // 직책을 저장할 상태 추가
   const [contact, setContact] = useState('');
   const [message, setMessage] = useState('');
-  const [fileName, setFileName] = useState(''); // ✨ 첨부파일 이름 표시용 상태
   const [isSending, setIsSending] = useState(false);
 
   if (!isOpen) return null;
-
-  // 첨부파일이 선택되었을 때 파일 이름을 화면에 보여주는 함수
-  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    if (e.target.files && e.target.files.length > 0) {
-      setFileName(e.target.files[0].name);
-    } else {
-      setFileName('');
-    }
-  };
 
   const handleSend = (e: React.FormEvent) => {
     e.preventDefault();
@@ -39,38 +29,38 @@ export const FeedbackModal: React.FC<FeedbackModalProps> = ({ isOpen, onClose, t
     
     setIsSending(true);
 
-    // ✨ sendForm 방식 적용: form.current에 담긴 데이터와 첨부파일을 통째로 전송!
-    emailjs.sendForm(
-      'service_2p7m4lf',    // 대표님의 Service ID
-      'template_q0i4r84',   // ✅ 올바른 Template ID 적용 완료
-      form.current!,        // 묶여있는 폼 데이터 (파일 포함)
-      '9HCVNg6wCK_IFMHaj'   // Public Key
-    )
-    .then(() => {
-      alert('📸 파일과 피드백이 성공적으로 전송되었습니다!');
-      setName('');
-      setContact('');
-      setMessage('');
-      setFileName('');
-      setIsSending(false);
-      onClose();
-    })
-    .catch((error) => {
-      console.error('전송 실패:', error);
-      alert('전송에 실패했습니다. 사진 용량이 너무 크거나 네트워크 문제일 수 있습니다.');
-      setIsSending(false);
-    });
-  };
-
-  // EmailJS 템플릿( {{message}} )으로 보낼 데이터를 몰래 하나로 합쳐주는 변수
-  const combinedMessage = `
-[브랜드/지점명] ${name || '미입력'}
+    // 직책이 선택되었으면 소속 뒤에 괄호로 붙여주고, 안 골랐으면 생략합니다.
+    const combinedMessage = `
+[소속] ${name} ${position ? `(${position})` : ''}
 [연락처] ${contact || '미입력'}
 [작업 중이던 컬러코드] ${targetColorCode || '미입력/없음'}
 
 [피드백 내용]
 ${message}
-  `.trim();
+    `.trim();
+
+    // 기존의 가볍고 빠른 emailjs.send 방식으로 복구 완료
+    emailjs.send(
+      'service_2p7m4lf',
+      'template_q0i4r84',   // ✅ 올바른 Template ID 유지
+      { message: combinedMessage },
+      '9HCVNg6wCK_IFMHaj'
+    )
+    .then(() => {
+      alert('소중한 피드백이 전송되었습니다. 감사합니다!');
+      setName('');
+      setPosition('');
+      setContact('');
+      setMessage('');
+      setIsSending(false);
+      onClose();
+    })
+    .catch((error) => {
+      console.error('전송 실패:', error);
+      alert('전송에 실패했습니다. 다시 시도해 주세요.');
+      setIsSending(false);
+    });
+  };
 
   return (
     <div style={{
@@ -79,22 +69,19 @@ ${message}
       display: 'flex', justifyContent: 'center', alignItems: 'center',
       backdropFilter: 'blur(4px)'
     }}>
-      {/* ✨ div 대신 form 태그 사용 */}
-      <form ref={form} onSubmit={handleSend} style={{
+      <div style={{
         backgroundColor: '#fff', padding: '30px', borderRadius: '15px',
-        width: '450px', maxWidth: '90%', boxShadow: '0 10px 25px rgba(0,0,0,0.2)',
+        width: '480px', maxWidth: '90%', boxShadow: '0 10px 25px rgba(0,0,0,0.2)',
         display: 'flex', flexDirection: 'column', gap: '15px'
       }}>
         
-        {/* EmailJS가 읽어갈 수 있도록 숨겨둔 통합 메시지 칸 */}
-        <input type="hidden" name="message" value={combinedMessage} />
-
         <h2 style={{ marginTop: 0, marginBottom: '5px', color: '#1e293b', fontSize: '1.25rem', fontWeight: '900', display: 'flex', alignItems: 'center', gap: '8px' }}>
-          📸 현장 피드백 & 사진 전송
+          💬 현장 피드백 보내기
         </h2>
 
+        {/* 1. 소속 및 직책 입력란 */}
         <div style={{ display: 'flex', gap: '10px' }}>
-          <div style={{ flex: 1 }}>
+          <div style={{ flex: 2 }}>
             <label style={{ display: 'block', fontSize: '12px', fontWeight: 'bold', color: '#64748b', marginBottom: '5px' }}>브랜드명 및 지점명 (필수)</label>
             <input 
               type="text" 
@@ -105,22 +92,41 @@ ${message}
             />
           </div>
           <div style={{ flex: 1 }}>
-            <label style={{ display: 'block', fontSize: '12px', fontWeight: 'bold', color: '#64748b', marginBottom: '5px' }}>연락처 (선택)</label>
-            <input 
-              type="text" 
-              placeholder="답변 받을 번호"
-              value={contact}
-              onChange={(e) => setContact(e.target.value)}
-              style={{ width: '100%', padding: '10px', borderRadius: '8px', border: '1px solid #cbd5e1', boxSizing: 'border-box' }}
-            />
+            <label style={{ display: 'block', fontSize: '12px', fontWeight: 'bold', color: '#64748b', marginBottom: '5px' }}>직책 (선택)</label>
+            <select 
+              value={position}
+              onChange={(e) => setPosition(e.target.value)}
+              style={{ width: '100%', padding: '10px', borderRadius: '8px', border: '1px solid #cbd5e1', boxSizing: 'border-box', backgroundColor: '#fff' }}
+            >
+              <option value="">선택</option>
+              <option value="사원">사원</option>
+              <option value="주임">주임</option>
+              <option value="대리">대리</option>
+              <option value="과장">과장</option>
+              <option value="팀장">팀장</option>
+              <option value="대표">대표</option>
+            </select>
           </div>
         </div>
 
+        {/* 2. 연락처 입력란 */}
+        <div>
+          <label style={{ display: 'block', fontSize: '12px', fontWeight: 'bold', color: '#64748b', marginBottom: '5px' }}>연락처 (선택)</label>
+          <input 
+            type="text" 
+            placeholder="답변 받을 번호 또는 이메일"
+            value={contact}
+            onChange={(e) => setContact(e.target.value)}
+            style={{ width: '100%', padding: '10px', borderRadius: '8px', border: '1px solid #cbd5e1', boxSizing: 'border-box' }}
+          />
+        </div>
+
+        {/* 3. 피드백 내용 */}
         <div>
           <label style={{ display: 'block', fontSize: '12px', fontWeight: 'bold', color: '#64748b', marginBottom: '5px' }}>피드백 내용 (필수)</label>
           <textarea
             rows={4}
-            placeholder="시편 불량, 색상 차이 등 현장에서 겪으신 문제를 자유롭게 적어주세요. (현재 컬러코드 자동 첨부됨)"
+            placeholder="불편한 점이나 추가 요청사항을 자유롭게 적어주세요. (현재 컬러코드 자동 첨부됨)"
             value={message}
             onChange={(e) => setMessage(e.target.value)}
             style={{
@@ -131,41 +137,30 @@ ${message}
           />
         </div>
 
-        {/* ✨ 대망의 사진/파일 첨부 영역 */}
-        <div style={{ backgroundColor: '#f1f5f9', padding: '12px', borderRadius: '8px', border: '1px dashed #94a3b8' }}>
-          <label style={{ display: 'block', fontSize: '12px', fontWeight: 'bold', color: '#475569', marginBottom: '8px' }}>불량 시편 및 화면 캡처 첨부</label>
-          <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-            <label style={{
-              backgroundColor: '#3b82f6', color: 'white', padding: '8px 12px', borderRadius: '6px',
-              fontSize: '12px', fontWeight: 'bold', cursor: 'pointer', textAlign: 'center', whiteSpace: 'nowrap'
-            }}>
-              📁 사진 선택하기
-              {/* 실제 파일 입력 칸은 못생겼으므로 숨김 처리 (name="attachment"가 핵심!) */}
-              <input type="file" name="attachment" accept="image/*" onChange={handleFileChange} style={{ display: 'none' }} />
-            </label>
-            <span style={{ fontSize: '11px', color: '#64748b', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
-              {fileName ? fileName : '선택된 사진이 없습니다.'}
-            </span>
-          </div>
+        {/* 4. 텍스트 전용 안내 경고문 */}
+        <div style={{ backgroundColor: '#f1f5f9', padding: '12px', borderRadius: '8px', border: '1px dashed #94a3b8', textAlign: 'center' }}>
+          <span style={{ fontSize: '12px', fontWeight: 'bold', color: '#475569' }}>
+            ※ 현재 시스템 상 텍스트 형식으로만 전송 가능합니다. (사진/파일 첨부 불가)
+          </span>
         </div>
 
-        <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '10px', marginTop: '10px' }}>
+        {/* 5. 버튼 영역 */}
+        <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '10px', marginTop: '5px' }}>
           <button 
-            type="button"
             onClick={onClose}
             style={{ padding: '12px 24px', border: 'none', borderRadius: '8px', backgroundColor: '#e2e8f0', color: '#475569', fontWeight: 'bold', cursor: 'pointer' }}
           >
             취소
           </button>
           <button 
-            type="submit"
+            onClick={handleSend}
             disabled={isSending}
             style={{ padding: '12px 24px', border: 'none', borderRadius: '8px', backgroundColor: '#059669', color: '#fff', fontWeight: '900', cursor: 'pointer' }}
           >
-            {isSending ? '전송 중...' : '작업 완료 및 전송'}
+            {isSending ? '전송 중...' : '피드백 보내기'}
           </button>
         </div>
-      </form>
+      </div>
     </div>
   );
 };
