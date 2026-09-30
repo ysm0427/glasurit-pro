@@ -39,7 +39,7 @@ ${message}
     // 새롭게 발급받은 Service ID 적용 완료!
     emailjs.send(
       'service_2p7m4lf',    // 대표님의 새로운 Service ID
-      'dv8q5x1',            // Template ID
+      'template_q0i4r84',            // Template ID
       { message: combinedMessage }, // 하나로 예쁘게 포장된 메시지 덩어리를 전송!
       '9HCVNg6wCK_IFMHaj'   // Public Key
     )
