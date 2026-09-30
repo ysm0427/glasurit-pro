@@ -9,7 +9,7 @@ import {
 
 // 🔧 대표님이 만드신 파일 위치에 딱 맞게 경로 수정 완료! ('./tonerDB')
 import { TONER_DB, shortcuts, PEARL_LEVELS, OEM_COLORS } from './tonerDB';
-
+import { FeedbackModal } from './FeedbackModal'; // 👉 이 줄을 새로 추가합니다!
 if (typeof window !== 'undefined' && !document.querySelector('#tailwind-script')) {
   const script = document.createElement('script');
   script.id = 'tailwind-script';
@@ -858,22 +858,11 @@ export default function App() {
         </div>
       )}
 
-      {isEmailModalOpen && (
-        <div className="fixed inset-0 bg-slate-900/80 z-[1000] flex items-center justify-center p-4 backdrop-blur-sm animate-in fade-in">
-          <div className="bg-white rounded-2xl w-[400px] max-w-full shadow-2xl flex flex-col overflow-hidden border border-slate-200">
-            <div className="p-4 bg-yellow-500 flex justify-between items-center text-slate-900">
-              <h3 className="font-black flex items-center gap-2"><Mail size={18} /> 개발자에게 피드백 보내기</h3>
-              <button onClick={() => setIsEmailModalOpen(false)} className="hover:text-red-600 transition-colors bg-yellow-400 p-1.5 rounded-full"><X size={16} /></button>
-            </div>
-            <div className="p-6 flex flex-col gap-4 bg-slate-50">
-              <div className="flex gap-3 mt-2">
-                  <a href="https://mail.naver.com/v2/new?to=ysm0427@gmail.com" target="_blank" rel="noreferrer" className="flex-1 bg-[#03C75A] text-white py-3 rounded-xl font-black text-center shadow-md">네이버 메일</a>
-                  <a href="https://mail.google.com/mail/?view=cm&fs=1&to=ysm0427@gmail.com" target="_blank" rel="noreferrer" className="flex-1 bg-white border text-slate-700 py-3 rounded-xl font-black text-center shadow-sm">구글 메일</a>
-              </div>
-            </div>
-          </div>
-        </div>
-      )}
+{/* 새롭게 연결된 EmailJS 피드백 팝업창 */}
+      <FeedbackModal 
+        isOpen={isEmailModalOpen} 
+        onClose={() => setIsEmailModalOpen(false)} 
+      />
 
       {isSnapshotModalOpen && (
         <div className="fixed inset-0 bg-slate-950/80 z-[1000] flex items-center justify-center p-4 backdrop-blur-sm animate-in fade-in">
