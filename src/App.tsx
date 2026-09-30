@@ -862,7 +862,8 @@ export default function App() {
       <FeedbackModal 
         isOpen={isEmailModalOpen} 
         onClose={() => setIsEmailModalOpen(false)} 
-      />
+        targetColorCode={targetColorCode}
+        />
 
       {isSnapshotModalOpen && (
         <div className="fixed inset-0 bg-slate-950/80 z-[1000] flex items-center justify-center p-4 backdrop-blur-sm animate-in fade-in">
