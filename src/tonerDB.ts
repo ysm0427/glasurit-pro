@@ -1387,6 +1387,7 @@ export const shortcuts: Record<string, string> = {
   'E3': '93-E3', 'E3S': '93-E3 Slow', 'E3F': '93-E3 Fast',
   '522-111': '522-111'
 };
+// ━━━━━━━━ 최종 통합 마스터 데이터베이스 ━━━━━━━━
 export const TONER_DB: Record<string, TonerData> = {
   ...TONER_DB_PHASE_1,
   ...TONER_DB_PHASE_2,
@@ -1396,4 +1397,6 @@ export const TONER_DB: Record<string, TonerData> = {
   ...TONER_DB_PHASE_6,
   ...TONER_DB_PHASE_7,
 };
+
+// ━━━━━━━━ 순정/OEM 컬러 데이터 매핑 ━━━━━━━━
 export const OEM_COLORS = {};
