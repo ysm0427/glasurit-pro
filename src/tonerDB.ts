@@ -1387,3 +1387,14 @@ export const shortcuts: Record<string, string> = {
   'E3': '93-E3', 'E3S': '93-E3 Slow', 'E3F': '93-E3 Fast',
   '522-111': '522-111'
 };
+export const TONER_DB: Record<string, TonerData> = {
+  ...TONER_DB_PHASE_1,
+  ...TONER_DB_PHASE_2,
+  ...TONER_DB_PHASE_3,
+  ...TONER_DB_PHASE_4,
+  ...TONER_DB_PHASE_5,
+  ...TONER_DB_PHASE_6,
+  ...TONER_DB_PHASE_7,
+};
+
+export { shortcuts };
