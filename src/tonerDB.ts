@@ -1396,5 +1396,3 @@ export const TONER_DB: Record<string, TonerData> = {
   ...TONER_DB_PHASE_6,
   ...TONER_DB_PHASE_7,
 };
-
-export { shortcuts };
