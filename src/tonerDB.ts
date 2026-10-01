@@ -1,3 +1,11 @@
+export interface TonerData {
+  role: string;
+  type: string;
+  face: string;
+  flop: string;
+  desc: string;
+  details: string[][];
+}
 // [Phase 1] 90라인 무채색 및 솔리드 베이스 전체 (A시리즈)
 export const TONER_DB_PHASE_1: Record<string, TonerData> = {
   '90-A031': { 
