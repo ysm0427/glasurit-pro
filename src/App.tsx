@@ -227,5 +227,113 @@ const App: React.FC = () => {
     </div>
   );
 };
+{/* ━━━━━━━━ Pro 제작 과정 모달창 (윤성만 팀장님 릴리즈 노트) ━━━━━━━━ */}
+      {isProcessOpen && (
+        <div className="fixed inset-0 bg-black bg-opacity-70 flex items-center justify-center z-50 p-4 backdrop-blur-sm transition-opacity">
+          <div className="bg-white rounded-2xl shadow-2xl max-w-4xl w-full max-h-[85vh] flex flex-col overflow-hidden border-2 border-gray-300">
+            
+            {/* 헤더 영역 */}
+            <div className="bg-gray-900 px-6 py-5 flex justify-between items-center border-b-4 border-blue-500">
+              <div>
+                <h2 className="text-2xl font-extrabold text-white tracking-wide">
+                  글라슈리트 마스터 DB 아키텍처 구축 내역
+                </h2>
+                <p className="text-blue-300 text-sm mt-1 font-semibold">
+                  Total 161 Items Perfectly Built & Engineered
+                </p>
+              </div>
+              <button 
+                onClick={() => setIsProcessOpen(false)} 
+                className="text-gray-400 hover:text-white text-4xl font-bold transition-colors"
+              >
+                &times;
+              </button>
+            </div>
 
+            {/* 작성자 명시 영역 */}
+            <div className="bg-gray-100 px-6 py-3 border-b border-gray-200 flex items-center justify-end">
+              <span className="bg-blue-100 text-blue-800 text-xs font-bold px-3 py-1 rounded-full border border-blue-300 shadow-sm mr-2">
+                Version 2.0.0 Masterpiece
+              </span>
+              <span className="text-gray-700 font-bold text-sm">
+                Lead Color & Data Engineer : <span className="text-black font-extrabold text-base">윤성만 팀장</span>
+              </span>
+            </div>
+
+            {/* 본문 릴리즈 노트 영역 */}
+            <div className="p-6 overflow-y-auto space-y-6 bg-gray-50">
+              
+              {/* 1. 90라인 */}
+              <div className="bg-white p-5 rounded-xl shadow-sm border-l-4 border-blue-500">
+                <h3 className="font-extrabold text-lg text-gray-900 mb-3 flex items-center gap-2">
+                  <span className="bg-blue-100 text-blue-700 px-2 py-0.5 rounded text-sm">Update 1</span>
+                  90라인 수용성 솔리드 전면 교정 (총 38개 품목)
+                </h3>
+                <p className="text-gray-600 text-sm mb-3">
+                  기존 단순 명칭에 의존한 AI의 톤(웜톤/쿨톤) 유추 오류를 공식 기술지원집의 정면/측면 색상 데이터를 기반으로 완벽히 교정했습니다.
+                </p>
+                <ul className="text-sm text-gray-700 space-y-2 pl-4 list-disc marker:text-blue-500">
+                  <li><strong className="text-gray-900">90-A503 (스카이 블루):</strong> 다크 코발트 블루 묘사 삭제 → 정/측면 산뜻한 녹미(Greenish) 청색으로 교정.</li>
+                  <li><strong className="text-gray-900">90-A927 (블랙 2):</strong> 차가운 블루블랙 오표기 수정 → A926 저농 기반의 따뜻한 적황미(Red-yellowish) 발현으로 교정.</li>
+                  <li><strong className="text-gray-900">98-A097 (마이크로 화이트):</strong> 고농 불투명 솔리드 오표기 수정 → 바탕 은폐 불가한 완전 투명 백색 틴터로 확립.</li>
+                </ul>
+              </div>
+
+              {/* 2. 22라인 */}
+              <div className="bg-white p-5 rounded-xl shadow-sm border-l-4 border-red-500">
+                <h3 className="font-extrabold text-lg text-gray-900 mb-3 flex items-center gap-2">
+                  <span className="bg-red-100 text-red-700 px-2 py-0.5 rounded text-sm">Update 2</span>
+                  22라인 우레탄 솔리드 및 틴터 체계 확립 (총 28개 품목)
+                </h3>
+                <p className="text-gray-600 text-sm mb-3">
+                  가장 큰 수정이 일어난 파트로, 품번 알파벳 오류를 교정하고 뼈대(페인트)와 조미료(틴터)의 역할을 명확히 분리했습니다.
+                </p>
+                <ul className="text-sm text-gray-700 space-y-2 pl-4 list-disc marker:text-red-500">
+                  <li><strong className="text-gray-900">저농 틴터 알파벳 오류 교정:</strong> A105, A126 오표기를 기술집 기준 M105, M126 등으로 전면 교체.</li>
+                  <li><strong className="text-gray-900">고농(뼈대) vs 저농(틴터) 분리:</strong> M60, M26 등 은폐력이 막강한 뼈대 안료를 틴팅에 사용할 경우 발생하는 탁색 하자를 경고. 미세 톤 보정 시에는 은폐력이 파괴된 저농 틴터만 투입하도록 로직 엄격 적용.</li>
+                </ul>
+              </div>
+
+              {/* 3. 특수 펄 */}
+              <div className="bg-white p-5 rounded-xl shadow-sm border-l-4 border-purple-500">
+                <h3 className="font-extrabold text-lg text-gray-900 mb-3 flex items-center gap-2">
+                  <span className="bg-purple-100 text-purple-700 px-2 py-0.5 rounded text-sm">Update 3</span>
+                  11/93/98라인 특수 펄 및 파우더 이펙트 (총 26개 품목)
+                </h3>
+                <p className="text-gray-600 text-sm mb-3">
+                  펄 안료의 핵심인 '측면 플롭(Flop) 반사광'과 도장 방식(액상 vs 분말)에 대한 치명적 오류를 바로잡았습니다.
+                </p>
+                <ul className="text-sm text-gray-700 space-y-2 pl-4 list-disc marker:text-purple-500">
+                  <li><strong className="text-gray-900">11-E120 (엠버 골드 펄):</strong> 측면 붉은빛 오표기 수정 → 정면 골드, 측면 백청미(하얗고 푸른빛)가 도는 역전 플롭 특성 확립.</li>
+                  <li><strong className="text-gray-900">파우더 펄 독립 분류 (11-M021, M033 등):</strong> 액상형 취급 오류 수정. 100% 교반 및 드롭 코트 미준수 시 발생하는 좁쌀/멍자국 하자 경고 로직 추가.</li>
+                </ul>
+              </div>
+
+              {/* 4. 신규 카테고리 (55라인 & 부자재) */}
+              <div className="bg-white p-5 rounded-xl shadow-sm border-l-4 border-emerald-500">
+                <h3 className="font-extrabold text-lg text-gray-900 mb-3 flex items-center gap-2">
+                  <span className="bg-emerald-100 text-emerald-700 px-2 py-0.5 rounded text-sm">Update 4</span>
+                  신규 카테고리 전면 추가 (총 60개 품목)
+                </h3>
+                <p className="text-gray-600 text-sm mb-3">
+                  기존 DB의 공백을 기술지원집을 통해 완벽하게 채워 넣어 완전한 시스템을 구축했습니다.
+                </p>
+                <ul className="text-sm text-gray-700 space-y-2 pl-4 list-disc marker:text-emerald-500">
+                  <li><strong className="text-gray-900">55라인 유성 시스템 46종 신규 구축:</strong> 55-M99/19(표준 광휘형) 등 은분 10종, 55-M319(질라릭 착색) 등 펄 14종, 유색/틴터 22종 완벽 동기화.</li>
+                  <li><strong className="text-gray-900">상도 투명 클리어 (4종):</strong> 923-155(MS), 923-255(HS), 923-447(불소), 923-55(무광) 등 용도 세분화.</li>
+                  <li><strong className="text-gray-900">하도재 및 경화제/첨가제 (10종):</strong> 프라이머 필러(285-16, 550), 퍼티(839-20), 온도별 경화제(929-33, 93, 55), 플라스틱 범퍼 유연제(522-111), 보카시(55-8.500) 등 혼합비/건조시간 규격 확립.</li>
+                </ul>
+              </div>
+
+              {/* 요약 결론 */}
+              <div className="bg-gray-800 p-5 rounded-xl shadow-inner mt-4">
+                <p className="text-gray-200 text-sm leading-relaxed text-center">
+                  본 시스템은 90라인(수용성 47종), 22라인(우레탄 28종), 55라인(유성 46종), 특수펄(26종)의 안료부터 도장의 뼈대를 세우고 마감하는 클리어, 서페이서, 경화제, 유연제 등 <strong className="text-white text-base">총 161종의 데이터</strong>가 단 하나의 누락이나 명칭 오류 없이 설계된 <strong className="text-blue-400">완벽한 마스터 데이터베이스</strong>입니다.
+                </p>
+              </div>
+
+            </div>
+          </div>
+        </div>
+      )}
 export default App; 
