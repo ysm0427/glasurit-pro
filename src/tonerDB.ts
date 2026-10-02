@@ -1707,5 +1707,3 @@ export const shortcuts: Record<string, string> = {
 };
 
 // ━━━━━━━━ 순정/OEM 컬러 데이터 매핑 ━━━━━━━━
-export const OEM_COLORS: Array<{ code: string; name: string }> = [];
-export const PEARL_LEVELS: Array<{ code: string; name: string }> = [];
