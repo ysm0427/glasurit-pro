@@ -21,7 +21,7 @@ const App: React.FC = () => {
   const [searchTerm, setSearchTerm] = useState('');
   const [activeCategory, setActiveCategory] = useState('전체');
   const [isGlossaryOpen, setIsGlossaryOpen] = useState(false);
-
+  const [isProcessOpen, setIsProcessOpen] = useState(false);
   // 용어 사전 모달 핸들러
   const openGlossary = () => setIsGlossaryOpen(true);
   const closeGlossary = () => setIsGlossaryOpen(false);
