@@ -1166,84 +1166,75 @@ export default function App() {
               <button onClick={() => setIsHistoryModalOpen(false)} className="text-slate-400 hover:text-white bg-slate-800 p-1.5 rounded-full"><X size={18} /></button>
             </div>
             <div className="p-6 overflow-y-auto custom-scrollbar space-y-4 text-slate-300 text-sm leading-relaxed font-mono">
-                <div className="bg-slate-800/80 p-5 rounded-xl border border-slate-600 shadow-inner text-emerald-400 whitespace-pre font-bold overflow-x-auto">
-{`┌─────────────────────────────────────────┐
-│ 🎨 윤성만 님을 위한 전용 프로그램           │
-│ 제작: Claude AI × 윤성만                 │
-│ 목적: BASF 글라슈리트 현장 조색 자동화    │
-│                                         │
-[글라슈리트 마스터 DB 제작 및 수정 내역 (총 161개 품목 완벽 구축)]
-🚨 1. 90라인 수용성 솔리드 (총 38개 품목): 색상 방향(Hue) 및 투명도 전면 수정
-기존에는 안료 이름만으로 AI가 임의 유추하여 톤(웜톤/쿨톤)을 정반대로 묘사했으나, 공식 기술지원집 사진의 정면/측면 색상 데이터를 통해 완벽히 교정했습니다.
+<div className="bg-slate-800 p-6 rounded-xl border border-slate-600 shadow-inner">
+    {/* 헤더 섹션 */}
+    <div className="border-b border-emerald-500/50 pb-4 mb-5">
+        <h4 className="text-2xl font-black text-white tracking-wide mb-1">
+            Glasurit Master DB Architecture
+        </h4>
+        <p className="text-emerald-400 font-bold text-sm">
+            Total 161 Items Perfectly Built & Engineered
+        </p>
+        <div className="mt-3 inline-block bg-slate-900 px-3 py-1.5 rounded border border-slate-700">
+            <span className="text-slate-400 text-xs mr-2">Lead Color & Data Engineer:</span>
+            <span className="text-white font-black text-sm">윤성만 팀장</span>
+        </div>
+    </div>
 
-90-A503 (스카이 블루): [수정 전] 다크 코발트 블루, 붉은빛 섀도우 → [수정 후] 정면과 측면 모두 산뜻한 녹미(Greenish) 청색. (붉은기 없음)
+    {/* 본문 섹션 */}
+    <div className="space-y-6 text-slate-300 font-sans text-[13px] leading-relaxed break-keep">
+        
+        {/* 1. 90라인 */}
+        <div>
+            <div className="flex items-center gap-2 mb-2">
+                <span className="bg-blue-600 text-white px-2 py-0.5 rounded text-[10px] font-black">Patch 1</span>
+                <span className="font-bold text-white text-sm">90라인 수용성 솔리드 전면 교정 (총 38종)</span>
+            </div>
+            <ul className="pl-4 space-y-1 list-disc marker:text-blue-500">
+                <li><b className="text-blue-300">90-A503 (스카이 블루):</b> 다크 코발트 블루 오표기 삭제 → 정/측면 산뜻한 녹미(Greenish) 청색 교정</li>
+                <li><b className="text-blue-300">90-A927 (블랙 2):</b> 차가운 블루블랙 오표기 수정 → 따뜻한 적황미(Red-yellowish) 발현 교정</li>
+                <li><b className="text-blue-300">98-A097 (마이크로 화이트):</b> 바탕 은폐가 불가능한 완전 투명 백색 틴터로 특성 확립</li>
+            </ul>
+        </div>
 
-90-A927 (블랙 2): [수정 전] 붉은 기운이 전혀 없는 차가운 블루 블랙 → [수정 후] A926의 저농 흑색. 정/측면에서 따뜻한 적황미(Red-yellowish) 발현.
+        {/* 2. 22라인 */}
+        <div>
+            <div className="flex items-center gap-2 mb-2">
+                <span className="bg-red-600 text-white px-2 py-0.5 rounded text-[10px] font-black">Patch 2</span>
+                <span className="font-bold text-white text-sm">22라인 우레탄 솔리드 및 틴터 체계 확립 (총 28종)</span>
+            </div>
+            <ul className="pl-4 space-y-1 list-disc marker:text-red-500">
+                <li><b className="text-red-300">알파벳 명칭 교정:</b> 저농 틴터 A105, A126 오표기를 기술집 기준 M105, M126으로 전면 교체</li>
+                <li><b className="text-red-300">뼈대/조미료 완벽 분리:</b> M60, M26 등 은폐력이 강한 뼈대 안료의 틴팅 사용 경고 로직 추가</li>
+            </ul>
+        </div>
 
-98-A097 (마이크로 화이트): [수정 전] 고농 불투명 솔리드 화이트 베이스 → [수정 후] 완전히 속이 비치는 투명 백색. (바탕을 덮는 용도로 사용 불가)
+        {/* 3. 펄/파우더 */}
+        <div>
+            <div className="flex items-center gap-2 mb-2">
+                <span className="bg-purple-600 text-white px-2 py-0.5 rounded text-[10px] font-black">Patch 3</span>
+                <span className="font-bold text-white text-sm">11/93/98라인 특수 펄 및 파우더 이펙트 (총 26종)</span>
+            </div>
+            <ul className="pl-4 space-y-1 list-disc marker:text-purple-500">
+                <li><b className="text-purple-300">11-E120 (엠버 골드 펄):</b> 정면 골드, 측면 백청미가 도는 역전 플롭(Flop) 특성 교정</li>
+                <li><b className="text-purple-300">파우더 펄 독립 분류:</b> 11-M021 등 가루 형태 펄의 교반 불량 시 좁쌀/멍자국 하자 경고 추가</li>
+            </ul>
+        </div>
 
-🚨 2. 22라인 우레탄 솔리드 및 틴터 (총 28개 품목): 명칭 오류 및 고농/저농 체계 확립
-가장 큰 수정이 일어난 파트입니다. 알파벳 오류를 잡고, 뼈대(페인트)와 조미료(틴터)의 역할을 기술집에 맞춰 강제 분리했습니다.
-
-저농 틴터 알파벳 오류 (A → M): [수정 전] 22-A105, 22-A126 등으로 임의 명명 → [수정 후] 기술집에 기재된 정확한 품번인 22-M105, 22-M126, 22-M127 등으로 전면 교체.
-
-고농(뼈대) vs 저농(틴터) 사용법 분리: [수정 전] M26(블랙)이나 M60(화이트)을 틴팅용으로도 쓸 수 있다고 묘사 → [수정 후] M60, M26 등은 은폐력이 막강한 뼈대로 타 틴터와 섞으면 색이 덮여버림을 경고. 미세 톤 보정 시에는 은폐력이 파괴된 저농 틴터(M160, M126, M105 등)만 투입해야 함을 엄격히 적용.
-
-🚨 3. 특수 펄 및 파우더 [11/93/98라인] (총 26개 품목): 측면 반사광(Flop)과 입자 형태
-펄의 생명인 '측면 섀도우 색상'과 '도장 방식(액상 vs 분말)'에 대한 치명적 오류를 바로잡았습니다.
-
-11-E120 (엠버 골드 펄): [수정 전] 측면에서 붉은 황금빛(황적미)을 냄 → [수정 후] 정면은 골드, 측면은 차가운 백청미(하얗고 푸른빛)가 도는 역전 플롭 펄.
-
-파우더 펄 분리 (11-M021, 11-M033 등): [수정 전] 일반 액상 펄처럼 취급 → [수정 후] 명확히 가루 형태인 파우더 펄로 분류. (액상 수지와 100% 교반 후 드롭 코트로 뿌리지 않으면 좁쌀처럼 뭉치는 멍자국 하자 발생 경고 추가).
-
-🚨 4. 신규 카테고리 전면 추가 (55라인 유성 46개 및 공통 부자재 14개 품목)
-이전 데이터베이스에 아예 존재하지 않았던 거대한 빈칸을 기술집을 통해 완벽하게 채웠습니다.
-
-55라인 유성 시스템 46종 추가: 55-M99/19(표준 광휘형) 등 은분 10종, 55-M319(질라릭 착색) 등 펄 14종, 55-A324(가장 밝은 적색) 등 유색 솔리드 및 틴터 22종을 기술집 텍스트와 100% 일치시켜 신규 구축.
-
-부자재 온도/용도 세분화 (14종 추가): 뭉뚱그려져 있던 클리어를 923-155(MS), 923-255(HS), 923-447(불소) 등으로 나누고, 경화제와 프라이머 필러의 배합비와 건조시간을 매뉴얼 규격대로 확립. (※ 하단 상세 리스트 참고)
-
-55-M010 등 은폐력 경고 반영: 기술집의 붉은 글씨 경고를 반영하여, 펄 단독 사용 시 은폐력이 떨어지므로 하도 색상 일치가 절대적임을 명시.
-
-🛡️ 포함된 투명 클리어 및 특수 부자재 리스트 (총 14개 품목)
-기술지원집 부록에 명시된 온도/용도/혼합비 규격대로 완벽히 코드로 만들어 두었습니다.
-
-상도 투명 클리어 (총 4종)
-
-923-155: 아크릴 우레탄 투명 (가장 범용적인 MS타입)
-
-923-255: 고광택 HS타입 투명 (살오름성이 좋은 하이솔리드)
-
-923-447: HS 불소투명 (스크래치 방지용 최고급 클리어)
-
-923-55: 아크릴 우레탄 무광 투명 (무광/반광 도장용)
-
-프라이머 및 하도재 (총 3종)
-
-285-16 VOC: 프라이머 필러 (철재/아연도강판 방청 겸용)
-
-285-550: HS 프라이머 필러 (명도 조절용 밝은 회색 서페이서)
-
-839-20: 다목적용 퍼티 (판금/폴리퍼티 겸용)
-
-온도/용도별 특수 경화제 (총 3종)
-
-929-33: VOC 투명 경화제 (25℃ 전후 보통)
-
-929-93: MS 아크릴 우레탄 경화제 (25℃ 전후)
-
-929-55: HS 필러전용 경화제 (하도 전용 속건)
-
-특수 첨가제 및 신나 (총 4종)
-
-522-111: 유연제 (플라스틱 범퍼 깨짐 방지용 첨가제)
-
-55-8.500: 블랜딩 크리어 (보카시 경계면을 지우는 55라인 특수 수지)
-
-352-91: 유성 보통 신나 (25℃ 전후 범용)
-
-93-E3: 수성 희석제 (90라인 전용) │
-└─────────────────────────────────────────┘`}
+        {/* 4. 신규 라인 */}
+        <div>
+            <div className="flex items-center gap-2 mb-2">
+                <span className="bg-emerald-600 text-white px-2 py-0.5 rounded text-[10px] font-black">Patch 4</span>
+                <span className="font-bold text-white text-sm">신규 카테고리 전면 추가 (총 60종)</span>
+            </div>
+            <ul className="pl-4 space-y-1 list-disc marker:text-emerald-500">
+                <li><b className="text-emerald-300">55라인 유성 시스템 구축:</b> 은분 10종, 펄 14종, 솔리드 22종 등 총 46종 완벽 동기화</li>
+                <li><b className="text-emerald-300">상도 투명 클리어 세분화:</b> 923-155(MS), 923-255(HS), 923-447(불소), 923-55(무광) 확립</li>
+                <li><b className="text-emerald-300">부자재 혼합비 규격화:</b> 하도재, 온도별 경화제(929-), 유연제 등 기술 매뉴얼 규격 완벽 적용</li>
+            </ul>
+        </div>
+    </div>
+</div>
                 </div>
             </div>
           </div>
