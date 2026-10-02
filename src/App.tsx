@@ -752,7 +752,7 @@ export default function App() {
                    <div className="flex items-center justify-between bg-slate-900/90 px-3 py-2.5 rounded-xl border border-slate-800 shadow-inner text-xs">
                        <div className="flex flex-col items-center"><span className="text-[9px] text-slate-500 font-bold">순수 안료</span><span className="font-black text-white text-sm">{totalBaseWeight}g</span></div>
                        <span className="text-slate-600 font-black text-sm">+</span>
-                       <div className="flex flex-col items-center"><span className="text-[9px] text-blue-400 font-bold">수지/첨가제</span><span className="font-black text-blue-400 text-sm">{(parseFloat(totalBaseWeight) * (isBaseMetallic ? 0.2 : 0.1)).toFixed(1)}g</span></div>
+                       <div className="flex flex-col items-center"><span className="text-[9px] text-blue-400 font-bold">수지/첨가제</span><span className="font-black text-blue-400 text-sm">{(parseFloat(totalBaseWeight) * (isBaseMetallic ? 0.5 : 0.1)).toFixed(1)}g</span></div>
                        <span className="text-slate-600 font-black text-sm">=</span>
                        <div className="flex flex-col items-center bg-blue-950/40 px-2 py-0.5 rounded border border-blue-900/50"><span className="text-[9px] text-emerald-400 font-bold">총 중량</span><span className="font-black text-emerald-400 text-base">{(parseFloat(totalBaseWeight) * (isBaseMetallic ? 1.2 : 1.1)).toFixed(1)}g</span></div>
                    </div>
@@ -763,7 +763,7 @@ export default function App() {
                    <div className="flex items-center justify-between bg-slate-900/90 px-3 py-2.5 rounded-xl border border-slate-800 shadow-inner text-xs">
                        <div className="flex flex-col items-center"><span className="text-[9px] text-slate-500 font-bold">순수 안료</span><span className="font-black text-white text-sm">{totalPearlWeight}g</span></div>
                        <span className="text-slate-600 font-black text-sm">+</span>
-                       <div className="flex flex-col items-center"><span className="text-[9px] text-purple-400 font-bold">수지/첨가제</span><span className="font-black text-purple-400 text-sm">{(parseFloat(totalPearlWeight) * (isPearlMetallic ? 0.2 : 0.1)).toFixed(1)}g</span></div>
+                       <div className="flex flex-col items-center"><span className="text-[9px] text-purple-400 font-bold">수지/첨가제</span><span className="font-black text-purple-400 text-sm">{(parseFloat(totalPearlWeight) * (isPearlMetallic ? 0.5 : 0.1)).toFixed(1)}g</span></div>
                        <span className="text-slate-600 font-black text-sm">=</span>
                        <div className="flex flex-col items-center bg-purple-950/40 px-2 py-0.5 rounded border border-purple-900/50"><span className="text-[9px] text-emerald-400 font-bold">총 중량</span><span className="font-black text-emerald-400 text-base">{(parseFloat(totalPearlWeight) * (isPearlMetallic ? 1.2 : 1.1)).toFixed(1)}g</span></div>
                    </div>
