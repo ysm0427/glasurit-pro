@@ -745,7 +745,7 @@ export default function App() {
       </div>
 
       <div className="fixed bottom-0 left-0 w-full z-[500] bg-slate-950/95 backdrop-blur-xl border-t border-slate-800 shadow-[0_-12px_45px_rgba(0,0,0,0.85)] text-slate-100 pb-[env(safe-area-inset-bottom)]">
-          <div className="hidden lg:flex p-4 justify-between items-center gap-4">
+          <div className="flex p-4 justify-between items-center gap-4">
             <div className="flex w-full lg:w-auto gap-4 flex-col sm:flex-row justify-between lg:justify-start">
                 <div className="flex flex-col gap-1 flex-1 min-w-[240px]">
                    <span className="text-[10px] text-slate-400 font-black tracking-widest flex items-center uppercase"><Layers size={11} className="mr-1 text-blue-400"/> A. 베이스 코트 실시간 중량</span>
