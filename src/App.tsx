@@ -17,15 +17,18 @@ const GLOSSARY_DATA = [
 
 // 우측 라인별 카테고리 탭 목록
 const CATEGORIES = ['전체', '90라인', '100라인', '22라인', '68라인', '특수/이펙트', '첨가제/경화제'];
+
 const App: React.FC = () => {
   const [searchTerm, setSearchTerm] = useState('');
   const [activeCategory, setActiveCategory] = useState('전체');
   const [isGlossaryOpen, setIsGlossaryOpen] = useState(false);
-  const [isProcessOpen, setIsProcessOpen] = useState(false);
+  const [isProcessOpen, setIsProcessOpen] = useState(false); // 👈 상태 선언 정상 포함 완료
+
   // 용어 사전 모달 핸들러
   const openGlossary = () => setIsGlossaryOpen(true);
   const closeGlossary = () => setIsGlossaryOpen(false);
- // ━━━━━━━━ 스마트 단축키 검색 및 필터링 로직 ━━━━━━━━
+
+  // ━━━━━━━━ 스마트 단축키 검색 및 필터링 로직 ━━━━━━━━
   const filteredToners = useMemo(() => {
     let results = Object.entries(TONER_DB);
 
@@ -46,50 +49,55 @@ const App: React.FC = () => {
     if (searchTerm.trim() !== '') {
       const query = searchTerm.trim().toUpperCase();
       
-      // 단축키 매핑본에서 정확한 풀네임 키 찾기 (예: 'M4' -> '90-M4' 또는 '22-M4')
       const exactMatchKey = shortcuts[query]; 
 
       const exactMatches: [string, TonerData][] = [];
       const partialMatches: [string, TonerData][] = [];
 
       results.forEach(([key, data]) => {
-        // [우선순위 1등] 단축키가 정확히 일치하는 경우
         if (exactMatchKey && key === exactMatchKey) {
           exactMatches.push([key, data]);
         } 
-        // [우선순위 1등] 입력어 자체가 키와 완전히 일치하는 경우 (예: '90-M4')
         else if (key.toUpperCase() === query) {
           exactMatches.push([key, data]);
         }
-        // [우선순위 2등] 그 외 코드나 설명에 글자가 포함되어 있는 경우
         else if (
           key.toUpperCase().includes(query) ||
           data.role.toUpperCase().includes(query) ||
           data.desc.toUpperCase().includes(query)
         ) {
-          // 중복 추가 방지
           if (exactMatchKey !== key) {
             partialMatches.push([key, data]);
           }
         }
       });
 
-      // 정확히 일치한 항목을 맨 위에, 부분 일치 항목을 그 아래에 배치
       results = [...exactMatches, ...partialMatches];
     }
 
     return results;
   }, [searchTerm, activeCategory]);
+
   return (
     <div className="min-h-screen bg-gray-100 p-4 font-sans">
       <header className="mb-6 bg-blue-900 text-white p-5 rounded-xl shadow-lg flex flex-col md:flex-row justify-between items-center gap-4">
         <h1 className="text-3xl font-extrabold tracking-tight">Glasurit Toner DB</h1>
-        <button 
-          onClick={openGlossary}
-          className="bg-green-500 hover:bg-green-600 text-white font-bold py-2.5 px-5 rounded-lg shadow transition-colors flex items-center gap-2"
-        >
-          <span className="text-xl">📖</span> 글라슈리트 용어 사전
-        </button>
+        <div className="flex gap-3">
+          {/* Pro 제작 과정 보기 버튼 */}
+          <button 
+            onClick={() => setIsProcessOpen(true)}
+            className="bg-gray-800 hover:bg-gray-900 text-white font-bold py-2.5 px-5 rounded-lg shadow transition-colors flex items-center gap-2"
+          >
+            <span className="text-xl">{'</>'}</span> Pro 제작 과정 보기
+          </button>
+          
+          <button 
+            onClick={openGlossary}
+            className="bg-green-500 hover:bg-green-600 text-white font-bold py-2.5 px-5 rounded-lg shadow transition-colors flex items-center gap-2"
+          >
+            <span className="text-xl">📖</span> 글라슈리트 용어 사전
+          </button>
+        </div>
       </header>
 
       {/* 라인별 카테고리 필터 탭 */}
@@ -109,7 +117,7 @@ const App: React.FC = () => {
         ))}
       </div>
 
-      {/* 용어 사전 모달창 (UI 복구) */}
+      {/* 용어 사전 모달창 */}
       {isGlossaryOpen && (
         <div className="fixed inset-0 bg-black bg-opacity-60 flex items-center justify-center z-50 p-4 backdrop-blur-sm transition-opacity">
           <div className="bg-white rounded-2xl shadow-2xl max-w-3xl w-full max-h-[85vh] flex flex-col overflow-hidden">
@@ -135,7 +143,8 @@ const App: React.FC = () => {
           </div>
         </div>
       )}
-     {/* ━━━━━━━━ 스마트 검색창 영역 ━━━━━━━━ */}
+
+      {/* 스마트 검색창 영역 */}
       <div className="mb-6 relative">
         <input
           type="text"
@@ -144,7 +153,6 @@ const App: React.FC = () => {
           onChange={(e) => setSearchTerm(e.target.value)}
           className="w-full p-4 pl-12 text-lg border-2 border-blue-200 rounded-xl shadow-sm focus:border-blue-500 focus:ring-4 focus:ring-blue-100 transition-all outline-none text-gray-800 font-medium placeholder-gray-400"
         />
-        <span className="absolute left-4 top-1/2 transform -translate-y-1/2 text-2xl text-gray-400"></span>
       </div>
 
       {/* 검색 결과 카운트 */}
@@ -152,12 +160,10 @@ const App: React.FC = () => {
         <span>총 <strong className="text-blue-700 text-lg">{filteredToners.length}</strong>개의 안료가 검색되었습니다.</span>
       </div>
 
-      {/* ━━━━━━━━ 안료 카드 리스트 렌더링 영역 ━━━━━━━━ */}
+      {/* 안료 카드 리스트 렌더링 영역 */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
         {filteredToners.map(([code, toner]) => (
           <div key={code} className="bg-white rounded-2xl shadow-md border border-gray-100 overflow-hidden hover:shadow-xl transition-shadow duration-300 flex flex-col">
-            
-            {/* 카드 헤더 (안료 코드 및 롤) */}
             <div 
               className="bg-gray-800 text-white p-4 flex justify-between items-center border-b-4" 
               style={{ borderColor: toner.face.startsWith('#') ? toner.face : '#3b82f6' }}
@@ -170,10 +176,7 @@ const App: React.FC = () => {
               </span>
             </div>
             
-            {/* 카드 바디 */}
             <div className="p-5 flex-1 flex flex-col">
-              
-              {/* 색상 미리보기 (Face & Flop) */}
               <div className="flex gap-3 mb-5">
                 <div className="flex-1">
                   <p className="text-xs text-gray-500 mb-1 font-semibold">정면 (Face)</p>
@@ -195,12 +198,10 @@ const App: React.FC = () => {
                 </div>
               </div>
               
-              {/* 안료 핵심 요약 (desc) */}
               <p className="text-sm text-gray-800 font-bold mb-4 bg-blue-50 p-3 rounded-lg border border-blue-100 leading-snug">
                 {toner.desc}
               </p>
               
-              {/* 안료 상세 정보 (details) */}
               {toner.details && toner.details.length > 0 && (
                 <div className="space-y-4 mt-auto">
                   {toner.details.map((detail, idx) => (
@@ -216,7 +217,7 @@ const App: React.FC = () => {
         ))}
       </div>
       
-      {/* ━━━━━━━━ 검색 결과 없음 예외 처리 ━━━━━━━━ */}
+      {/* 검색 결과 없음 예외 처리 */}
       {filteredToners.length === 0 && (
         <div className="text-center py-20 bg-white rounded-2xl shadow-sm border border-gray-200 mt-6">
           <span className="text-5xl block mb-4">🥲</span>
@@ -224,15 +225,12 @@ const App: React.FC = () => {
           <p className="text-gray-500">다른 단축키(예: M4)나 안료명을 입력해보세요.</p>
         </div>
       )}
-    </div>
-  );
-};
-{/* ━━━━━━━━ Pro 제작 과정 모달창 (윤성만 팀장님 릴리즈 노트) ━━━━━━━━ */}
+
+      {/* ━━━━━━━━ Pro 제작 과정 모달창 (윤성만 팀장님 릴리즈 노트) ━━━━━━━━ */}
       {isProcessOpen && (
         <div className="fixed inset-0 bg-black bg-opacity-70 flex items-center justify-center z-50 p-4 backdrop-blur-sm transition-opacity">
           <div className="bg-white rounded-2xl shadow-2xl max-w-4xl w-full max-h-[85vh] flex flex-col overflow-hidden border-2 border-gray-300">
             
-            {/* 헤더 영역 */}
             <div className="bg-gray-900 px-6 py-5 flex justify-between items-center border-b-4 border-blue-500">
               <div>
                 <h2 className="text-2xl font-extrabold text-white tracking-wide">
@@ -250,7 +248,6 @@ const App: React.FC = () => {
               </button>
             </div>
 
-            {/* 작성자 명시 영역 */}
             <div className="bg-gray-100 px-6 py-3 border-b border-gray-200 flex items-center justify-end">
               <span className="bg-blue-100 text-blue-800 text-xs font-bold px-3 py-1 rounded-full border border-blue-300 shadow-sm mr-2">
                 Version 2.0.0 Masterpiece
@@ -260,10 +257,7 @@ const App: React.FC = () => {
               </span>
             </div>
 
-            {/* 본문 릴리즈 노트 영역 */}
             <div className="p-6 overflow-y-auto space-y-6 bg-gray-50">
-              
-              {/* 1. 90라인 */}
               <div className="bg-white p-5 rounded-xl shadow-sm border-l-4 border-blue-500">
                 <h3 className="font-extrabold text-lg text-gray-900 mb-3 flex items-center gap-2">
                   <span className="bg-blue-100 text-blue-700 px-2 py-0.5 rounded text-sm">Update 1</span>
@@ -279,7 +273,6 @@ const App: React.FC = () => {
                 </ul>
               </div>
 
-              {/* 2. 22라인 */}
               <div className="bg-white p-5 rounded-xl shadow-sm border-l-4 border-red-500">
                 <h3 className="font-extrabold text-lg text-gray-900 mb-3 flex items-center gap-2">
                   <span className="bg-red-100 text-red-700 px-2 py-0.5 rounded text-sm">Update 2</span>
@@ -294,7 +287,6 @@ const App: React.FC = () => {
                 </ul>
               </div>
 
-              {/* 3. 특수 펄 */}
               <div className="bg-white p-5 rounded-xl shadow-sm border-l-4 border-purple-500">
                 <h3 className="font-extrabold text-lg text-gray-900 mb-3 flex items-center gap-2">
                   <span className="bg-purple-100 text-purple-700 px-2 py-0.5 rounded text-sm">Update 3</span>
@@ -309,7 +301,6 @@ const App: React.FC = () => {
                 </ul>
               </div>
 
-              {/* 4. 신규 카테고리 (55라인 & 부자재) */}
               <div className="bg-white p-5 rounded-xl shadow-sm border-l-4 border-emerald-500">
                 <h3 className="font-extrabold text-lg text-gray-900 mb-3 flex items-center gap-2">
                   <span className="bg-emerald-100 text-emerald-700 px-2 py-0.5 rounded text-sm">Update 4</span>
@@ -325,7 +316,6 @@ const App: React.FC = () => {
                 </ul>
               </div>
 
-              {/* 요약 결론 */}
               <div className="bg-gray-800 p-5 rounded-xl shadow-inner mt-4">
                 <p className="text-gray-200 text-sm leading-relaxed text-center">
                   본 시스템은 90라인(수용성 47종), 22라인(우레탄 28종), 55라인(유성 46종), 특수펄(26종)의 안료부터 도장의 뼈대를 세우고 마감하는 클리어, 서페이서, 경화제, 유연제 등 <strong className="text-white text-base">총 161종의 데이터</strong>가 단 하나의 누락이나 명칭 오류 없이 설계된 <strong className="text-blue-400">완벽한 마스터 데이터베이스</strong>입니다.
@@ -336,4 +326,9 @@ const App: React.FC = () => {
           </div>
         </div>
       )}
-export default App; 
+
+    </div>
+  );
+};
+
+export default App;
