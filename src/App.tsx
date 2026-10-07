@@ -4,7 +4,7 @@ import {
   Sliders, Trash2, Plus, X, Maximize, Beaker, Sun, 
   Layers, ChevronDown, ChevronUp, BookOpen, Share2, Zap, Search, 
   FileSpreadsheet, History, Mail, Code, Calendar, Eye, ThumbsUp, 
-  CheckCircle, Edit3, Target, MessageSquare, Send, Save, RefreshCw 
+  CheckCircle, Edit3, Target, MessageSquare, Send, Save, RefreshCw, Camera 
 } from 'lucide-react';
 
 import { TONER_DB, shortcuts, PEARL_LEVELS, OEM_COLORS, TonerData } from './tonerDB';
@@ -84,6 +84,33 @@ const MIXING_DATA: Record<string, any> = {
   'R': { c1: '빨강 (R)', h1: '#ff0000', r1: 100 }, 'yR': { c1: '빨강 (R)', h1: '#ff0000', r1: 75, c2: '노랑 (Y)', h2: '#ffff00', r2: 25 }, 'YR': { c1: '빨강 (R)', h1: '#ff0000', r1: 50, c2: '노랑 (Y)', h2: '#ffff00', r2: 50 }, 'rY': { c1: '노랑 (Y)', h1: '#ffff00', r1: 75, c2: '빨강 (R)', h2: '#ff0000', r2: 25 }, 'Y': { c1: '노랑 (Y)', h1: '#ffff00', r1: 100 }, 'gY': { c1: '노랑 (Y)', h1: '#ffff00', r1: 75, c2: '녹색 (G)', h2: '#009900', r2: 25 }, 'GY': { c1: '노랑 (Y)', h1: '#ffff00', r1: 50, c2: '녹색 (G)', h2: '#009900', r2: 50 }, 'yG': { c1: '녹색 (G)', h1: '#009900', r1: 75, c2: '노랑 (Y)', h2: '#ffff00', r2: 25 }, 'G': { c1: '녹색 (G)', h1: '#009900', r1: 100 }, 'bG': { c1: '녹색 (G)', h1: '#009900', r1: 75, c2: '파랑 (B)', h2: '#0000ff', r2: 25 }, 'BG': { c1: '녹색 (G)', h1: '#009900', r1: 50, c2: '파랑 (B)', h2: '#0000ff', r2: 50 }, 'gB': { c1: '파랑 (B)', h1: '#0000ff', r1: 75, c2: '녹색 (G)', h2: '#009900', r2: 25 }, 'B': { c1: '파랑 (B)', h1: '#0000ff', r1: 100 }, 'pB': { c1: '파랑 (B)', h1: '#0000ff', r1: 75, c2: '보라 (P)', h2: '#700070', r2: 25 }, 'PB': { c1: '파랑 (B)', h1: '#0000ff', r1: 50, c2: '보라 (P)', h2: '#700070', r2: 50 }, 'bP': { c1: '보라 (P)', h1: '#700070', r1: 75, c2: '파랑 (B)', h2: '#0000ff', r2: 25 }, 'P': { c1: '보라 (P)', h1: '#700070', r1: 100 }, 'rP': { c1: '보라 (P)', h1: '#700070', r1: 75, c2: '빨강 (R)', h2: '#ff0000', r2: 25 }, 'RP': { c1: '보라 (P)', h1: '#700070', r1: 50, c2: '빨강 (R)', h2: '#ff0000', r2: 50 }, 'pR': { c1: '빨강 (R)', h1: '#ff0000', r1: 75, c2: '보라 (P)', h2: '#700070', r2: 25 },
 };
 
+// ━━━━━━━━ [추가] 이미지 갤러리 가이드 데이터베이스 ━━━━━━━━
+// (나중에 URL 부분만 대표님이 올리신 60장 사진 주소로 갈아끼우시면 됩니다)
+const GUIDE_IMAGES: Record<string, any[]> = {
+  theory: [
+    { id: 1, title: '색의 인식과 3원색', desc: '빛의 혼합/안료 혼합 원리 (p.3-4)', url: 'https://via.placeholder.com/800x600/1e293b/ffffff?text=Theory+1' },
+    { id: 2, title: '단색안료 특성', desc: '유기안료와 무기안료의 차이점 (p.6-7)', url: 'https://via.placeholder.com/800x600/1e293b/ffffff?text=Theory+2' },
+    { id: 3, title: '빛과 안료 상호작용', desc: '솔리드/알루미늄/간섭펄 반사 원리 (p.8)', url: 'https://via.placeholder.com/800x600/1e293b/ffffff?text=Theory+3' },
+  ],
+  spectrum: [
+    { id: 4, title: '조색제 포스터의 이해', desc: 'WT345, WT330 등 기호 읽는 법 (p.10)', url: 'https://via.placeholder.com/800x600/1e293b/ffffff?text=Spectrum+1' },
+    { id: 5, title: '솔리드 포지셔닝 맵', desc: '솔리드 컬러 조색제 별 위치도 (p.11)', url: 'https://via.placeholder.com/800x600/1e293b/ffffff?text=Spectrum+2' },
+    { id: 6, title: '황색/적색 계열도', desc: '명암/채도 방향성에 따른 비교 (p.24-27)', url: 'https://via.placeholder.com/800x600/1e293b/ffffff?text=Spectrum+3' },
+    { id: 7, title: '청색/녹색/흑색 계열도', desc: '각 계열별 측면/정면 이색 비교', url: 'https://via.placeholder.com/800x600/1e293b/ffffff?text=Spectrum+4' },
+  ],
+  effect: [
+    { id: 8, title: '이펙트 포지셔닝 맵', desc: '이펙트 컬러 조색제 별 위치도 (p.12)', url: 'https://via.placeholder.com/800x600/1e293b/ffffff?text=Effect+1' },
+    { id: 9, title: '알루미늄 입자 특성', desc: '콘플레이크 vs 실버달러 형상 비교 (p.31-38)', url: 'https://via.placeholder.com/800x600/1e293b/ffffff?text=Effect+2' },
+    { id: 10, title: '펄(Pearl) 입자 특성', desc: '천연 마이카 vs 시라릭 펄 현미경 (p.42-47)', url: 'https://via.placeholder.com/800x600/1e293b/ffffff?text=Effect+3' },
+    { id: 11, title: 'PP펄 (파우더) 특성', desc: 'PP201~PP901 입자/현미경 비교 (p.37)', url: 'https://via.placeholder.com/800x600/1e293b/ffffff?text=Effect+4' },
+  ],
+  special: [
+    { id: 12, title: 'WT386 특성', desc: '측면밝기조정제 명암 변화 원리 (p.16-17)', url: 'https://via.placeholder.com/800x600/1e293b/ffffff?text=Special+1' },
+    { id: 13, title: '3코트 컬러 특성', desc: '3코트 도장 및 얼룩 발생 주의사항 (p.58-63)', url: 'https://via.placeholder.com/800x600/1e293b/ffffff?text=Special+2' },
+    { id: 14, title: '틴티드 크리어 (Tinted Clear)', desc: '첨가제 종류 및 적용 컬러 (p.64-71)', url: 'https://via.placeholder.com/800x600/1e293b/ffffff?text=Special+3' },
+  ]
+};
+
 const polarToCartesian = (centerX: number, centerY: number, radius: number, angleInDegrees: number) => { const angleInRadians = (angleInDegrees - 90) * Math.PI / 180.0; return { x: centerX + (radius * Math.cos(angleInRadians)), y: centerY + (radius * Math.sin(angleInRadians)) }; };
 const describeArc = (x: number, y: number, innerRadius: number, outerRadius: number, startAngle: number, endAngle: number) => { const startOuter = polarToCartesian(x, y, outerRadius, endAngle); const endOuter = polarToCartesian(x, y, outerRadius, startAngle); const startInner = polarToCartesian(x, y, innerRadius, endAngle); const endInner = polarToCartesian(x, y, innerRadius, startAngle); const largeArcFlag = endAngle - startAngle <= 180 ? "0" : "1"; return [ "M", startOuter.x, startOuter.y, "A", outerRadius, outerRadius, 0, largeArcFlag, 0, endOuter.x, endOuter.y, "L", endInner.x, endInner.y, "A", innerRadius, innerRadius, 0, largeArcFlag, 1, startInner.x, startInner.y, "Z" ].join(" "); };
 
@@ -124,8 +151,10 @@ export default function App() {
   const [isSnapshotModalOpen, setIsSnapshotModalOpen] = useState(false);
   const [selectedSnapshot, setSelectedSnapshot] = useState<any>(null);
 
-  const [isPearlGuideOpen, setIsPearlGuideOpen] = useState(false);
-  const [activePearlLevel, setActivePearlLevel] = useState(6);
+  // ━━━━━━━━ 갤러리 탭 State 추가 ━━━━━━━━
+  const [activeGuideTab, setActiveGuideTab] = useState<'theory'|'spectrum'|'effect'|'special'>('spectrum');
+  const [zoomedImage, setZoomedImage] = useState<any>(null);
+
   const [boardPosts, setBoardPosts] = useState<any[]>([]);
 
   const codeRefs = useRef<{ [key: string]: HTMLInputElement | null }>({}); 
@@ -328,7 +357,7 @@ export default function App() {
   const generateShareText = () => {
     let baseListText = toners.filter(t => t.code).map(t => `  - ${t.code} (${TONER_DB[t.code]?.role || '미지정'}): ${t.adjustedWeight || '0'}g`).join('\n'); let pearlListText = pearlToners.filter(t => t.code).map(t => `  - ${t.code} (${TONER_DB[t.code]?.role || '미지정'}): ${t.adjustedWeight || '0'}g`).join('\n'); let currentOrigin = localStorage.getItem('hitec_clean_domain') || window.location.origin;
     const payloadStr = [vehicleNumber, carModel, targetColorCode, jobDescription, specialNotes, packToners(toners), isThreeCoatMode ? packToners(pearlToners) : '', isThreeCoatMode ? '1' : '0', registrationDate].join('|'); const shareUrl = `${currentOrigin}${window.location.pathname}?d=${btoa(unescape(encodeURIComponent(payloadStr)))}`;
-    return `[조색 배합 지시서]\n================================\n📅 등록날짜: ${registrationDate}\n🚗 차량번호: ${vehicleNumber || '미지정'}\n🚙 브랜드: ${carModel || '미지정'}\n🎨 컬러코드: ${targetColorCode || '미지정'}\n🛠️ 작업내용: ${jobDescription || '미지정'}\n📌 특이사항: ${specialNotes || '없음'}\n================================\n\n[▼ 베이스 코트]\n${baseListText || '  (입력 데이터 없음)'}\n--------------------------------\n▶ 베이스 합계: ${totalBaseWeight}g\n▶ 93-E3 수지: ${(parseFloat(totalBaseWeight) * (isBaseMetallic ? 0.5 : 0.1)).toFixed(1)}g\n\n${isThreeCoatMode ? `[▼ 펄 코트]\n${pearlListText || '  (입력 데이터 없음)'}\n--------------------------------\n▶ 펄 합계: ${totalPearlWeight}g\n▶ 93-E3 수지: ${(parseFloat(totalPearlWeight) * (isPearlMetallic ? 0.5 : 0.1)).toFixed(1)}g\n\n` : ''}================================\n✨ 최종 도막 총량: ${totalFinalWeight}g\n\n👉 링크:\n${shareUrl}`;
+    return `[조색 배합 지시서]\n================================\n📅 등록날짜: ${registrationDate}\n🚗 차량번호: ${vehicleNumber || '미지정'}\n🚙 브랜드: ${carModel || '미지정'}\n🎨 컬러코드: ${targetColorCode || '미지정'}\n🛠️ 작업내용: ${jobDescription || '미지정'}\n📌 특이사항: ${specialNotes || '없음'}\n================================\n\n[▼ 베이스 코트]\n${baseListText || '  (입력 데이터 없음)'}\n--------------------------------\n▶ 베이스 합계: ${totalBaseWeight}g\n▶ 필수 수지(E3/E5): ${(parseFloat(totalBaseWeight) * (isBaseMetallic ? 0.5 : 0.1)).toFixed(1)}g\n\n${isThreeCoatMode ? `[▼ 펄 코트]\n${pearlListText || '  (입력 데이터 없음)'}\n--------------------------------\n▶ 펄 합계: ${totalPearlWeight}g\n▶ 펄전용 수지: ${(parseFloat(totalPearlWeight) * (isPearlMetallic ? 0.5 : 0.1)).toFixed(1)}g\n\n` : ''}================================\n✨ 최종 도막 총량: ${totalFinalWeight}g\n\n👉 링크:\n${shareUrl}`;
   };
 
   const handleShareKakao = () => { 
@@ -388,7 +417,7 @@ export default function App() {
   }
 
   return (
-    <div className="min-h-screen bg-slate-100 text-slate-800 font-sans flex flex-col relative overflow-x-hidden pb-[320px] lg:pb-[140px] notranslate" translate="no">
+    <div className="min-h-screen bg-slate-100 text-slate-800 font-sans flex flex-col relative overflow-x-hidden pb-[200px] md:pb-[140px] notranslate" translate="no">
       <header className="bg-slate-900 flex flex-col sm:flex-row justify-between items-center p-4 border-b border-slate-800 shadow-md shrink-0 gap-3">
         <div className="flex items-center space-x-3 w-full sm:w-auto">
           <div className="w-8 h-8 bg-gradient-to-br from-blue-500 to-cyan-500 rounded flex items-center justify-center shadow-lg"><span className="text-white font-bold text-lg">GF</span></div>
@@ -525,8 +554,22 @@ export default function App() {
                   </div>
                 )
               })}
+
+              {/* ━━━━━━━━ 수지 고정 UI (베이스 코트) ━━━━━━━━ */}
+              <div className="flex justify-between items-center bg-blue-50/80 p-3 mt-3 rounded-xl border border-blue-200 shadow-sm">
+                  <div className="flex items-center gap-2.5">
+                      <div className="w-8 h-8 rounded-full bg-blue-200 flex items-center justify-center border border-blue-300 shadow-inner">
+                          <Beaker size={14} className="text-blue-700"/>
+                      </div>
+                      <div className="flex flex-col">
+                          <span className="text-xs font-black text-blue-800">💧 필수 수지/환원제 (E3/E5 등)</span>
+                          <span className="text-[10px] font-bold text-blue-600 opacity-80">입력된 베이스 안료 중량 대비 자동 계산량</span>
+                      </div>
+                  </div>
+                  <span className="text-xl font-black text-blue-700">{(parseFloat(totalBaseWeight) * (isBaseMetallic ? 0.5 : 0.1)).toFixed(1)}<span className="text-xs ml-0.5">g</span></span>
+              </div>
               
-              <div className="flex w-full gap-2 mt-2">
+              <div className="flex w-full gap-2 mt-3">
                   <button onClick={() => addToner(false)} className="flex-1 py-3 border border-dashed border-slate-300 bg-white hover:bg-blue-50 hover:border-blue-400 rounded-lg text-slate-500 hover:text-blue-600 font-bold text-sm flex justify-center items-center transition-all shadow-sm">
                       <Plus size={18} className="mr-1"/>베이스 안료 추가
                   </button>
@@ -631,7 +674,22 @@ export default function App() {
                     </div>
                   )
                 })}
-                <button onClick={() => addToner(true)} className="w-full py-3 border border-dashed border-purple-300 hover:border-purple-500 bg-purple-50/50 hover:bg-purple-100/50 rounded-lg text-purple-600 font-bold transition-all flex items-center justify-center space-x-2 text-sm mt-2 shadow-sm">
+
+                {/* ━━━━━━━━ 수지 고정 UI (펄 코트) ━━━━━━━━ */}
+                <div className="flex justify-between items-center bg-purple-50/80 p-3 mt-3 rounded-xl border border-purple-200 shadow-sm">
+                    <div className="flex items-center gap-2.5">
+                        <div className="w-8 h-8 rounded-full bg-purple-200 flex items-center justify-center border border-purple-300 shadow-inner">
+                            <Zap size={14} className="text-purple-700"/>
+                        </div>
+                        <div className="flex flex-col">
+                            <span className="text-xs font-black text-purple-800">✨ 펄 전용 수지/환원제</span>
+                            <span className="text-[10px] font-bold text-purple-600 opacity-80">입력된 펄 안료 중량 대비 자동 계산량</span>
+                        </div>
+                    </div>
+                    <span className="text-xl font-black text-purple-700">{(parseFloat(totalPearlWeight) * (isPearlMetallic ? 0.5 : 0.1)).toFixed(1)}<span className="text-xs ml-0.5">g</span></span>
+                </div>
+
+                <button onClick={() => addToner(true)} className="w-full py-3 border border-dashed border-purple-300 hover:border-purple-500 bg-purple-50/50 hover:bg-purple-100/50 rounded-lg text-purple-600 font-bold transition-all flex items-center justify-center space-x-2 text-sm mt-3 shadow-sm">
                     <Plus size={18} /><span>펄 코트 조색제 추가</span>
                 </button>
               </div>
@@ -643,18 +701,34 @@ export default function App() {
           <div className="flex-1 bg-white border border-slate-300 rounded-xl shadow-xl overflow-hidden flex flex-col min-h-[500px]">
             <div className="p-3 shrink-0 bg-slate-50 border-b border-slate-200">
               <h3 className="text-xs font-black mb-2 flex justify-between items-center text-slate-800">
-                <span className="flex items-center"><Target size={14} className="mr-1 text-purple-600"/> 💎 PEARL OPTICS SPECTRUM MAP</span>
-                <button onClick={() => setIsConfiguratorOpen(true)} className="text-[10px] px-2.5 py-1.5 rounded-lg bg-blue-600 text-white font-bold flex items-center hover:bg-blue-700 transition-colors shadow-sm"><Maximize size={10} className="mr-1"/>먼셀 컬러 믹싱 랩</button>
+                <span className="flex items-center"><Target size={14} className="mr-1 text-blue-600"/> 📘 마스터 기술자료실 (Visual Guide)</span>
+                <button onClick={() => setIsConfiguratorOpen(true)} className="text-[10px] px-2.5 py-1.5 rounded-lg bg-blue-600 text-white font-bold flex items-center hover:bg-blue-700 transition-colors shadow-sm"><Maximize size={10} className="mr-1"/>먼셀 믹싱 랩</button>
               </h3>
               
-              <div 
-                  className="h-44 rounded-xl overflow-hidden shadow-inner border border-slate-300 cursor-pointer relative group transition-all" 
-                  onClick={() => setIsPearlGuideOpen(true)}
-                  style={{ background: 'linear-gradient(to right, #f8fafc 0%, #cbd5e1 20%, #8b5cf6 50%, #1e3a8a 80%, #0f172a 100%)' }}
-              >
-                  <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent"></div>
-                  <div className="absolute inset-0 flex flex-col items-center justify-center z-20">
-                      <span className="bg-white/90 text-slate-900 font-black px-4 py-2 rounded-full text-sm shadow-xl flex items-center gap-2 group-hover:scale-105 transition-transform"><BookOpen size={16}/> 글라슈리트 펄/이펙트 마스터 인덱스 열기</span>
+              {/* ━━━━━━━━ 안전하게 탑재된 이미지 갤러리 탭 UI ━━━━━━━━ */}
+              <div className="flex flex-col bg-slate-900 rounded-xl overflow-hidden shadow-inner border border-slate-700">
+                  <div className="flex border-b border-slate-700">
+                      {['theory', 'spectrum', 'effect', 'special'].map(tab => (
+                          <button key={tab} onClick={() => setActiveGuideTab(tab as any)} className={`flex-1 py-2.5 text-[11px] font-bold transition-colors ${activeGuideTab === tab ? 'bg-blue-600 text-white' : 'text-slate-400 hover:bg-slate-800'}`}>
+                              {tab === 'theory' ? '이론/기초' : tab === 'spectrum' ? '컬러 맵' : tab === 'effect' ? '이펙트/펄' : '특수/3코트'}
+                          </button>
+                      ))}
+                  </div>
+                  <div className="p-3 grid grid-cols-2 gap-2 h-44 overflow-y-auto custom-scrollbar bg-slate-800">
+                      {GUIDE_IMAGES[activeGuideTab].map(img => (
+                          <div key={img.id} onClick={() => setZoomedImage(img)} className="bg-slate-700 rounded-lg overflow-hidden cursor-pointer hover:ring-2 ring-blue-500 transition-all relative group flex flex-col">
+                              <div className="aspect-video bg-slate-800 flex items-center justify-center relative overflow-hidden border-b border-slate-600">
+                                  <img src={img.url} alt={img.title} className="w-full h-full object-cover opacity-60 group-hover:opacity-100 transition-opacity duration-300" />
+                                  <div className="absolute inset-0 bg-black/40 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
+                                      <Camera size={24} className="text-white drop-shadow-md"/>
+                                  </div>
+                              </div>
+                              <div className="p-2 flex-1">
+                                  <p className="text-[10px] text-white font-bold truncate leading-tight mb-0.5">{img.title}</p>
+                                  <p className="text-[9px] text-slate-400 truncate leading-tight">{img.desc}</p>
+                              </div>
+                          </div>
+                      ))}
                   </div>
               </div>
 
@@ -744,40 +818,59 @@ export default function App() {
         </div>
       </div>
 
+      {/* ━━━━━━━━ 완벽한 모바일 최적화 하단 계산 바 ━━━━━━━━ */}
       <div className="fixed bottom-0 left-0 w-full z-[500] bg-slate-950/95 backdrop-blur-xl border-t border-slate-800 shadow-[0_-12px_45px_rgba(0,0,0,0.85)] text-slate-100 pb-[env(safe-area-inset-bottom)]">
-          <div className="flex p-4 justify-between items-center gap-4">
-            <div className="flex w-full lg:w-auto gap-4 flex-col sm:flex-row justify-between lg:justify-start">
-                <div className="flex flex-col gap-1 flex-1 min-w-[240px]">
-                   <span className="text-[10px] text-slate-400 font-black tracking-widest flex items-center uppercase"><Layers size={11} className="mr-1 text-blue-400"/> A. 베이스 코트 실시간 중량</span>
+          <div className="flex flex-col md:flex-row p-3 md:p-4 justify-between items-center gap-3">
+             {/* 왼쪽: 각 코트별 중량 표시 (가로 스크롤 허용) */}
+             <div className="flex w-full md:w-auto gap-3 sm:gap-4 shrink-0 overflow-x-auto custom-scrollbar pb-1 md:pb-0">
+                <div className="flex flex-col gap-1 flex-1 min-w-[220px]">
+                   <span className="text-[10px] text-slate-400 font-black tracking-widest flex items-center uppercase"><Layers size={11} className="mr-1 text-blue-400"/> A. 베이스 코트 중량</span>
                    <div className="flex items-center justify-between bg-slate-900/90 px-3 py-2.5 rounded-xl border border-slate-800 shadow-inner text-xs">
                        <div className="flex flex-col items-center"><span className="text-[9px] text-slate-500 font-bold">순수 안료</span><span className="font-black text-white text-sm">{totalBaseWeight}g</span></div>
                        <span className="text-slate-600 font-black text-sm">+</span>
-                       <div className="flex flex-col items-center"><span className="text-[9px] text-blue-400 font-bold">수지/첨가제</span><span className="font-black text-blue-400 text-sm">{(parseFloat(totalBaseWeight) * (isBaseMetallic ? 0.5 : 0.1)).toFixed(1)}g</span></div>
+                       <div className="flex flex-col items-center"><span className="text-[9px] text-blue-400 font-bold">필수 수지</span><span className="font-black text-blue-400 text-sm">{(parseFloat(totalBaseWeight) * (isBaseMetallic ? 0.5 : 0.1)).toFixed(1)}g</span></div>
                        <span className="text-slate-600 font-black text-sm">=</span>
-                       <div className="flex flex-col items-center bg-blue-950/40 px-2 py-0.5 rounded border border-blue-900/50"><span className="text-[9px] text-emerald-400 font-bold">총 중량</span><span className="font-black text-emerald-400 text-base">{(parseFloat(totalBaseWeight) * (isBaseMetallic ? 1.2 : 1.1)).toFixed(1)}g</span></div>
+                       <div className="flex flex-col items-center bg-blue-950/40 px-2 py-0.5 rounded border border-blue-900/50"><span className="text-[9px] text-emerald-400 font-bold">합계</span><span className="font-black text-emerald-400 text-base">{(parseFloat(totalBaseWeight) * (isBaseMetallic ? 1.2 : 1.1)).toFixed(1)}g</span></div>
                    </div>
                 </div>
                 {isThreeCoatMode && (
-                <div className="flex flex-col gap-1 flex-1 min-w-[240px]">
-                   <span className="text-[10px] text-slate-400 font-black tracking-widest flex items-center uppercase"><Zap size={11} className="mr-1 text-purple-400"/> B. 펄 코트 실시간 중량</span>
+                <div className="flex flex-col gap-1 flex-1 min-w-[220px]">
+                   <span className="text-[10px] text-slate-400 font-black tracking-widest flex items-center uppercase"><Zap size={11} className="mr-1 text-purple-400"/> B. 펄 코트 중량</span>
                    <div className="flex items-center justify-between bg-slate-900/90 px-3 py-2.5 rounded-xl border border-slate-800 shadow-inner text-xs">
-                       <div className="flex flex-col items-center"><span className="text-[9px] text-slate-500 font-bold">순수 안료</span><span className="font-black text-white text-sm">{totalPearlWeight}g</span></div>
+                       <div className="flex flex-col items-center"><span className="text-[9px] text-slate-500 font-bold">순수 펄</span><span className="font-black text-white text-sm">{totalPearlWeight}g</span></div>
                        <span className="text-slate-600 font-black text-sm">+</span>
-                       <div className="flex flex-col items-center"><span className="text-[9px] text-purple-400 font-bold">수지/첨가제</span><span className="font-black text-purple-400 text-sm">{(parseFloat(totalPearlWeight) * (isPearlMetallic ? 0.5 : 0.1)).toFixed(1)}g</span></div>
+                       <div className="flex flex-col items-center"><span className="text-[9px] text-purple-400 font-bold">펄 수지</span><span className="font-black text-purple-400 text-sm">{(parseFloat(totalPearlWeight) * (isPearlMetallic ? 0.5 : 0.1)).toFixed(1)}g</span></div>
                        <span className="text-slate-600 font-black text-sm">=</span>
-                       <div className="flex flex-col items-center bg-purple-950/40 px-2 py-0.5 rounded border border-purple-900/50"><span className="text-[9px] text-emerald-400 font-bold">총 중량</span><span className="font-black text-emerald-400 text-base">{(parseFloat(totalPearlWeight) * (isPearlMetallic ? 1.2 : 1.1)).toFixed(1)}g</span></div>
+                       <div className="flex flex-col items-center bg-purple-950/40 px-2 py-0.5 rounded border border-purple-900/50"><span className="text-[9px] text-emerald-400 font-bold">합계</span><span className="font-black text-emerald-400 text-base">{(parseFloat(totalPearlWeight) * (isPearlMetallic ? 1.2 : 1.1)).toFixed(1)}g</span></div>
                    </div>
                 </div>
                 )}
-            </div>
-            <div className="flex flex-col items-center justify-center shrink-0 bg-gradient-to-br from-amber-950/50 to-yellow-900/20 border-2 border-yellow-500/60 px-6 py-2 rounded-xl shadow-[0_0_25px_rgba(234,179,8,0.2)]">
-               <span className="text-[11px] text-yellow-500 font-black tracking-widest flex items-center uppercase"><Beaker size={13} className="mr-1"/> ✨ 최종 도막 혼합 총량</span>
-               <span className="text-3xl font-black text-yellow-400 drop-shadow-[0_0_10px_rgba(234,179,8,0.5)]">
-                  {(parseFloat((parseFloat(totalBaseWeight) * (isBaseMetallic ? 1.2 : 1.1)).toFixed(1)) + (isThreeCoatMode ? parseFloat((parseFloat(totalPearlWeight) * (isPearlMetallic ? 1.2 : 1.1)).toFixed(1)) : 0)).toFixed(1)}<span className="text-lg font-bold text-yellow-600 ml-0.5">g</span>
-               </span>
-            </div>
+             </div>
+             {/* 오른쪽: 최종 도막 총량 (모바일에서도 가로 꽉 차게 확실히 보임) */}
+             <div className="w-full md:w-auto flex flex-row md:flex-col items-center justify-between md:justify-center shrink-0 bg-gradient-to-br from-amber-950/50 to-yellow-900/20 border-2 border-yellow-500/60 px-4 py-2 sm:px-6 sm:py-2 rounded-xl shadow-[0_0_25px_rgba(234,179,8,0.2)]">
+                <span className="text-[11px] text-yellow-500 font-black tracking-widest flex items-center uppercase"><Beaker size={13} className="mr-1"/> ✨ 혼합 총량</span>
+                <span className="text-2xl sm:text-3xl font-black text-yellow-400 drop-shadow-[0_0_10px_rgba(234,179,8,0.5)]">
+                   {(parseFloat((parseFloat(totalBaseWeight) * (isBaseMetallic ? 1.2 : 1.1)).toFixed(1)) + (isThreeCoatMode ? parseFloat((parseFloat(totalPearlWeight) * (isPearlMetallic ? 1.2 : 1.1)).toFixed(1)) : 0)).toFixed(1)}<span className="text-base sm:text-lg font-bold text-yellow-600 ml-0.5">g</span>
+                </span>
+             </div>
           </div>
       </div>
+
+      {/* ━━━━━━━━ 갤러리 이미지 모달창 ━━━━━━━━ */}
+      {zoomedImage && (
+        <div className="fixed inset-0 bg-black/90 z-[4000] flex flex-col items-center justify-center p-4 backdrop-blur-sm animate-in fade-in" onClick={() => setZoomedImage(null)}>
+            <button className="absolute top-4 right-4 text-white bg-slate-800 hover:bg-red-500 rounded-full p-2 transition-colors z-[4010]"><X size={20}/></button>
+            <div className="max-w-5xl w-full flex flex-col items-center relative" onClick={e => e.stopPropagation()}>
+                <div className="bg-slate-900 p-4 rounded-xl border border-slate-700 w-full mb-4 text-center">
+                    <h3 className="text-white font-black text-xl mb-1">{zoomedImage.title}</h3>
+                    <p className="text-blue-400 text-sm font-bold">{zoomedImage.desc}</p>
+                </div>
+                <div className="relative w-full max-h-[70vh] flex justify-center">
+                    <img src={zoomedImage.url} alt={zoomedImage.title} className="max-w-full max-h-[70vh] object-contain rounded-lg shadow-[0_0_40px_rgba(0,0,0,0.8)] border border-slate-700" />
+                </div>
+            </div>
+        </div>
+      )}
 
       {memoModal.isOpen && (
         <div className="fixed inset-0 bg-slate-900/80 z-[2000] flex items-center justify-center p-4 backdrop-blur-sm animate-in fade-in">
@@ -859,12 +952,11 @@ export default function App() {
         </div>
       )}
 
-      {/* 새롭게 연결된 EmailJS 피드백 팝업창 */}
       <FeedbackModal 
         isOpen={isEmailModalOpen} 
         onClose={() => setIsEmailModalOpen(false)} 
         targetColorCode={targetColorCode}
-        />
+      />
 
       {isSnapshotModalOpen && (
         <div className="fixed inset-0 bg-slate-950/80 z-[1000] flex items-center justify-center p-4 backdrop-blur-sm animate-in fade-in">
