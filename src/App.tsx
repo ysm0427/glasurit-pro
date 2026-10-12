@@ -4,11 +4,10 @@ import {
   Sliders, Trash2, Plus, X, Maximize, Beaker, Sun, 
   Layers, ChevronDown, ChevronUp, BookOpen, Share2, Zap, Search, 
   FileSpreadsheet, History, Mail, Code, Calendar, Eye, ThumbsUp, 
-  CheckCircle, Edit3, Target, MessageSquare, Send, Save, RefreshCw 
+  CheckCircle, Edit3, Target, MessageSquare, Send, Save, RefreshCw, Camera, AlertTriangle
 } from 'lucide-react';
 
 import { TONER_DB, shortcuts, PEARL_LEVELS, OEM_COLORS, TonerData } from './tonerDB';
-import { FeedbackModal } from './FeedbackModal'; 
 
 if (typeof window !== 'undefined' && !document.querySelector('#tailwind-script')) {
   const script = document.createElement('script');
@@ -17,9 +16,83 @@ if (typeof window !== 'undefined' && !document.querySelector('#tailwind-script')
   document.head.appendChild(script);
 }
 
+const LAST_PATCH_DATE = "2026.10.12 (조색 용어 사전 - 영문 안료명 대폭 확장!)"; 
+
+const GUIDE_IMAGES: Record<string, any[]> = {
+  theory: [
+    { id: 1, title: '색의 인식과 3원색', desc: '빛의 혼합 / 안료 혼합 원리', url: '/image1.jpg' },
+    { id: 2, title: '단색안료 특성', desc: '유기안료와 무기안료의 차이점', url: '/image2.jpg' },
+    { id: 3, title: '빛과 안료 상호작용', desc: '솔리드 / 알루미늄 / 간섭펄 반사 원리', url: '/image3.jpg' },
+    { id: 15, title: '추가 이론 자료 1', desc: '상세 가이드 페이지 (15)', url: '/image15.jpg' },
+    { id: 16, title: '추가 이론 자료 2', desc: '상세 가이드 페이지 (16)', url: '/image16.jpg' },
+    { id: 17, title: '추가 이론 자료 3', desc: '상세 가이드 페이지 (17)', url: '/image17.jpg' },
+    { id: 18, title: '추가 이론 자료 4', desc: '상세 가이드 페이지 (18)', url: '/image18.jpg' },
+    { id: 19, title: '추가 이론 자료 5', desc: '상세 가이드 페이지 (19)', url: '/image19.jpg' },
+    { id: 20, title: '추가 이론 자료 6', desc: '상세 가이드 페이지 (20)', url: '/image20.jpg' },
+    { id: 21, title: '추가 이론 자료 7', desc: '상세 가이드 페이지 (21)', url: '/image21.jpg' },
+    { id: 22, title: '추가 이론 자료 8', desc: '상세 가이드 페이지 (22)', url: '/image22.jpg' },
+    { id: 23, title: '추가 이론 자료 9', desc: '상세 가이드 페이지 (23)', url: '/image23.jpg' },
+    { id: 24, title: '추가 이론 자료 10', desc: '상세 가이드 페이지 (24)', url: '/image24.jpg' },
+    { id: 25, title: '추가 이론 자료 11', desc: '상세 가이드 페이지 (25)', url: '/image25.jpg' },
+  ],
+  spectrum: [
+    { id: 4, title: '조색제 포스터의 이해', desc: '기호 읽는 법', url: '/image4.jpg' },
+    { id: 5, title: '솔리드 포지셔닝 맵', desc: '솔리드 컬러 별 위치도', url: '/image5.jpg' },
+    { id: 6, title: '황색/적색 계열도', desc: '명암 및 채도 방향성에 따른 비교', url: '/image6.jpg' },
+    { id: 7, title: '청색/녹색/흑색 계열도', desc: '각 계열별 측면/정면 이색 비교', url: '/image7.jpg' },
+    { id: 26, title: '추가 컬러 맵 자료 1', desc: '상세 가이드 페이지 (26)', url: '/image26.jpg' },
+    { id: 27, title: '추가 컬러 맵 자료 2', desc: '상세 가이드 페이지 (27)', url: '/image27.jpg' },
+    { id: 28, title: '추가 컬러 맵 자료 3', desc: '상세 가이드 페이지 (28)', url: '/image28.jpg' },
+    { id: 29, title: '추가 컬러 맵 자료 4', desc: '상세 가이드 페이지 (29)', url: '/image29.jpg' },
+    { id: 30, title: '추가 컬러 맵 자료 5', desc: '상세 가이드 페이지 (30)', url: '/image30.jpg' },
+    { id: 31, title: '추가 컬러 맵 자료 6', desc: '상세 가이드 페이지 (31)', url: '/image31.jpg' },
+    { id: 32, title: '추가 컬러 맵 자료 7', desc: '상세 가이드 페이지 (32)', url: '/image32.jpg' },
+    { id: 33, title: '추가 컬러 맵 자료 8', desc: '상세 가이드 페이지 (33)', url: '/image33.jpg' },
+    { id: 34, title: '추가 컬러 맵 자료 9', desc: '상세 가이드 페이지 (34)', url: '/image34.jpg' },
+    { id: 35, title: '추가 컬러 맵 자료 10', desc: '상세 가이드 페이지 (35)', url: '/image35.jpg' },
+    { id: 36, title: '추가 컬러 맵 자료 11', desc: '상세 가이드 페이지 (36)', url: '/image36.jpg' },
+    { id: 37, title: '추가 컬러 맵 자료 12', desc: '상세 가이드 페이지 (37)', url: '/image37.jpg' },
+  ],
+  effect: [
+    { id: 8, title: '이펙트 포지셔닝 맵', desc: '이펙트 컬러 조색제 별 위치도', url: '/image8.jpg' },
+    { id: 9, title: '알루미늄 입자 특성', desc: '콘플레이크 vs 실버달러 형상 비교', url: '/image9.jpg' },
+    { id: 10, title: '펄(Pearl) 입자 특성', desc: '천연 마이카 vs 시라릭 펄 현미경', url: '/image10.jpg' },
+    { id: 11, title: 'PP펄 (파우더) 특성', desc: 'PP201~PP901 입자 및 현미경 비교', url: '/image11.jpg' },
+    { id: 38, title: '추가 이펙트 자료 1', desc: '상세 가이드 페이지 (38)', url: '/image38.jpg' },
+    { id: 39, title: '추가 이펙트 자료 2', desc: '상세 가이드 페이지 (39)', url: '/image39.jpg' },
+    { id: 40, title: '추가 이펙트 자료 3', desc: '상세 가이드 페이지 (40)', url: '/image40.jpg' },
+    { id: 41, title: '추가 이펙트 자료 4', desc: '상세 가이드 페이지 (41)', url: '/image41.jpg' },
+    { id: 42, title: '추가 이펙트 자료 5', desc: '상세 가이드 페이지 (42)', url: '/image42.jpg' },
+    { id: 43, title: '추가 이펙트 자료 6', desc: '상세 가이드 페이지 (43)', url: '/image43.jpg' },
+    { id: 44, title: '추가 이펙트 자료 7', desc: '상세 가이드 페이지 (44)', url: '/image44.jpg' },
+    { id: 45, title: '추가 이펙트 자료 8', desc: '상세 가이드 페이지 (45)', url: '/image45.jpg' },
+    { id: 46, title: '추가 이펙트 자료 9', desc: '상세 가이드 페이지 (46)', url: '/image46.jpg' },
+    { id: 47, title: '추가 이펙트 자료 10', desc: '상세 가이드 페이지 (47)', url: '/image47.jpg' },
+    { id: 48, title: '추가 이펙트 자료 11', desc: '상세 가이드 페이지 (48)', url: '/image48.jpg' },
+    { id: 49, title: '추가 이펙트 자료 12', desc: '상세 가이드 페이지 (49)', url: '/image49.jpg' },
+  ],
+  special: [
+    { id: 12, title: 'WT386 특성', desc: '측면밝기조정제 명암 변화 원리', url: '/image12.jpg' },
+    { id: 13, title: '3코트 컬러 특성', desc: '3코트 도장 및 얼룩 발생 주의사항', url: '/image13.jpg' },
+    { id: 14, title: '틴티드 크리어 (Tinted Clear)', desc: '첨가제 종류 및 적용 컬러', url: '/image14.jpg' },
+    { id: 50, title: '추가 특수 자료 1', desc: '상세 가이드 페이지 (50)', url: '/image50.jpg' },
+    { id: 51, title: '추가 특수 자료 2', desc: '상세 가이드 페이지 (51)', url: '/image51.jpg' },
+    { id: 52, title: '추가 특수 자료 3', desc: '상세 가이드 페이지 (52)', url: '/image52.jpg' },
+    { id: 53, title: '추가 특수 자료 4', desc: '상세 가이드 페이지 (53)', url: '/image53.jpg' },
+    { id: 54, title: '추가 특수 자료 5', desc: '상세 가이드 페이지 (54)', url: '/image54.jpg' },
+    { id: 55, title: '추가 특수 자료 6', desc: '상세 가이드 페이지 (55)', url: '/image55.jpg' },
+    { id: 56, title: '추가 특수 자료 7', desc: '상세 가이드 페이지 (56)', url: '/image56.jpg' },
+    { id: 57, title: '추가 특수 자료 8', desc: '상세 가이드 페이지 (57)', url: '/image57.jpg' },
+    { id: 58, title: '추가 특수 자료 9', desc: '상세 가이드 페이지 (58)', url: '/image58.jpg' },
+    { id: 59, title: '추가 특수 자료 10', desc: '상세 가이드 페이지 (59)', url: '/image59.jpg' },
+    { id: 60, title: '추가 특수 자료 11', desc: '상세 가이드 페이지 (60)', url: '/image60.jpg' },
+    { id: 61, title: '추가 특수 자료 12', desc: '상세 가이드 페이지 (61)', url: '/image61.jpg' },
+  ]
+};
+
 export const catalogData = Object.entries(TONER_DB).map(([code, data]) => { return { code, ...data }; });
 export const safeNum = (val: any): number => { const num = Number(val); return isNaN(num) ? 0 : num; };
-export const isTonerMetallic = (role: string) => { const r = role || ''; return r.includes('실버') || r.includes('알루미늄') || r.includes('펄') || r.includes('이펙트') || r.includes('다이아몬드') || r.includes('시라릭') || r.includes('크리스탈'); };
+export const isTonerMetallic = (role: string) => { const r = role || ''; return r.includes('실버') || r.includes('알루미늄') || r.includes('펄') || r.includes('이펙트') || r.includes('분말') || r.includes('글라스'); };
 
 const textureCache: any = {};
 export const getCachedTexture = (type: string, faceColor: string, flopColor: string, isMetallic: boolean): React.CSSProperties => {
@@ -37,11 +110,11 @@ export const getCachedTexture = (type: string, faceColor: string, flopColor: str
 };
 
 export const getBadgeClass = (title: string) => {
-  if(title.includes("화학적")) return "bg-purple-50 text-purple-700 border-purple-300 shadow-sm";
-  if(title.includes("일반")) return "bg-blue-50 text-blue-700 border-blue-300 shadow-sm";
-  if(title.includes("외관")) return "bg-emerald-50 text-emerald-700 border-emerald-300 shadow-sm";
-  if(title.includes("배합")) return "bg-orange-50 text-orange-700 border-orange-300 shadow-sm";
-  if(title.includes("비교")) return "bg-yellow-100 text-yellow-800 border-yellow-400 shadow-md font-black";
+  if(title.includes("특성") || title.includes("분말") || title.includes("캔디") || title.includes("배합")) return "bg-teal-50 text-teal-700 border-teal-300 shadow-sm";
+  if(title.includes("용도") || title.includes("컬러") || title.includes("확인")) return "bg-indigo-50 text-indigo-700 border-indigo-300 shadow-sm";
+  if(title.includes("외관")) return "bg-blue-50 text-blue-700 border-blue-300 shadow-sm";
+  if(title.includes("비교") || title.includes("유동성") || title.includes("원리")) return "bg-yellow-100 text-yellow-800 border-yellow-400 shadow-md font-black";
+  if(title.includes("경고") || title.includes("주의") || title.includes("한계") || title.includes("철칙")) return "bg-red-50 text-red-700 border-red-300 shadow-sm font-black";
   return "bg-slate-50 text-slate-700 border-slate-300 shadow-sm";
 };
 
@@ -67,21 +140,14 @@ export const getTonerDetailBackground = (code: string, role: string, angle: stri
 };
 
 export const packToners = (tonerList: any[]) => { return tonerList.filter((t: any) => t.code).map((t: any) => { const w = t.adjustedWeight || ''; return `${t.code}_${w}`; }).join('*'); };
-export const unpackToners = (str: string) => { 
-  if (!str) return []; 
-  const baseTime = Date.now();
-  return str.split('*').map((t, i) => { 
-    const [c, w] = t.split('_'); 
-    return { id: `restored_${baseTime}_${i}_${Math.random().toString(36).substring(2, 7)}`, code: c || '', adjustedWeight: w || '', history: [], memo: '', isExpanded: false }; 
-  }); 
-};
+export const unpackToners = (str: string) => { if (!str) return []; return str.split('*').map((t, i) => { const [c, w] = t.split('_'); return { id: `restored_${Date.now()}_${i}`, code: c || '', adjustedWeight: w || '', history: [], memo: '', isExpanded: false }; }); };
 
 const MUNSELL_WHEEL_COLORS = [
-  { name: '빨강', symbol: 'R', hex: '#E60012' }, { name: '다홍', symbol: 'yR', hex: '#EB6100' }, { name: '주황', symbol: 'YR', hex: '#F39800' }, { name: '귤색', symbol: 'rY', hex: '#FCC800' }, { name: '노랑', symbol: 'Y', hex: '#FFF100' }, { name: '노랑연두', symbol: 'gY', hex: '#CFDB00' }, { name: '연두', symbol: 'GY', hex: '#8FC31F' }, { name: '풀색', symbol: 'yG', hex: '#22AC38' }, { name: '녹색', symbol: 'G', hex: '#009944' }, { name: '초록', symbol: 'bG', hex: '#009B6B' }, { name: '청록', symbol: 'BG', hex: '#009E96' }, { name: '바다색', symbol: 'gB', hex: '#00A0C1' }, { name: '파랑', symbol: 'B', hex: '#00A0E9' }, { name: '감청', symbol: 'pB', hex: '#0086D1' }, { name: '남색', symbol: 'PB', hex: '#0068B7' }, { name: '남보라', symbol: 'bP', hex: '#00479D' }, { name: '보라', symbol: 'P', hex: '#1D2088' }, { name: '붉은보라', symbol: 'rP', hex: '#601986' }, { name: '자주', symbol: 'RP', hex: '#920783' }, { name: '연지', symbol: 'pR', hex: '#BE0081' }
+    { name: '빨강', symbol: 'R', hex: '#E60012' }, { name: '다홍', symbol: 'yR', hex: '#EB6100' }, { name: '주황', symbol: 'YR', hex: '#F39800' }, { name: '귤색', symbol: 'rY', hex: '#FCC800' }, { name: '노랑', symbol: 'Y', hex: '#FFF100' }, { name: '노랑연두', symbol: 'gY', hex: '#CFDB00' }, { name: '연두', symbol: 'GY', hex: '#8FC31F' }, { name: '풀색', symbol: 'yG', hex: '#22AC38' }, { name: '녹색', symbol: 'G', hex: '#009944' }, { name: '초록', symbol: 'bG', hex: '#009B6B' }, { name: '청록', symbol: 'BG', hex: '#009E96' }, { name: '바다색', symbol: 'gB', hex: '#00A0C1' }, { name: '파랑', symbol: 'B', hex: '#00A0E9' }, { name: '감청', symbol: 'pB', hex: '#0086D1' }, { name: '남색', symbol: 'PB', hex: '#0068B7' }, { name: '남보라', symbol: 'bP', hex: '#00479D' }, { name: '보라', symbol: 'P', hex: '#1D2088' }, { name: '붉은보라', symbol: 'rP', hex: '#601986' }, { name: '자주', symbol: 'RP', hex: '#920783' }, { name: '연지', symbol: 'pR', hex: '#BE0081' }
 ];
 
 const MIXING_DATA: Record<string, any> = {
-  'R': { c1: '빨강 (R)', h1: '#ff0000', r1: 100 }, 'yR': { c1: '빨강 (R)', h1: '#ff0000', r1: 75, c2: '노랑 (Y)', h2: '#ffff00', r2: 25 }, 'YR': { c1: '빨강 (R)', h1: '#ff0000', r1: 50, c2: '노랑 (Y)', h2: '#ffff00', r2: 50 }, 'rY': { c1: '노랑 (Y)', h1: '#ffff00', r1: 75, c2: '빨강 (R)', h2: '#ff0000', r2: 25 }, 'Y': { c1: '노랑 (Y)', h1: '#ffff00', r1: 100 }, 'gY': { c1: '노랑 (Y)', h1: '#ffff00', r1: 75, c2: '녹색 (G)', h2: '#009900', r2: 25 }, 'GY': { c1: '노랑 (Y)', h1: '#ffff00', r1: 50, c2: '녹색 (G)', h2: '#009900', r2: 50 }, 'yG': { c1: '녹색 (G)', h1: '#009900', r1: 75, c2: '노랑 (Y)', h2: '#ffff00', r2: 25 }, 'G': { c1: '녹색 (G)', h1: '#009900', r1: 100 }, 'bG': { c1: '녹색 (G)', h1: '#009900', r1: 75, c2: '파랑 (B)', h2: '#0000ff', r2: 25 }, 'BG': { c1: '녹색 (G)', h1: '#009900', r1: 50, c2: '파랑 (B)', h2: '#0000ff', r2: 50 }, 'gB': { c1: '파랑 (B)', h1: '#0000ff', r1: 75, c2: '녹색 (G)', h2: '#009900', r2: 25 }, 'B': { c1: '파랑 (B)', h1: '#0000ff', r1: 100 }, 'pB': { c1: '파랑 (B)', h1: '#0000ff', r1: 75, c2: '보라 (P)', h2: '#700070', r2: 25 }, 'PB': { c1: '파랑 (B)', h1: '#0000ff', r1: 50, c2: '보라 (P)', h2: '#700070', r2: 50 }, 'bP': { c1: '보라 (P)', h1: '#700070', r1: 75, c2: '파랑 (B)', h2: '#0000ff', r2: 25 }, 'P': { c1: '보라 (P)', h1: '#700070', r1: 100 }, 'rP': { c1: '보라 (P)', h1: '#700070', r1: 75, c2: '빨강 (R)', h2: '#ff0000', r2: 25 }, 'RP': { c1: '보라 (P)', h1: '#700070', r1: 50, c2: '빨강 (R)', h2: '#ff0000', r2: 50 }, 'pR': { c1: '빨강 (R)', h1: '#ff0000', r1: 75, c2: '보라 (P)', h2: '#700070', r2: 25 },
+    'R': { c1: '빨강 (R)', h1: '#ff0000', r1: 100 }, 'yR': { c1: '빨강 (R)', h1: '#ff0000', r1: 75, c2: '노랑 (Y)', h2: '#ffff00', r2: 25 }, 'YR': { c1: '빨강 (R)', h1: '#ff0000', r1: 50, c2: '노랑 (Y)', h2: '#ffff00', r2: 50 }, 'rY': { c1: '노랑 (Y)', h1: '#ffff00', r1: 75, c2: '빨강 (R)', h2: '#ff0000', r2: 25 }, 'Y': { c1: '노랑 (Y)', h1: '#ffff00', r1: 100 }, 'gY': { c1: '노랑 (Y)', h1: '#ffff00', r1: 75, c2: '녹색 (G)', h2: '#009900', r2: 25 }, 'GY': { c1: '노랑 (Y)', h1: '#ffff00', r1: 50, c2: '녹색 (G)', h2: '#009900', r2: 50 }, 'yG': { c1: '녹색 (G)', h1: '#009900', r1: 75, c2: '노랑 (Y)', h2: '#ffff00', r2: 25 }, 'G': { c1: '녹색 (G)', h1: '#009900', r1: 100 }, 'bG': { c1: '녹색 (G)', h1: '#009900', r1: 75, c2: '파랑 (B)', h2: '#0000ff', r2: 25 }, 'BG': { c1: '녹색 (G)', h1: '#009900', r1: 50, c2: '파랑 (B)', h2: '#0000ff', r2: 50 }, 'gB': { c1: '파랑 (B)', h1: '#0000ff', r1: 75, c2: '녹색 (G)', h2: '#009900', r2: 25 }, 'B': { c1: '파랑 (B)', h1: '#0000ff', r1: 100 }, 'pB': { c1: '파랑 (B)', h1: '#0000ff', r1: 75, c2: '보라 (P)', h2: '#700070', r2: 25 }, 'PB': { c1: '파랑 (B)', h1: '#0000ff', r1: 50, c2: '보라 (P)', h2: '#700070', r2: 50 }, 'bP': { c1: '보라 (P)', h1: '#700070', r1: 75, c2: '파랑 (B)', h2: '#0000ff', r2: 25 }, 'P': { c1: '보라 (P)', h1: '#700070', r1: 100 }, 'rP': { c1: '보라 (P)', h1: '#700070', r1: 75, c2: '빨강 (R)', h2: '#ff0000', r2: 25 }, 'RP': { c1: '보라 (P)', h1: '#700070', r1: 50, c2: '빨강 (R)', h2: '#ff0000', r2: 50 }, 'pR': { c1: '빨강 (R)', h1: '#ff0000', r1: 75, c2: '보라 (P)', h2: '#700070', r2: 25 },
 };
 
 const polarToCartesian = (centerX: number, centerY: number, radius: number, angleInDegrees: number) => { const angleInRadians = (angleInDegrees - 90) * Math.PI / 180.0; return { x: centerX + (radius * Math.cos(angleInRadians)), y: centerY + (radius * Math.sin(angleInRadians)) }; };
@@ -89,7 +155,6 @@ const describeArc = (x: number, y: number, innerRadius: number, outerRadius: num
 
 export default function App() {
   const [isLoaded, setIsLoaded] = useState(false);
-  const [designReady, setDesignReady] = useState(false); 
   const [toners, setToners] = useState<any[]>([{ id: `b_init`, code: '', adjustedWeight: "", history: [], memo: "", isExpanded: false }]);
   const [pearlToners, setPearlToners] = useState<any[]>([{ id: `p_init`, code: '', adjustedWeight: "", history: [], memo: "", isExpanded: false }]);
   const [isThreeCoatMode, setIsThreeCoatMode] = useState(false); 
@@ -105,12 +170,12 @@ export default function App() {
   const [selectedTonerForView, setSelectedTonerForView] = useState<string | null>(null);
   
   const [memoModal, setMemoModal] = useState<{isOpen: boolean, id: string, code: string, isPearl: boolean, text: string, history: string[]}>({isOpen: false, id: '', code: '', isPearl: false, text: '', history: []});
-  const [activeTab, setActiveTab] = useState<'90LINE'|'100LINE'|'22LINE'|'68LINE'|'EFFECT'|'ADDITIVE'>('90LINE');
+
+  const [activeTab, setActiveTab] = useState<'WT'|'PP'|'CANDY'>('WT');
   
   const [isEmailModalOpen, setIsEmailModalOpen] = useState(false);
-  const [isHistoryModalOpen, setIsHistoryModalOpen] = useState(false);
   const [isGlossaryModalOpen, setIsGlossaryModalOpen] = useState(false);
-  const [isProcessOpen, setIsProcessOpen] = useState(false); 
+  const [isProcessOpen, setIsProcessOpen] = useState(false);
   
   const [isBoardOpen, setIsBoardOpen] = useState(false); 
   const [isShareModalOpen, setIsShareModalOpen] = useState(false); 
@@ -119,14 +184,29 @@ export default function App() {
   const [isEditingPost, setIsEditingPost] = useState(false);
   const [editPostForm, setEditPostForm] = useState({ brand: '', code: '', spec: '' });
 
-  const [boardSearch, setBoardSearch] = useState(''); const [boardBrandFilter, setBoardBrandFilter] = useState('전체');
+  const [boardSearch, setBoardSearch] = useState(''); 
+  const [boardBrandFilter, setBoardBrandFilter] = useState('전체');
+  
   const [snapshots, setSnapshots] = useState<any[]>([]);
   const [isSnapshotModalOpen, setIsSnapshotModalOpen] = useState(false);
   const [selectedSnapshot, setSelectedSnapshot] = useState<any>(null);
 
+  const [activeGuideTab, setActiveGuideTab] = useState<'theory'|'spectrum'|'effect'|'special'>('spectrum');
+  
+  const [zoomedImage, setZoomedImage] = useState<any>(null);
+  const [imgScale, setImgScale] = useState(1);
+  const [pinchDist, setPinchDist] = useState(0);
+  const [isDragging, setIsDragging] = useState(false);
+  const [dragStart, setDragStart] = useState({ x: 0, y: 0 });
+  const [scrollStart, setScrollStart] = useState({ x: 0, y: 0 });
+  const scrollContainerRef = useRef<HTMLDivElement | null>(null);
+
   const [isPearlGuideOpen, setIsPearlGuideOpen] = useState(false);
   const [activePearlLevel, setActivePearlLevel] = useState(6);
-  const [boardPosts, setBoardPosts] = useState<any[]>([]);
+  
+  const [boardPosts, setBoardPosts] = useState([
+      { id: 1, brand: '현대', code: 'UG4', date: '2026-09-11', likes: 12, views: 45, author: '윤프로', spec: '이색 심함, 보카시 블렌딩 필수', baseFormula: [{code: 'WT 321', adjustedWeight: '15.5'}], pearlFormula: [], isThreeCoat: false }
+  ]);
 
   const codeRefs = useRef<{ [key: string]: HTMLInputElement | null }>({}); 
   const weightRefs = useRef<{ [key: string]: HTMLInputElement | null }>({});
@@ -140,19 +220,14 @@ export default function App() {
   const [isConfiguratorOpen, setIsConfiguratorOpen] = useState(false);
   const [selectedWheelIndex, setSelectedWheelIndex] = useState<number | null>(null);
   const handleWheelClick = (index: number) => { setSelectedWheelIndex(index); };
-  const glossarySearchRef = useRef<HTMLInputElement | null>(null);
 
   const activeCodes = [...toners, ...pearlToners].map(t => t.code).filter(c => c !== '');
   
   const sortedCatalog = [...catalogData].filter(item => {
     const code = item.code;
-    if (activeTab === '90LINE') return code.startsWith('90-');
-    if (activeTab === '100LINE') return code.startsWith('100-');
-    if (activeTab === '22LINE') return code.startsWith('22-');
-    if (activeTab === '68LINE') return code.startsWith('68-');
-    if (activeTab === 'EFFECT') return code.startsWith('93-') || code.startsWith('98-') || ['90-A34', '90-A35'].includes(code) || code.startsWith('11-');
-    if (activeTab === 'ADDITIVE') return code.startsWith('H-') || code.startsWith('R-') || code.startsWith('285-') || code.startsWith('923-') || code === '522-111' || code === '352-91' || code.includes('E3') || code.includes('8.500');
-    return true; 
+    if (activeTab === 'CANDY') return code.startsWith('90');
+    if (activeTab === 'PP') return code.startsWith('PP');
+    return !code.startsWith('90') && !code.startsWith('PP'); 
   }).sort((a, b) => { 
       const aActive = activeCodes.includes(a.code); const bActive = activeCodes.includes(b.code); 
       if (aActive && !bActive) return -1; if (!aActive && bActive) return 1; return 0; 
@@ -161,14 +236,80 @@ export default function App() {
       return item.code.includes(searchTxt) || item.role.toUpperCase().includes(searchTxt);
   });
 
+  useEffect(() => { document.title = "조색 Pro"; }, []);
+
   useEffect(() => {
-    let attempts = 0;
-    const timer = setInterval(() => {
-      if ((window as any).tailwind || attempts > 50) { clearInterval(timer); setDesignReady(true); }
-      attempts++;
-    }, 100);
-    return () => clearInterval(timer);
-  }, []);
+    let meta = document.querySelector('meta[name="viewport"]');
+    if (zoomedImage) {
+        document.body.style.overflow = 'hidden'; 
+        if (meta) meta.setAttribute('content', 'width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0'); 
+    } else {
+        document.body.style.overflow = '';
+        if (meta) meta.setAttribute('content', 'width=device-width, initial-scale=1'); 
+    }
+    return () => {
+        document.body.style.overflow = '';
+        if (meta) meta.setAttribute('content', 'width=device-width, initial-scale=1');
+    };
+  }, [zoomedImage]);
+
+  useEffect(() => {
+      const el = scrollContainerRef.current;
+      if (!el || !zoomedImage || zoomedImage.id === 12) return; 
+
+      const handleNativeWheel = (e: WheelEvent) => {
+          e.preventDefault(); 
+          const delta = e.deltaY < 0 ? 0.15 : -0.15; 
+          setImgScale(s => {
+              const newScale = Math.max(1, Math.min(s + delta, 5)); 
+              return Number(newScale.toFixed(2));
+          });
+      };
+
+      el.addEventListener('wheel', handleNativeWheel, { passive: false });
+      return () => el.removeEventListener('wheel', handleNativeWheel);
+  }, [zoomedImage]);
+
+  const handleMouseDown = (e: React.MouseEvent) => {
+      if (imgScale > 1 && scrollContainerRef.current) {
+          setIsDragging(true);
+          setDragStart({ x: e.clientX, y: e.clientY });
+          setScrollStart({ 
+              x: scrollContainerRef.current.scrollLeft, 
+              y: scrollContainerRef.current.scrollTop 
+          });
+      }
+  };
+  const handleMouseMove = (e: React.MouseEvent) => {
+      if (isDragging && scrollContainerRef.current) {
+          const dx = e.clientX - dragStart.x;
+          const dy = e.clientY - dragStart.y;
+          scrollContainerRef.current.scrollLeft = scrollStart.x - dx;
+          scrollContainerRef.current.scrollTop = scrollStart.y - dy;
+      }
+  };
+  const handleMouseUp = () => setIsDragging(false);
+
+  const handleTouchStart = (e: React.TouchEvent) => {
+      if (e.touches.length === 2) {
+          const dist = Math.hypot(e.touches[0].clientX - e.touches[1].clientX, e.touches[0].clientY - e.touches[1].clientY);
+          setPinchDist(dist);
+      }
+  };
+  const handleTouchMove = (e: React.TouchEvent) => {
+      if (e.touches.length === 2) {
+          const dist = Math.hypot(e.touches[0].clientX - e.touches[1].clientX, e.touches[0].clientY - e.touches[1].clientY);
+          if (pinchDist > 0) {
+              const delta = (dist - pinchDist) / 150; 
+              setImgScale(s => Math.min(Math.max(1, s + delta), 5));
+          }
+          setPinchDist(dist);
+      }
+  };
+  const handleTouchEnd = () => { setPinchDist(0); };
+
+  const openImageModal = (img: any) => { setZoomedImage(img); setImgScale(1); };
+
 
   useEffect(() => {
     if (typeof window !== 'undefined') {
@@ -183,7 +324,7 @@ export default function App() {
                 if (safeD.includes('%7B') || safeD.includes('{')) { decodedStr = decodeURIComponent(safeD); } 
                 else if (!safeD.includes('|') && !safeD.includes('%')) { try { decodedStr = decodeURIComponent(escape(atob(safeD))); } catch(e) { decodedStr = atob(safeD); } } 
                 else { decodedStr = decodeURIComponent(safeD.replace(/%7C/g, '|')); }
-                let parsedData: any = null;
+                let parsedData = null;
                 if (decodedStr.startsWith('{')) { parsedData = JSON.parse(decodedStr); } 
                 else {
                     const parts = decodedStr.split('|');
@@ -207,8 +348,9 @@ export default function App() {
 
   useEffect(() => {
       const urlParams = new URLSearchParams(window.location.search); if (urlParams.get('d')) return;
-      if (!isLoaded || typeof window === 'undefined') return;
-      localStorage.setItem('hitec_base', JSON.stringify(toners)); localStorage.setItem('hitec_pearl', JSON.stringify(pearlToners)); localStorage.setItem('hitec_code', targetColorCode); localStorage.setItem('hitec_mode', JSON.stringify(isThreeCoatMode)); localStorage.setItem('hitec_vehicle', vehicleNumber); localStorage.setItem('hitec_carmodel', carModel); localStorage.setItem('hitec_job', jobDescription); localStorage.setItem('hitec_notes', specialNotes); localStorage.setItem('hitec_board_mock', JSON.stringify(boardPosts)); localStorage.setItem('hitec_snapshots', JSON.stringify(snapshots));
+      if (isLoaded && typeof window !== 'undefined') {
+          localStorage.setItem('hitec_base', JSON.stringify(toners)); localStorage.setItem('hitec_pearl', JSON.stringify(pearlToners)); localStorage.setItem('hitec_code', targetColorCode); localStorage.setItem('hitec_mode', JSON.stringify(isThreeCoatMode)); localStorage.setItem('hitec_vehicle', vehicleNumber); localStorage.setItem('hitec_carmodel', carModel); localStorage.setItem('hitec_job', jobDescription); localStorage.setItem('hitec_notes', specialNotes); localStorage.setItem('hitec_board_mock', JSON.stringify(boardPosts)); localStorage.setItem('hitec_snapshots', JSON.stringify(snapshots));
+      }
   }, [toners, pearlToners, targetColorCode, isThreeCoatMode, vehicleNumber, carModel, jobDescription, specialNotes, boardPosts, snapshots, isLoaded]);
 
   useEffect(() => {
@@ -241,52 +383,28 @@ export default function App() {
       setToners([{ id: `b_${Date.now()}`, code: '', adjustedWeight: "", history: [], memo: "", isExpanded: false }]); setPearlToners([{ id: `p_${Date.now()}`, code: '', adjustedWeight: "", history: [], memo: "", isExpanded: false }]); setSelectedTonerForView(null); 
       setSnapshots([]); setCatalogSearch('');
   };
-
+  
   const handleCodeChange = (id: string, newCode: string, isPearl = false) => {
-    const val = newCode.toUpperCase().replace(/[^A-Z0-9/.\- ]/g, '');
-    const setter = isPearl ? setPearlToners : setToners;
-    setter(prev => prev.map(t => t.id === id ? { ...t, code: val } : t));
-  };
+    const rawVal = newCode.toUpperCase(); 
+    const numOnly = rawVal.replace(/[^0-9]/g, '');
+    let finalCode = rawVal;
+    
+    if (rawVal.startsWith('90') && numOnly.length >= 4) {
+        finalCode = numOnly.substring(0, 4); 
+    } else if (['1051', '1500', '455', 'AXT700'].includes(numOnly) || rawVal === 'AXT700') {
+        finalCode = rawVal === 'AXT700' ? 'AXT700' : numOnly; 
+    } else if (numOnly) {
+        finalCode = `WT ${numOnly}`; 
+    }
 
-  const resolveCode = (rawVal: string): string => {
-    const val = rawVal.toUpperCase().trim();
-    if (!val) return val;
-    if (shortcuts[val]) return shortcuts[val];
-    if (TONER_DB[val]) return val;
-    const keys = Object.keys(TONER_DB);
-    const exact    = keys.find(k => k === val);
-    const stripped = keys.find(k => k.replace(/[-\/]/g,'') === val.replace(/[-\/]/g,''));
-    const starts   = keys.find(k => k.startsWith(val));
-    const includes = keys.find(k => k.includes(val));
-    return exact || stripped || starts || includes || val;
-  };
-
-  const handleCodeKeyDown = (e: React.KeyboardEvent<HTMLInputElement>, id: string, isPearl = false) => {
-    if (e.key !== 'Enter') return;
-    e.preventDefault();
     const setter = isPearl ? setPearlToners : setToners;
-    setter(prev => prev.map(t => {
-        if (t.id !== id) return t;
-        const resolved = resolveCode(t.code);
-        if (TONER_DB[resolved]) setFocusTarget({ id, type: 'weight' });
-        return { ...t, code: resolved };
+    setter(prev => prev.map(toner => { 
+        if (toner.id === id) { 
+            if (TONER_DB[finalCode]) { setFocusTarget({ id: id, type: 'weight' }); } 
+            return { ...toner, code: finalCode }; 
+        } 
+        return toner; 
     }));
-  };
-
-  const handleCodeBlur = (e: React.FocusEvent<HTMLInputElement>, id: string, isPearl = false) => {
-    const setter = isPearl ? setPearlToners : setToners;
-    setter(prev => prev.map(t => {
-        if (t.id !== id) return t;
-        return { ...t, code: resolveCode(t.code) };
-    }));
-  };
-
-  const addToner = (isPearl = false) => { 
-      const newId = `new_${Date.now()}_${Math.random().toString(36).substring(2, 9)}`; 
-      const newToner = { id: newId, code: '', adjustedWeight: "", history: [], memo: "", isExpanded: false }; 
-      if (isPearl) setPearlToners(prev => [...prev, newToner]); 
-      else setToners(prev => [...prev, newToner]); 
-      setFocusTarget({ id: newId, type: 'code' }); 
   };
 
   const handleWeightInputChange = (id: string, rawValue: string, isPearl = false) => {
@@ -294,25 +412,13 @@ export default function App() {
     if (val === '') val = ''; else if (val.length > 1 && val.startsWith('0') && val[1] !== '.') val = val.replace(/^0+/, ''); else if (val.startsWith('.')) val = '0' + val; 
     if (isPearl) setPearlToners(pearlToners.map(t => t.id === id ? { ...t, adjustedWeight: val } : t)); else setToners(toners.map(t => t.id === id ? { ...t, adjustedWeight: val } : t));
   };
-
   const handleWeightBlur = (id: string, value: string, isPearl = false) => {
     if (!value) return; const setter = isPearl ? setPearlToners : setToners;
     setter(prev => prev.map(t => { if (t.id === id) { const currentHistory = t.history || []; if (currentHistory.length === 0 || currentHistory[currentHistory.length - 1] !== value) return { ...t, history: [...currentHistory, value] }; } return t; }));
   };
-
-  const handleWeightKeyDown = (e: React.KeyboardEvent<HTMLInputElement>, id: string, isPearl = false) => { 
-    if (e.key !== 'Enter') return;
-    e.preventDefault();
-    const currentList = isPearl ? pearlToners : toners;
-    const current = currentList.find(t => t.id === id);
-    if (current?.adjustedWeight) { handleWeightBlur(id, current.adjustedWeight, isPearl); }
-    
-    const idx = currentList.findIndex(t => t.id === id);
-    if (idx === currentList.length - 1) { addToner(isPearl); } 
-    else { const nextId = currentList[idx + 1].id; setFocusTarget({ id: nextId, type: 'code' }); }
-  };
-
+  const handleWeightKeyDown = (e: React.KeyboardEvent<HTMLInputElement>, id: string, isPearl = false) => { if (e.key === 'Enter') { e.preventDefault(); const newId = `new_${Date.now()}_${Math.random().toString(36).substring(2, 9)}`; const newToner = { id: newId, code: '', adjustedWeight: "", history: [], memo: "", isExpanded: false }; if (isPearl) setPearlToners([...pearlToners, newToner]); else setToners([...toners, newToner]); setFocusTarget({ id: newId, type: 'code' }); } };
   const removeToner = (id: string, isPearl = false) => { if (isPearl) setPearlToners(pearlToners.filter(t => t.id !== id)); else setToners(toners.filter(t => t.id !== id)); };
+  const addToner = (isPearl = false) => { const newId = `new_${Date.now()}_${Math.random().toString(36).substring(2, 9)}`; const newToner = { id: newId, code: '', adjustedWeight: "", history: [], memo: "", isExpanded: false }; if (isPearl) setPearlToners([...pearlToners, newToner]); else setToners([...toners, newToner]); setFocusTarget({ id: newId, type: 'code' }); };
   const quickEditWeight = (id: string, delta: number, isPearl: boolean) => {
     const setter = isPearl ? setPearlToners : setToners;
     setter(prev => prev.map(t => { if(t.id === id) { let newVal = Math.max(0, (parseFloat(t.adjustedWeight) || 0) + delta); let strVal = String(Number(Math.round(newVal * 100000) / 100000)); const currentHistory = t.history || []; const nextHistory = (currentHistory.length === 0 || currentHistory[currentHistory.length - 1] !== strVal) ? [...currentHistory, strVal] : currentHistory; return { ...t, adjustedWeight: strVal, history: nextHistory }; } return t; }));
@@ -328,24 +434,10 @@ export default function App() {
   const generateShareText = () => {
     let baseListText = toners.filter(t => t.code).map(t => `  - ${t.code} (${TONER_DB[t.code]?.role || '미지정'}): ${t.adjustedWeight || '0'}g`).join('\n'); let pearlListText = pearlToners.filter(t => t.code).map(t => `  - ${t.code} (${TONER_DB[t.code]?.role || '미지정'}): ${t.adjustedWeight || '0'}g`).join('\n'); let currentOrigin = localStorage.getItem('hitec_clean_domain') || window.location.origin;
     const payloadStr = [vehicleNumber, carModel, targetColorCode, jobDescription, specialNotes, packToners(toners), isThreeCoatMode ? packToners(pearlToners) : '', isThreeCoatMode ? '1' : '0', registrationDate].join('|'); const shareUrl = `${currentOrigin}${window.location.pathname}?d=${btoa(unescape(encodeURIComponent(payloadStr)))}`;
-    return `[조색 배합 지시서]\n================================\n📅 등록날짜: ${registrationDate}\n🚗 차량번호: ${vehicleNumber || '미지정'}\n🚙 브랜드: ${carModel || '미지정'}\n🎨 컬러코드: ${targetColorCode || '미지정'}\n🛠️ 작업내용: ${jobDescription || '미지정'}\n📌 특이사항: ${specialNotes || '없음'}\n================================\n\n[▼ 베이스 코트]\n${baseListText || '  (입력 데이터 없음)'}\n--------------------------------\n▶ 베이스 합계: ${totalBaseWeight}g\n▶ 93-E3 수지: ${(parseFloat(totalBaseWeight) * (isBaseMetallic ? 0.5 : 0.1)).toFixed(1)}g\n\n${isThreeCoatMode ? `[▼ 펄 코트]\n${pearlListText || '  (입력 데이터 없음)'}\n--------------------------------\n▶ 펄 합계: ${totalPearlWeight}g\n▶ 93-E3 수지: ${(parseFloat(totalPearlWeight) * (isPearlMetallic ? 0.5 : 0.1)).toFixed(1)}g\n\n` : ''}================================\n✨ 최종 도막 총량: ${(parseFloat((parseFloat(totalBaseWeight) * (isBaseMetallic ? 1.5 : 1.1)).toFixed(1)) + (isThreeCoatMode ? parseFloat((parseFloat(totalPearlWeight) * (isPearlMetallic ? 1.5 : 1.1)).toFixed(1)) : 0)).toFixed(1)}g\n\n👉 링크:\n${shareUrl}`;
+    return `[조색 배합 지시서]\n================================\n📅 등록날짜: ${registrationDate}\n🚗 차량번호: ${vehicleNumber || '미지정'}\n🚙 브랜드: ${carModel || '미지정'}\n🎨 컬러코드: ${targetColorCode || '미지정'}\n🛠️ 작업내용: ${jobDescription || '미지정'}\n📌 특이사항: ${specialNotes || '없음'}\n================================\n\n[▼ 베이스 코트]\n${baseListText || '  (입력 데이터 없음)'}\n--------------------------------\n▶ 베이스 합계: ${totalBaseWeight}g\n▶ 6052 수지: ${(parseFloat(totalBaseWeight) * (isBaseMetallic ? 0.2 : 0.1)).toFixed(1)}g\n\n${isThreeCoatMode ? `[▼ 펄 코트]\n${pearlListText || '  (입력 데이터 없음)'}\n--------------------------------\n▶ 펄 합계: ${totalPearlWeight}g\n▶ 6052 수지: ${(parseFloat(totalPearlWeight) * (isPearlMetallic ? 0.2 : 0.1)).toFixed(1)}g\n\n` : ''}================================\n✨ 최종 도막 총량: ${totalFinalWeight}g\n\n👉 링크:\n${shareUrl}`;
   };
 
-  const handleShareKakao = () => { 
-    const text = generateShareText();
-    const kakaoUrl = `kakaotalk://send?text=${encodeURIComponent(text)}`;
-    const start = Date.now();
-    window.location.href = kakaoUrl;
-    setTimeout(() => {
-        if (Date.now() - start < 1500) {
-            if (navigator.clipboard) {
-                navigator.clipboard.writeText(text).then(() => alert("📋 앱을 열 수 없습니다. 클립보드에 복사되었습니다! 카카오톡에 붙여넣으세요."));
-            }
-        }
-    }, 1000);
-    setIsShareModalOpen(false); 
-  };
-
+  const handleShareKakao = () => { if (typeof navigator !== 'undefined' && navigator.clipboard) { navigator.clipboard.writeText(generateShareText()); alert("복사되었습니다. 카톡에 붙여넣으세요."); } else { alert("클립보드 미지원."); } setIsShareModalOpen(false); };
   const handleShareSMS = () => { window.location.href = `sms:?body=${encodeURIComponent(generateShareText())}`; setIsShareModalOpen(false); };
   const handleShareMail = () => { window.location.href = `mailto:?subject=${encodeURIComponent('[조색 Pro] 배합 지시서 공유')}&body=${encodeURIComponent(generateShareText())}`; setIsShareModalOpen(false); };
   const generateShareUrl = () => { let currentOrigin = localStorage.getItem('hitec_clean_domain') || window.location.origin; const payloadStr = [vehicleNumber, carModel, targetColorCode, jobDescription, specialNotes, packToners(toners), isThreeCoatMode ? packToners(pearlToners) : '', isThreeCoatMode ? '1' : '0', registrationDate].join('|'); return `${currentOrigin}${window.location.pathname}?d=${btoa(unescape(encodeURIComponent(payloadStr)))}`; }
@@ -367,39 +459,31 @@ export default function App() {
       setBoardPosts([newPost, ...boardPosts]); alert("🎉 게시판에 데이터가 등록되었습니다!");
   };
   const deleteBoardPost = (id: number, e: React.MouseEvent) => { e.stopPropagation(); if (window.confirm("삭제하시겠습니까?")) setBoardPosts(prev => prev.filter(post => post.id !== id)); };
-  const handleSaveSnapshot = () => { const newSnapshot = { id: Date.now(), timestamp: new Date().toLocaleTimeString('ko-KR', { hour12: false }), dateStr: new Date().toLocaleDateString('ko-KR'), base: JSON.parse(JSON.stringify(toners)), pearl: JSON.parse(JSON.stringify(pearlToners)), isThreeCoat: isThreeCoatMode, totalFinal: ((parseFloat((parseFloat(totalBaseWeight) * (isBaseMetallic ? 1.5 : 1.1)).toFixed(1)) + (isThreeCoatMode ? parseFloat((parseFloat(totalPearlWeight) * (isPearlMetallic ? 1.5 : 1.1)).toFixed(1)) : 0)).toFixed(1)) }; setSnapshots(prev => [newSnapshot, ...prev]); alert(`[${newSnapshot.timestamp}] 데이터가 확정 저장되었습니다.`); };
+  const handleSaveSnapshot = () => { const newSnapshot = { id: Date.now(), timestamp: new Date().toLocaleTimeString('ko-KR', { hour12: false }), dateStr: new Date().toLocaleDateString('ko-KR'), base: JSON.parse(JSON.stringify(toners)), pearl: JSON.parse(JSON.stringify(pearlToners)), isThreeCoat: isThreeCoatMode, totalFinal: totalFinalWeight }; setSnapshots(prev => [newSnapshot, ...prev]); alert(`[${newSnapshot.timestamp}] 데이터가 확정 저장되었습니다.`); };
   const restoreSnapshot = (snapshot: any) => { if (window.confirm("복원하시겠습니까?")) { setToners(JSON.parse(JSON.stringify(snapshot.base))); setPearlToners(JSON.parse(JSON.stringify(snapshot.pearl))); setIsThreeCoatMode(snapshot.isThreeCoat); setSelectedSnapshot(null); setIsSnapshotModalOpen(false); } };
   const handleSavePostEdit = () => { setBoardPosts(prev => prev.map(p => p.id === viewingPost.id ? { ...p, brand: editPostForm.brand, code: editPostForm.code, spec: editPostForm.spec } : p)); setViewingPost({ ...viewingPost, brand: editPostForm.brand, code: editPostForm.code, spec: editPostForm.spec }); setIsEditingPost(false); };
   const handleOpenPost = (post: any) => { setViewingPost(post); setEditPostForm({ brand: post.brand, code: post.code, spec: post.spec }); setIsEditingPost(false); };
 
   const handleGoogleGlossarySearch = () => {
-      const val = glossarySearchRef.current?.value?.trim();
+      const inputEl = document.getElementById('glossarySearchInput') as HTMLInputElement;
+      const val = inputEl?.value?.trim();
       if(!val) { alert("사전 검색창에 뜻이 궁금한 용어를 직접 입력하세요!"); return; }
-      window.open(`https://www.google.com/search?q=글라슈리트+조색+${val}+뜻`, '_blank');
+      window.open(`https://www.google.com/search?q=스피스헥커+${val}+뜻`, '_blank');
   };
 
-  if (!designReady) {
-    return (
-      <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', height: '100vh', backgroundColor: '#0f172a', color: '#38bdf8', fontFamily: 'sans-serif' }}>
-        <h2 style={{ fontSize: '24px', fontWeight: 'bold' }}>🎨 글라슈리트 시스템 초기화 중...</h2>
-        <p style={{ marginTop: '10px', color: '#94a3b8' }}>인터넷 환경에 따라 최대 3~4초 정도 소요될 수 있습니다.</p>
-      </div>
-    );
-  }
-
   return (
-    <div className="min-h-screen bg-slate-100 text-slate-800 font-sans flex flex-col relative overflow-x-hidden pb-[320px] lg:pb-[140px] notranslate" translate="no">
+    <div className="min-h-screen bg-slate-100 text-slate-800 font-sans flex flex-col relative overflow-x-hidden pb-[200px] md:pb-[140px] notranslate" translate="no">
       <header className="bg-slate-900 flex flex-col sm:flex-row justify-between items-center p-4 border-b border-slate-800 shadow-md shrink-0 gap-3">
         <div className="flex items-center space-x-3 w-full sm:w-auto">
-          <div className="w-8 h-8 bg-gradient-to-br from-blue-500 to-cyan-500 rounded flex items-center justify-center shadow-lg"><span className="text-white font-bold text-lg">GF</span></div>
+          <div className="w-8 h-8 bg-gradient-to-br from-blue-500 to-cyan-500 rounded flex items-center justify-center shadow-lg"><span className="text-white font-bold text-lg">H</span></div>
           <h1 className="text-lg md:text-xl font-semibold flex items-center gap-2 w-full">
-              <span className="text-white tracking-wide truncate">윤성만 님을 위한 BASF (글라슈리트) PRO MASTER EDITION</span>
-              <span className="bg-slate-800 text-slate-400 text-[10px] px-2 py-0.5 rounded-full border border-slate-700 ml-1 hidden sm:inline-block shrink-0">DB 분리 완벽 패치</span>
+              <span className="text-white tracking-wide truncate">조색 Pro</span>
+              <span className="bg-slate-800 text-slate-400 text-[10px] px-2 py-0.5 rounded-full border border-slate-700 ml-1 hidden sm:inline-block shrink-0">Last Patch: {LAST_PATCH_DATE}</span>
           </h1>
         </div>
         <div className="flex gap-2 w-full sm:w-auto overflow-x-auto pb-1 sm:pb-0">
             <button onClick={() => setIsGlossaryModalOpen(true)} className="flex items-center gap-1.5 bg-emerald-600 hover:bg-emerald-700 text-white border border-emerald-500 px-3 py-1.5 rounded-lg text-xs font-bold transition-colors whitespace-nowrap shadow-sm">
-                📖 글라슈리트 용어 사전
+                📖 도장/조색 용어 사전
             </button>
             <button onClick={() => window.location.reload()} className="flex items-center gap-1.5 bg-slate-800 hover:bg-slate-700 text-blue-400 border border-blue-900/50 px-3 py-1.5 rounded-lg text-xs font-bold transition-colors whitespace-nowrap shadow-sm">
                 <RefreshCw size={14} /> 업데이트
@@ -464,18 +548,12 @@ export default function App() {
                               </div>
                               <input 
                                   ref={el => { codeRefs.current[toner.id] = el; }} 
-                                  value={toner.code} 
+                                  value={toner.code.replace('WT ', '').replace('PP ', '')} 
                                   onChange={e => handleCodeChange(toner.id, e.target.value, false)} 
-                                  onKeyDown={e => handleCodeKeyDown(e, toner.id, false)}
-                                  onBlur={e => handleCodeBlur(e, toner.id, false)}
+                                  onKeyDown={(e) => { if (e.key === 'Enter') { e.preventDefault(); setFocusTarget({ id: toner.id, type: 'weight' }); } }}
                                   type="text"
-                                  inputMode="text"
-                                  className="w-36 text-center text-lg font-black border-2 border-slate-300 rounded-xl px-1 py-3 focus:border-blue-500 focus:outline-none shadow-inner shrink-0 uppercase bg-white" 
-                                  placeholder="예: M5, A430" 
-                                  autoCapitalize="characters"
-                                  autoCorrect="off"
-                                  autoComplete="off"
-                                  spellCheck={false}
+                                  className="w-20 text-center text-sm font-black border border-slate-300 rounded p-1.5 focus:border-blue-500 focus:outline-none shadow-inner shrink-0 uppercase" 
+                                  placeholder="번호" 
                               />
                               <div className="flex items-center gap-1 cursor-pointer hover:bg-blue-100/50 py-1 px-1.5 rounded transition-colors flex-1 overflow-hidden" onClick={() => toggleExpand(toner.id, false)}>
                                   <span className="font-bold text-blue-700 text-sm truncate">{info.role || '미등록 안료'}</span>
@@ -506,16 +584,9 @@ export default function App() {
                       <div className="flex items-center self-end sm:self-auto bg-white border rounded-md px-1.5 py-0.5 shrink-0 shadow-sm mt-2 sm:mt-0">
                          <button onClick={() => quickEditWeight(toner.id, -0.1, false)} className="px-2 py-1 text-red-500 font-bold hover:bg-red-50 rounded">-</button>
                          <input 
-                             ref={el => { weightRefs.current[toner.id] = el; }} 
-                             inputMode="decimal" 
-                             type="text"
-                             pattern="[0-9.]*" 
-                             value={toner.adjustedWeight} 
-                             onChange={e => handleWeightInputChange(toner.id, e.target.value, false)} 
-                             onBlur={e => handleWeightBlur(toner.id, e.target.value, false)} 
-                             onKeyDown={e => handleWeightKeyDown(e, toner.id, false)} 
-                             className="w-20 text-right text-xl font-black text-blue-600 focus:outline-none clean-number-input mx-1" 
-                             placeholder="0.0" 
+                             ref={el => { weightRefs.current[toner.id] = el; }} inputMode="decimal" pattern="[0-9]*" value={toner.adjustedWeight} 
+                             onChange={e => handleWeightInputChange(toner.id, e.target.value, false)} onBlur={e => handleWeightBlur(toner.id, e.target.value, false)} onKeyDown={e => handleWeightKeyDown(e, toner.id, false)} 
+                             className="w-16 text-right text-base font-black text-blue-600 focus:outline-none clean-number-input mx-1" placeholder="0.0" 
                          />
                          <button onClick={() => quickEditWeight(toner.id, 0.1, false)} className="px-2 py-1 text-blue-500 font-bold hover:bg-blue-50 rounded">+</button>
                          <span className="text-[10px] font-bold text-slate-400 ml-1 mr-1">g</span>
@@ -526,7 +597,20 @@ export default function App() {
                 )
               })}
               
-              <div className="flex w-full gap-2 mt-2">
+              <div className="flex justify-between items-center bg-blue-50/80 p-3 mt-3 rounded-xl border border-blue-200 shadow-sm">
+                  <div className="flex items-center gap-2.5">
+                      <div className="w-8 h-8 rounded-full bg-blue-200 flex items-center justify-center border border-blue-300 shadow-inner">
+                          <Beaker size={14} className="text-blue-700"/>
+                      </div>
+                      <div className="flex flex-col">
+                          <span className="text-xs font-black text-blue-800">💧 필수 수지/환원제 (6052 등)</span>
+                          <span className="text-[10px] font-bold text-blue-600 opacity-80">입력된 베이스 안료 중량 대비 자동 계산량</span>
+                      </div>
+                  </div>
+                  <span className="text-xl font-black text-blue-700">{(parseFloat(totalBaseWeight) * (isBaseMetallic ? 0.2 : 0.1)).toFixed(1)}<span className="text-xs ml-0.5">g</span></span>
+              </div>
+
+              <div className="flex w-full gap-2 mt-3">
                   <button onClick={() => addToner(false)} className="flex-1 py-3 border border-dashed border-slate-300 bg-white hover:bg-blue-50 hover:border-blue-400 rounded-lg text-slate-500 hover:text-blue-600 font-bold text-sm flex justify-center items-center transition-all shadow-sm">
                       <Plus size={18} className="mr-1"/>베이스 안료 추가
                   </button>
@@ -570,18 +654,12 @@ export default function App() {
                                 </div>
                                 <input 
                                     ref={el => { codeRefs.current[toner.id] = el; }} 
-                                    value={toner.code} 
+                                    value={toner.code.replace('WT ', '').replace('PP ', '')} 
                                     onChange={e => handleCodeChange(toner.id, e.target.value, true)} 
-                                    onKeyDown={e => handleCodeKeyDown(e, toner.id, true)}
-                                    onBlur={e => handleCodeBlur(e, toner.id, true)}
+                                    onKeyDown={(e) => { if (e.key === 'Enter') { e.preventDefault(); setFocusTarget({ id: toner.id, type: 'weight' }); } }}
                                     type="text" 
-                                    inputMode="text"
-                                    className="w-36 text-center text-lg font-black border-2 border-purple-300 rounded-xl px-1 py-3 text-purple-800 shadow-inner focus:outline-none focus:border-purple-500 shrink-0 uppercase bg-white" 
-                                    placeholder="예: M011" 
-                                    autoCapitalize="characters"
-                                    autoCorrect="off"
-                                    autoComplete="off"
-                                    spellCheck={false}
+                                    className="w-20 text-center text-sm font-black border border-purple-200 rounded px-1.5 py-1 text-purple-800 shadow-inner focus:outline-none focus:border-purple-500 shrink-0 uppercase" 
+                                    placeholder="번호" 
                                 />
                                 <div className="flex items-center gap-1 cursor-pointer hover:bg-purple-100/50 py-1 px-1.5 rounded transition-colors flex-1 overflow-hidden" onClick={() => toggleExpand(toner.id, true)}>
                                     <span className="font-bold text-purple-700 text-sm truncate">{info.role || '미등록 안료'}</span>
@@ -612,16 +690,9 @@ export default function App() {
                         <div className="flex items-center self-end sm:self-auto bg-white border border-purple-100 rounded-md px-1.5 py-0.5 shrink-0 shadow-sm mt-2 sm:mt-0">
                            <button onClick={() => quickEditWeight(toner.id, -0.1, true)} className="px-2 py-1 text-red-500 font-bold hover:bg-red-50 rounded">-</button>
                            <input 
-                               ref={el => { weightRefs.current[toner.id] = el; }} 
-                               inputMode="decimal" 
-                               type="text"
-                               pattern="[0-9.]*" 
-                               value={toner.adjustedWeight} 
-                               onChange={e => handleWeightInputChange(toner.id, e.target.value, true)} 
-                               onBlur={e => handleWeightBlur(toner.id, e.target.value, true)} 
-                               onKeyDown={e => handleWeightKeyDown(e, toner.id, true)} 
-                               className="w-20 text-right text-xl font-black text-purple-600 focus:outline-none clean-number-input mx-1" 
-                               placeholder="0.0" 
+                               ref={el => { weightRefs.current[toner.id] = el; }} inputMode="decimal" pattern="[0-9]*" value={toner.adjustedWeight} 
+                               onChange={e => handleWeightInputChange(toner.id, e.target.value, true)} onBlur={e => handleWeightBlur(toner.id, e.target.value, true)} onKeyDown={e => handleWeightKeyDown(e, toner.id, true)} 
+                               className="w-16 text-right text-base font-black text-purple-600 focus:outline-none clean-number-input mx-1" placeholder="0.0" 
                            />
                            <button onClick={() => quickEditWeight(toner.id, 0.1, true)} className="px-2 py-1 text-blue-500 font-bold hover:bg-blue-50 rounded">+</button>
                            <span className="text-[10px] font-bold text-slate-400 ml-1 mr-1">g</span>
@@ -631,8 +702,22 @@ export default function App() {
                     </div>
                   )
                 })}
-                <button onClick={() => addToner(true)} className="w-full py-3 border border-dashed border-purple-300 hover:border-purple-500 bg-purple-50/50 hover:bg-purple-100/50 rounded-lg text-purple-600 font-bold transition-all flex items-center justify-center space-x-2 text-sm mt-2 shadow-sm">
-                    <Plus size={18} /><span>펄 코트 조색제 추가</span>
+
+                <div className="flex justify-between items-center bg-purple-50/80 p-3 mt-3 rounded-xl border border-purple-200 shadow-sm">
+                    <div className="flex items-center gap-2.5">
+                        <div className="w-8 h-8 rounded-full bg-purple-200 flex items-center justify-center border border-purple-300 shadow-inner">
+                            <Zap size={14} className="text-purple-700"/>
+                        </div>
+                        <div className="flex flex-col">
+                            <span className="text-xs font-black text-purple-800">✨ 펄 전용 수지/환원제</span>
+                            <span className="text-[10px] font-bold text-purple-600 opacity-80">입력된 펄 안료 중량 대비 자동 계산량</span>
+                        </div>
+                    </div>
+                    <span className="text-xl font-black text-purple-700">{(parseFloat(totalPearlWeight) * (isPearlMetallic ? 0.2 : 0.1)).toFixed(1)}<span className="text-xs ml-0.5">g</span></span>
+                </div>
+
+                <button onClick={() => addToner(true)} className="w-full py-3 border border-dashed border-purple-300 hover:border-purple-500 bg-purple-50/50 hover:bg-purple-100/50 rounded-lg text-purple-600 font-bold transition-all flex items-center justify-center space-x-2 text-sm mt-3 shadow-sm">
+                    <Plus size={18} /><span>펄 조색제 추가</span>
                 </button>
               </div>
             )}
@@ -643,24 +728,38 @@ export default function App() {
           <div className="flex-1 bg-white border border-slate-300 rounded-xl shadow-xl overflow-hidden flex flex-col min-h-[500px]">
             <div className="p-3 shrink-0 bg-slate-50 border-b border-slate-200">
               <h3 className="text-xs font-black mb-2 flex justify-between items-center text-slate-800">
-                <span className="flex items-center"><Target size={14} className="mr-1 text-purple-600"/> 💎 PEARL OPTICS SPECTRUM MAP</span>
-                <button onClick={() => setIsConfiguratorOpen(true)} className="text-[10px] px-2.5 py-1.5 rounded-lg bg-blue-600 text-white font-bold flex items-center hover:bg-blue-700 transition-colors shadow-sm"><Maximize size={10} className="mr-1"/>먼셀 컬러 믹싱 랩</button>
+                <span className="flex items-center"><Target size={14} className="mr-1 text-blue-600"/> 📘 마스터 기술자료실 (Visual Guide)</span>
+                <button onClick={() => setIsConfiguratorOpen(true)} className="text-[10px] px-2.5 py-1.5 rounded-lg bg-blue-600 text-white font-bold flex items-center hover:bg-blue-700 transition-colors shadow-sm"><Maximize size={10} className="mr-1"/>먼셀 믹싱 랩</button>
               </h3>
               
-              <div 
-                  className="h-44 rounded-xl overflow-hidden shadow-inner border border-slate-300 cursor-pointer relative group transition-all" 
-                  onClick={() => setIsPearlGuideOpen(true)}
-                  style={{ background: 'linear-gradient(to right, #f8fafc 0%, #cbd5e1 20%, #8b5cf6 50%, #1e3a8a 80%, #0f172a 100%)' }}
-              >
-                  <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent"></div>
-                  <div className="absolute inset-0 flex flex-col items-center justify-center z-20">
-                      <span className="bg-white/90 text-slate-900 font-black px-4 py-2 rounded-full text-sm shadow-xl flex items-center gap-2 group-hover:scale-105 transition-transform"><BookOpen size={16}/> 글라슈리트 펄/이펙트 마스터 인덱스 열기</span>
+              <div className="flex flex-col bg-white rounded-2xl overflow-hidden shadow-md border border-blue-200">
+                  <div className="flex border-b border-blue-200 bg-slate-50">
+                      {['theory', 'spectrum', 'effect', 'special'].map(tab => (
+                          <button key={tab} onClick={() => setActiveGuideTab(tab as any)} className={`flex-1 py-3 text-[12px] font-black transition-all ${activeGuideTab === tab ? 'bg-blue-600 text-white shadow-md transform scale-[1.02] rounded-t-xl z-10' : 'text-slate-500 hover:text-blue-700 hover:bg-blue-50'}`}>
+                              {tab === 'theory' ? '이론/기초' : tab === 'spectrum' ? '컬러 맵' : tab === 'effect' ? '이펙트/펄' : '특수/3코트'}
+                          </button>
+                      ))}
+                  </div>
+                  <div className="p-3 grid grid-cols-2 gap-3 h-52 overflow-y-auto custom-scrollbar bg-slate-50/50">
+                      {GUIDE_IMAGES[activeGuideTab].map(img => (
+                          <div key={img.id} onClick={() => openImageModal(img)} className="bg-white rounded-xl overflow-hidden cursor-pointer hover:ring-2 hover:ring-blue-500 hover:shadow-xl transition-all shadow-sm border border-slate-200 group flex flex-col justify-center items-center text-center p-4 min-h-[90px] relative">
+                              {img.url && (
+                                  <div className="absolute inset-0 z-0">
+                                      <img src={img.url} alt={img.title} className="w-full h-full object-cover opacity-10 group-hover:opacity-100 transition-opacity duration-300" />
+                                  </div>
+                              )}
+                              <div className="relative z-10 flex flex-col items-center justify-center w-full h-full p-1 transition-colors duration-300">
+                                  <h4 className="text-[13px] font-black text-blue-800 group-hover:text-blue-600 mb-1.5 leading-tight drop-shadow-sm">{img.title}</h4>
+                                  <p className="text-[11px] font-bold text-slate-500 group-hover:text-slate-700 break-keep leading-tight">{img.desc}</p>
+                              </div>
+                          </div>
+                      ))}
                   </div>
               </div>
 
               <div className="flex gap-2 mt-3 relative z-50">
-                  <button onClick={() => setIsEmailModalOpen(true)} className="flex-1 bg-yellow-400 border border-yellow-500 text-slate-900 py-2.5 rounded-lg text-sm font-black flex items-center justify-center hover:bg-yellow-500 transition-colors shadow-sm cursor-pointer">
-                      <Mail size={16} className="mr-1.5 text-slate-800 pointer-events-none" /> <span className="pointer-events-none">다이렉트 피드백 보내기</span>
+                  <button onClick={() => setIsPearlGuideOpen(true)} className="flex-1 bg-purple-100 border border-purple-300 text-purple-900 py-2.5 rounded-lg text-sm font-black flex items-center justify-center hover:bg-purple-200 transition-colors shadow-sm cursor-pointer">
+                      <BookOpen size={16} className="mr-1.5" /> <span className="pointer-events-none">PP(분말) 가이드 열기</span>
                   </button>
                   <button onClick={() => setIsProcessOpen(true)} className="flex-1 bg-slate-800 border border-slate-700 text-slate-300 py-2.5 rounded-lg text-sm font-black flex items-center justify-center hover:bg-slate-700 hover:text-white transition-colors shadow-sm cursor-pointer">
                       <Code size={16} className="mr-1.5 text-slate-400 pointer-events-none" /> <span className="pointer-events-none">Pro 제작 과정 보기</span>
@@ -669,36 +768,34 @@ export default function App() {
             </div>
 
             <div className="flex flex-col h-full bg-slate-100">
-                <div className="flex flex-wrap sm:flex-nowrap bg-slate-900 shrink-0 border-b border-slate-700">
-                    <button onClick={()=>{setActiveTab('90LINE'); setCatalogSearch('');}} className={`flex-1 py-3 px-2 min-w-[70px] text-[11px] sm:text-[12px] font-black transition-colors whitespace-nowrap ${activeTab === '90LINE' ? 'bg-blue-600 text-white' : 'text-slate-400 hover:text-slate-200'}`}>💧 90라인</button>
-                    <button onClick={()=>{setActiveTab('100LINE'); setCatalogSearch('');}} className={`flex-1 py-3 px-2 min-w-[70px] text-[11px] sm:text-[12px] font-black transition-colors whitespace-nowrap ${activeTab === '100LINE' ? 'bg-emerald-600 text-white' : 'text-slate-400 hover:text-slate-200'}`}>🌱 100라인</button>
-                    <button onClick={()=>{setActiveTab('22LINE'); setCatalogSearch('');}} className={`flex-1 py-3 px-2 min-w-[70px] text-[11px] sm:text-[12px] font-black transition-colors whitespace-nowrap ${activeTab === '22LINE' ? 'bg-purple-600 text-white' : 'text-slate-400 hover:text-slate-200'}`}>🚚 22라인</button>
-                    <button onClick={()=>{setActiveTab('68LINE'); setCatalogSearch('');}} className={`flex-1 py-3 px-2 min-w-[70px] text-[11px] sm:text-[12px] font-black transition-colors whitespace-nowrap ${activeTab === '68LINE' ? 'bg-orange-600 text-white' : 'text-slate-400 hover:text-slate-200'}`}>🚌 68라인</button>
-                    <button onClick={()=>{setActiveTab('EFFECT'); setCatalogSearch('');}} className={`flex-1 py-3 px-2 min-w-[80px] text-[11px] sm:text-[12px] font-black transition-colors whitespace-nowrap ${activeTab === 'EFFECT' ? 'bg-indigo-500 text-white' : 'text-slate-400 hover:text-slate-200'}`}>✨ 특수/이펙트</button>
-                    <button onClick={()=>{setActiveTab('ADDITIVE'); setCatalogSearch('');}} className={`flex-1 py-3 px-2 min-w-[90px] text-[11px] sm:text-[12px] font-black transition-colors whitespace-nowrap ${activeTab === 'ADDITIVE' ? 'bg-slate-700 text-white' : 'text-slate-400 hover:text-slate-200'}`}>🧪 첨가제/경화제</button>
+                <div className="flex bg-slate-900 shrink-0 border-b border-slate-700">
+                    <button onClick={()=>{setActiveTab('WT'); setCatalogSearch('');}} className={`flex-1 py-3 text-sm font-black transition-colors ${activeTab === 'WT' ? 'bg-blue-600 text-white' : 'text-slate-400 hover:text-slate-200'}`}>💧 WT (액상)</button>
+                    <button onClick={()=>{setActiveTab('PP'); setCatalogSearch('');}} className={`flex-1 py-3 text-sm font-black transition-colors ${activeTab === 'PP' ? 'bg-purple-600 text-white' : 'text-slate-400 hover:text-slate-200'}`}>🌬️ PP (분말)</button>
+                    <button onClick={()=>{setActiveTab('CANDY'); setCatalogSearch('');}} className={`flex-1 py-3 text-sm font-black transition-colors ${activeTab === 'CANDY' ? 'bg-yellow-500 text-slate-900' : 'text-slate-400 hover:text-slate-200'}`}>🍬 CANDY</button>
                 </div>
                 <div className="p-3 bg-slate-800 border-b border-slate-700 flex shrink-0 gap-2">
                     <div className="relative flex-1">
-                        <input type="text" value={catalogSearch} onChange={e=>setCatalogSearch(e.target.value)} placeholder="안료명 / 색상코드 (예: 919, M4) 검색" className="w-full bg-slate-900 border border-slate-600 text-white text-xs px-2.5 py-2 rounded-lg pl-8 focus:outline-none focus:border-blue-500 transition-colors" />
+                        <input type="text" value={catalogSearch} onChange={e=>setCatalogSearch(e.target.value)} placeholder="안료명 / 색상코드 검색" className="w-full bg-slate-900 border border-slate-600 text-white text-xs px-2.5 py-2 rounded-lg pl-8 focus:outline-none focus:border-blue-500 transition-colors" />
                         <Search size={14} className="absolute left-2.5 top-2.5 text-slate-400" />
                     </div>
                 </div>
                 
-                <div className="flex-1 overflow-y-auto p-3 space-y-3">
-                    {activeTab === 'EFFECT' && (
-                        <div className="mb-4 bg-purple-50 border border-purple-300 p-4 rounded-xl shadow-sm">
-                           <h4 className="text-sm font-black text-purple-800 mb-2">⚠️ 글라슈리트 스페셜 이펙트 도장 가이드</h4>
-                           <ul className="text-xs text-purple-700 space-y-1.5 font-bold">
-                              <li>1. 투명도가 생명입니다. 바탕색 평활도(샌딩)를 완벽히 하세요.</li>
-                              <li>2. 캔디나 크리스탈 펄은 블렌딩 시 얼룩 발생률이 매우 높습니다.</li>
-                              <li>3. 분말 타입(90-A34 등)은 믹싱 클리어와 100% 교반해야 뭉치지 않습니다.</li>
+                <div className="flex-1 overflow-y-auto custom-scrollbar p-3 space-y-3">
+                    {activeTab === 'CANDY' && (
+                        <div className="mb-4 bg-yellow-50 border border-yellow-300 p-4 rounded-xl shadow-sm">
+                           <h4 className="text-sm font-black text-yellow-800 mb-2">⚠️ 퍼마솔리드 캔디 6단계 시공 및 3대 철칙</h4>
+                           <ul className="text-xs text-yellow-700 space-y-1.5 font-bold">
+                              <li>1. 이소시아네이트 포함. 방독 마스크 및 환기 필수</li>
+                              <li>2. 반사층 도장 후 완벽한 플래시 오프 필수</li>
+                              <li>3. 블렌딩 불가(전체 도장), 건조 타임 준수</li>
+                              <li>4. 2액형 클리어 조색비 엄수 및 Clear over Clear 필수</li>
                            </ul>
                         </div>
                     )}
                     
                     {catalogSearch.trim() !== '' && OEM_COLORS.some(c => c.code.toUpperCase().includes(catalogSearch.toUpperCase()) || c.name.toUpperCase().includes(catalogSearch.toUpperCase())) && (
                         <div className="mb-2 p-3 bg-blue-50 rounded-xl border border-blue-200 shadow-sm">
-                            <h4 className="text-xs font-black text-blue-800 mb-2">🔍 OEM 색상코드 검색 결과</h4>
+                            <h4 className="text-xs font-black text-blue-800 mb-2">🔍 FORD 색상코드 검색 결과</h4>
                             <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
                                 {OEM_COLORS.filter(c => c.code.toUpperCase().includes(catalogSearch.toUpperCase()) || c.name.toUpperCase().includes(catalogSearch.toUpperCase())).slice(0, 20).map((oem, idx) => (
                                     <div key={idx} className="flex justify-between items-center bg-white px-3 py-2 rounded shadow-sm border border-slate-200 cursor-pointer hover:border-blue-400" onClick={() => setTargetColorCode(oem.code)}>
@@ -745,411 +842,297 @@ export default function App() {
       </div>
 
       <div className="fixed bottom-0 left-0 w-full z-[500] bg-slate-950/95 backdrop-blur-xl border-t border-slate-800 shadow-[0_-12px_45px_rgba(0,0,0,0.85)] text-slate-100 pb-[env(safe-area-inset-bottom)]">
-          <div className="flex flex-col lg:flex-row p-3 lg:p-4 justify-between items-center gap-3 lg:gap-4">
-            <div className="flex w-full lg:w-auto gap-3 flex-col sm:flex-row justify-between lg:justify-start">
-                <div className="flex flex-col gap-1 flex-1 min-w-[200px] lg:min-w-[240px]">
-                   <span className="text-[10px] text-slate-400 font-black tracking-widest flex items-center uppercase"><Layers size={11} className="mr-1 text-blue-400"/> A. 베이스 코트 실시간 중량</span>
-                   <div className="flex items-center justify-between bg-slate-900/90 px-3 py-2 rounded-xl border border-slate-800 shadow-inner text-xs">
+          <div className="flex flex-col md:flex-row p-3 md:p-4 justify-between items-center gap-3">
+             <div className="flex w-full md:w-auto gap-3 sm:gap-4 shrink-0 overflow-x-auto custom-scrollbar pb-1 md:pb-0">
+                <div className="flex flex-col gap-1 flex-1 min-w-[220px]">
+                   <span className="text-[10px] text-slate-400 font-black tracking-widest flex items-center uppercase"><Layers size={11} className="mr-1 text-blue-400"/> A. 베이스 코트 중량</span>
+                   <div className="flex items-center justify-between bg-slate-900/90 px-3 py-2.5 rounded-xl border border-slate-800 shadow-inner text-xs">
                        <div className="flex flex-col items-center"><span className="text-[9px] text-slate-500 font-bold">순수 안료</span><span className="font-black text-white text-sm">{totalBaseWeight}g</span></div>
                        <span className="text-slate-600 font-black text-sm">+</span>
-                       <div className="flex flex-col items-center"><span className="text-[9px] text-blue-400 font-bold">수지/첨가제</span><span className="font-black text-blue-400 text-sm">{(parseFloat(totalBaseWeight) * (isBaseMetallic ? 0.5 : 0.1)).toFixed(1)}g</span></div>
+                       <div className="flex flex-col items-center"><span className="text-[9px] text-blue-400 font-bold">필수 수지</span><span className="font-black text-blue-400 text-sm">{(parseFloat(totalBaseWeight) * (isBaseMetallic ? 0.2 : 0.1)).toFixed(1)}g</span></div>
                        <span className="text-slate-600 font-black text-sm">=</span>
-                       <div className="flex flex-col items-center bg-blue-950/40 px-2 py-0.5 rounded border border-blue-900/50"><span className="text-[9px] text-emerald-400 font-bold">총 중량</span><span className="font-black text-emerald-400 text-base">{(parseFloat(totalBaseWeight) * (isBaseMetallic ? 1.5 : 1.1)).toFixed(1)}g</span></div>
+                       <div className="flex flex-col items-center bg-blue-950/40 px-2 py-0.5 rounded border border-blue-900/50"><span className="text-[9px] text-emerald-400 font-bold">합계</span><span className="font-black text-emerald-400 text-base">{(parseFloat(totalBaseWeight) * (isBaseMetallic ? 1.2 : 1.1)).toFixed(1)}g</span></div>
                    </div>
                 </div>
                 {isThreeCoatMode && (
-                <div className="flex flex-col gap-1 flex-1 min-w-[200px] lg:min-w-[240px]">
-                   <span className="text-[10px] text-slate-400 font-black tracking-widest flex items-center uppercase"><Zap size={11} className="mr-1 text-purple-400"/> B. 펄 코트 실시간 중량</span>
-                   <div className="flex items-center justify-between bg-slate-900/90 px-3 py-2 rounded-xl border border-slate-800 shadow-inner text-xs">
-                       <div className="flex flex-col items-center"><span className="text-[9px] text-slate-500 font-bold">순수 안료</span><span className="font-black text-white text-sm">{totalPearlWeight}g</span></div>
+                <div className="flex flex-col gap-1 flex-1 min-w-[220px]">
+                   <span className="text-[10px] text-slate-400 font-black tracking-widest flex items-center uppercase"><Zap size={11} className="mr-1 text-purple-400"/> B. 펄 코트 중량</span>
+                   <div className="flex items-center justify-between bg-slate-900/90 px-3 py-2.5 rounded-xl border border-slate-800 shadow-inner text-xs">
+                       <div className="flex flex-col items-center"><span className="text-[9px] text-slate-500 font-bold">순수 펄</span><span className="font-black text-white text-sm">{totalPearlWeight}g</span></div>
                        <span className="text-slate-600 font-black text-sm">+</span>
-                       <div className="flex flex-col items-center"><span className="text-[9px] text-purple-400 font-bold">수지/첨가제</span><span className="font-black text-purple-400 text-sm">{(parseFloat(totalPearlWeight) * (isPearlMetallic ? 0.5 : 0.1)).toFixed(1)}g</span></div>
+                       <div className="flex flex-col items-center"><span className="text-[9px] text-purple-400 font-bold">펄 수지</span><span className="font-black text-purple-400 text-sm">{(parseFloat(totalPearlWeight) * (isPearlMetallic ? 0.2 : 0.1)).toFixed(1)}g</span></div>
                        <span className="text-slate-600 font-black text-sm">=</span>
-                       <div className="flex flex-col items-center bg-purple-950/40 px-2 py-0.5 rounded border border-purple-900/50"><span className="text-[9px] text-emerald-400 font-bold">총 중량</span><span className="font-black text-emerald-400 text-base">{(parseFloat(totalPearlWeight) * (isPearlMetallic ? 1.5 : 1.1)).toFixed(1)}g</span></div>
+                       <div className="flex flex-col items-center bg-purple-950/40 px-2 py-0.5 rounded border border-purple-900/50"><span className="text-[9px] text-emerald-400 font-bold">합계</span><span className="font-black text-emerald-400 text-base">{(parseFloat(totalPearlWeight) * (isPearlMetallic ? 1.2 : 1.1)).toFixed(1)}g</span></div>
                    </div>
                 </div>
                 )}
-            </div>
-            <div className="flex flex-col items-center justify-center w-full lg:w-auto shrink-0 bg-gradient-to-br from-amber-950/50 to-yellow-900/20 border-2 border-yellow-500/60 px-6 py-2 rounded-xl shadow-[0_0_25px_rgba(234,179,8,0.2)]">
-               <span className="text-[11px] text-yellow-500 font-black tracking-widest flex items-center uppercase"><Beaker size={13} className="mr-1"/> ✨ 최종 도막 혼합 총량</span>
-               <span className="text-2xl lg:text-3xl font-black text-yellow-400 drop-shadow-[0_0_10px_rgba(234,179,8,0.5)]">
-                  {(parseFloat((parseFloat(totalBaseWeight) * (isBaseMetallic ? 1.5 : 1.1)).toFixed(1)) + (isThreeCoatMode ? parseFloat((parseFloat(totalPearlWeight) * (isPearlMetallic ? 1.5 : 1.1)).toFixed(1)) : 0)).toFixed(1)}<span className="text-base lg:text-lg font-bold text-yellow-600 ml-0.5">g</span>
-               </span>
-            </div>
+             </div>
+             <div className="w-full md:w-auto flex flex-row md:flex-col items-center justify-between md:justify-center shrink-0 bg-gradient-to-br from-amber-950/50 to-yellow-900/20 border-2 border-yellow-500/60 px-4 py-2 sm:px-6 sm:py-2 rounded-xl shadow-[0_0_25px_rgba(234,179,8,0.2)]">
+                <span className="text-[11px] text-yellow-500 font-black tracking-widest flex items-center uppercase"><Beaker size={13} className="mr-1"/> ✨ 혼합 총량</span>
+                <span className="text-2xl sm:text-3xl font-black text-yellow-400 drop-shadow-[0_0_10px_rgba(234,179,8,0.5)]">
+                   {(parseFloat((parseFloat(totalBaseWeight) * (isBaseMetallic ? 1.2 : 1.1)).toFixed(1)) + (isThreeCoatMode ? parseFloat((parseFloat(totalPearlWeight) * (isPearlMetallic ? 1.2 : 1.1)).toFixed(1)) : 0)).toFixed(1)}<span className="text-base sm:text-lg font-bold text-yellow-600 ml-0.5">g</span>
+                </span>
+             </div>
           </div>
       </div>
 
-      {memoModal.isOpen && (
-        <div className="fixed inset-0 bg-slate-900/80 z-[2000] flex items-center justify-center p-4 backdrop-blur-sm animate-in fade-in">
-          <div className="bg-white rounded-2xl w-[400px] max-w-full shadow-2xl flex flex-col overflow-hidden border border-slate-200">
-            <div className="p-4 bg-indigo-600 flex justify-between items-center text-white">
-              <h3 className="font-bold flex items-center gap-2"><Edit3 size={18} /> {memoModal.code || '선택된 안료'} 메모 및 히스토리</h3>
-              <button onClick={() => setMemoModal({...memoModal, isOpen: false})} className="hover:text-red-200 transition-colors bg-indigo-700 p-1.5 rounded-full"><X size={16} /></button>
-            </div>
-            <div className="p-5 flex flex-col gap-4 bg-slate-50">
-              <div>
-                <label className="text-xs font-black text-indigo-800 mb-1.5 flex items-center gap-1"><Edit3 size={14}/> 조색 커스텀 메모</label>
-                <textarea 
-                    value={memoModal.text} 
-                    onChange={e => setMemoModal({...memoModal, text: e.target.value})} 
-                    placeholder="이 안료에 대한 특별한 조색 팁이나 주의사항을 자유롭게 적어두세요." 
-                    className="w-full border border-slate-300 p-3 rounded-lg text-sm text-slate-800 h-28 resize-none focus:outline-none focus:ring-2 focus:ring-indigo-500 shadow-inner font-medium" 
-                />
-              </div>
-              {memoModal.history.length > 0 && (
-                <div>
-                  <label className="text-xs font-black text-slate-500 mb-1.5 flex items-center gap-1"><History size={14}/> 용량(g) 변경 히스토리 기록</label>
-                  <div className="flex flex-wrap gap-1.5 bg-white p-3 rounded-lg border border-slate-200 shadow-sm max-h-32 overflow-y-auto">
-                    {memoModal.history.map((h, i) => (
-                      <span key={i} className="bg-slate-100 text-slate-600 text-xs font-bold px-2 py-1 rounded border border-slate-200">{h}g</span>
-                    ))}
-                  </div>
-                </div>
-              )}
-              <button 
-                  onClick={() => {
-                      if(memoModal.isPearl) setPearlToners(prev => prev.map(t => t.id === memoModal.id ? {...t, memo: memoModal.text} : t));
-                      else setToners(prev => prev.map(t => t.id === memoModal.id ? {...t, memo: memoModal.text} : t));
-                      setMemoModal({...memoModal, isOpen: false});
-                  }} 
-                  className="w-full bg-indigo-600 text-white py-3 rounded-xl font-black shadow-md hover:bg-indigo-700 transition-colors flex justify-center items-center gap-2"
-              >
-                <Save size={18}/> 메모 저장하기
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
+      {zoomedImage && (
+        <div className="fixed inset-0 bg-black/95 z-[4000] flex flex-col items-center justify-center p-4 backdrop-blur-md animate-in fade-in" onClick={() => setZoomedImage(null)}>
+            <button className="absolute top-6 right-6 text-slate-800 bg-white hover:bg-red-500 hover:text-white rounded-full p-2 transition-colors z-[4010] shadow-lg"><X size={24}/></button>
+            <div className="w-full h-full max-w-5xl flex flex-col items-center relative py-12" onClick={e => e.stopPropagation()}>
+                
+                {zoomedImage.id === 12 ? (
+                    <div className="w-full bg-white p-6 md:p-8 rounded-2xl shadow-2xl overflow-y-auto max-h-full custom-scrollbar text-left border-4 border-slate-100 mt-8">
+                        <div className="border-b-4 border-red-600 pb-2 mb-6 flex justify-between items-end">
+                            <h2 className="text-2xl md:text-3xl font-black text-slate-900 tracking-tight flex items-center flex-wrap gap-2">
+                                WT386 <span className="text-lg text-slate-500 font-bold bg-slate-100 px-2 py-1 rounded">(측면밝기조정제)</span>의 역할
+                            </h2>
+                            <div className="text-red-600 font-black italic text-xl sm:text-2xl tracking-tighter shrink-0 ml-4">Permahyd<sup className="text-sm">®</sup> HI-TEC</div>
+                        </div>
 
-      {isExcelModalOpen && (
-        <div className="fixed inset-0 bg-slate-900/80 z-[1000] flex items-center justify-center p-4 backdrop-blur-sm animate-in fade-in">
-          <div className="bg-white rounded-2xl w-[500px] max-w-full shadow-2xl flex flex-col overflow-hidden border-2 border-green-600">
-            <div className="p-4 bg-green-600 flex justify-between items-center text-white">
-              <h3 className="font-bold flex items-center gap-2"><FileSpreadsheet size={18} /> 엑셀(Excel) 연동 가이드 및 복사</h3>
-              <button onClick={() => setIsExcelModalOpen(false)} className="hover:text-red-200 transition-colors bg-green-700 p-1.5 rounded-full"><X size={16} /></button>
-            </div>
-            <div className="p-5 flex flex-col gap-4 bg-slate-50">
-              <div className="text-sm text-slate-700 leading-relaxed bg-green-50 p-4 rounded-xl border border-green-200">
-                  <p className="font-black text-green-800 mb-2">✅ 초간단 엑셀 복사 사용 방법 (매크로 불필요!)</p>
-                  <p><b>Step 1.</b> 처음 사용하실 때만 아래 <b>'엑셀 기본 양식 복사'</b>를 눌러 엑셀 A1 셀에 붙여넣어 <b>제목 틀</b>을 만드세요.</p>
-                  <p className="mt-1"><b>Step 2.</b> 데이터 입력 후 <b>초록색 [엑셀 복사] 버튼을 누른 다음, 엑셀의 빈 줄 첫 칸(A열)에 바로 붙여넣기(Ctrl+V)</b> 하시면 자동으로 팝업 복원 링크가 생성됩니다.</p>
-              </div>
-              <div className="flex flex-col gap-2 mt-2">
-                  <button onClick={handleCopyExcelTemplate} className="w-full bg-slate-800 text-white py-3 rounded-xl font-bold shadow-sm hover:bg-slate-700 transition-colors">📋 Step 1. 엑셀 기본 양식 복사 (제목줄 만들기)</button>
-                  <button onClick={handleDirectExcelCopy} className="w-full bg-green-600 text-white py-3 rounded-xl font-black shadow-md hover:bg-green-700 transition-colors">🚀 Step 2. 현재 데이터 엑셀 복사 (배합 저장하기)</button>
-              </div>
-            </div>
-          </div>
-        </div>
-      )}
-
-      {isShareModalOpen && (
-        <div className="fixed inset-0 bg-slate-900/80 z-[1000] flex items-center justify-center p-4 backdrop-blur-sm animate-in fade-in">
-          <div className="bg-white rounded-2xl w-[400px] max-w-full shadow-2xl flex flex-col overflow-hidden border border-slate-200">
-            <div className="p-4 bg-slate-800 flex justify-between items-center text-white">
-              <h3 className="font-bold flex items-center gap-2"><Share2 size={18} /> 배합 데이터 공유 전송</h3>
-              <button onClick={() => setIsShareModalOpen(false)} className="hover:text-red-200 transition-colors bg-slate-700 p-1.5 rounded-full"><X size={16} /></button>
-            </div>
-            <div className="p-6 flex flex-col gap-3 bg-slate-50">
-                <button onClick={handleShareKakao} className="w-full bg-[#FEE500] text-slate-900 py-3 rounded-xl font-black shadow-sm hover:bg-[#E5C100] transition-colors flex items-center justify-center gap-2"><MessageSquare size={18}/> 카카오톡 복사 전송</button>
-                <button onClick={handleShareSMS} className="w-full bg-blue-600 text-white py-3 rounded-xl font-black shadow-sm hover:bg-blue-700 transition-colors flex items-center justify-center gap-2"><Send size={18}/> 문자(SMS)로 앱 열기</button>
-                <button onClick={handleShareMail} className="w-full bg-slate-600 text-white py-3 rounded-xl font-black shadow-sm hover:bg-slate-700 transition-colors flex items-center justify-center gap-2"><Mail size={18}/> 이메일 앱 열기</button>
-            </div>
-          </div>
-        </div>
-      )}
-
-      <FeedbackModal 
-        isOpen={isEmailModalOpen} 
-        onClose={() => setIsEmailModalOpen(false)} 
-        targetColorCode={targetColorCode}
-      />
-
-      {isSnapshotModalOpen && (
-        <div className="fixed inset-0 bg-slate-950/80 z-[1000] flex items-center justify-center p-4 backdrop-blur-sm animate-in fade-in">
-          <div className="bg-[#1e293b] rounded-2xl w-[800px] max-w-full h-[85vh] shadow-2xl flex flex-col overflow-hidden border border-slate-700">
-            <div className="p-4 flex justify-between items-center border-b border-slate-700/50 bg-slate-900">
-              <h3 className="text-white font-bold flex items-center gap-2"><History size={18} className="text-blue-400" /> 현재 페이지 데이터 수정 내역 보기</h3>
-              <button onClick={() => setIsSnapshotModalOpen(false)} className="text-slate-400 hover:text-white bg-slate-800 p-1.5 rounded-full transition-colors"><X size={16} /></button>
-            </div>
-            <div className="flex-1 flex flex-col md:flex-row overflow-hidden bg-[#0f172a]">
-                <div className="w-full md:w-1/3 border-b md:border-b-0 md:border-r border-slate-700/50 overflow-y-auto bg-slate-900/50 flex flex-col">
-                    {snapshots.length === 0 ? ( <div className="p-6 text-center text-slate-500 text-sm">확정된 기록이 없습니다.</div> ) : (
-                        snapshots.map((snap, idx) => (
-                            <button key={snap.id} onClick={() => setSelectedSnapshot(snap)} className={`p-4 text-left border-b border-slate-800 transition-colors flex flex-col gap-1 ${selectedSnapshot?.id === snap.id ? 'bg-indigo-900/40 border-l-4 border-indigo-500' : 'hover:bg-slate-800'}`}>
-                                <span className="text-xs text-slate-400 font-bold">{snap.dateStr}</span>
-                                <span className="text-white font-black text-sm">{snapshots.length - idx}차 확정 데이터</span>
-                                <span className="text-xs text-emerald-400 font-bold flex items-center"><CheckCircle size={12} className="mr-1"/> {snap.timestamp}</span>
-                            </button>
-                        ))
-                    )}
-                </div>
-                <div className="flex-1 p-6 overflow-y-auto bg-[#0f172a]">
-                    {selectedSnapshot ? (
-                        <div className="animate-in fade-in slide-in-from-right-4 duration-300">
-                            <h4 className="text-lg font-black text-white mb-4 flex items-center gap-2 border-b border-slate-700 pb-3"><Search size={20} className="text-yellow-400"/> 데이터 상세 보기 및 복원</h4>
-                            <div className="bg-[#1e293b] p-4 rounded-xl border border-slate-700/50 mb-4 flex justify-between items-center"><span className="text-sm text-slate-300 font-bold">최종 혼합 총량</span><span className="text-xl font-black text-yellow-400">{selectedSnapshot.totalFinal}g</span></div>
-                            <div className="mb-4">
-                                <h5 className="text-xs font-bold text-slate-400 mb-2 flex items-center gap-1 uppercase"><Layers size={14} className="text-blue-400"/> 베이스 코트 내역</h5>
-                                <div className="space-y-2">
-                                    {selectedSnapshot.base?.filter((t: any) => t.code).map((t: any, i: number) => (
-                                        <div key={i} className="flex justify-between items-center bg-[#1e293b] p-3 rounded-lg border border-slate-700/50">
-                                            <div className="flex items-center gap-3"><span className="text-white font-bold text-sm">{t.code}</span><span className="text-xs text-slate-500 truncate max-w-[120px]">{TONER_DB[t.code]?.role || ''}</span></div>
-                                            <span className="text-blue-400 font-bold">{t.adjustedWeight}g</span>
-                                        </div>
-                                    ))}
+                        <div className="bg-slate-50 p-5 rounded-xl border border-slate-200 mb-8 flex flex-col md:flex-row gap-6 items-center">
+                            <div className="flex-1">
+                                <p className="text-slate-700 font-bold text-base leading-relaxed mb-4">
+                                    WT386(측면밝기조정제)는 마치 <span className="text-blue-600 font-black">투명한 구슬</span>과 같아서, 알루미늄 입자에 혼합하면 입자가 불규칙하게 배열되도록 만듭니다.
+                                </p>
+                                <div className="bg-yellow-100 border-l-4 border-yellow-500 p-4 rounded-r-lg shadow-sm">
+                                    <p className="text-[13px] sm:text-sm text-yellow-800 font-black leading-relaxed">
+                                        💡 핵심: 측면밝기조정제를 사용하면 입자의 배열이 불규칙해져,<br/> 
+                                        빛 반사 유사각도<span className="text-red-600 bg-red-100 px-1.5 py-0.5 mx-1 rounded">정면(15도)은 어두워지고</span> 
+                                        나머지 각도<span className="text-blue-600 bg-blue-100 px-1.5 py-0.5 mx-1 rounded">측면(45도/110도)은 밝아집니다.</span>
+                                    </p>
                                 </div>
                             </div>
-                            {selectedSnapshot.isThreeCoat && selectedSnapshot.pearl?.filter((t: any) => t.code).length > 0 && (
-                                <div className="mb-6">
-                                    <h5 className="text-xs font-bold text-slate-400 mb-2 flex items-center gap-1 uppercase"><Zap size={14} className="text-purple-400"/> 펄 코트 내역</h5>
-                                    <div className="space-y-2">
-                                        {selectedSnapshot.pearl?.filter((t: any) => t.code).map((t: any, i: number) => (
-                                            <div key={i} className="flex justify-between items-center bg-[#1e293b] p-3 rounded-lg border border-purple-900/30">
-                                                <div className="flex items-center gap-3"><span className="text-white font-bold text-sm">{t.code}</span><span className="text-xs text-slate-500 truncate max-w-[120px]">{TONER_DB[t.code]?.role || ''}</span></div>
-                                                <span className="text-purple-400 font-bold">{t.adjustedWeight}g</span>
-                                            </div>
-                                        ))}
+                            <div className="w-full md:w-1/3 flex flex-row md:flex-col gap-3">
+                                <div className="bg-white border border-slate-300 rounded p-3 text-center shadow-inner flex-1">
+                                    <span className="text-[11px] font-bold text-slate-500 mb-2 block">&lt;사용 안 함&gt;</span>
+                                    <div className="h-6 bg-slate-300 w-full rounded flex items-center justify-around px-2">
+                                        <div className="w-8 h-1.5 bg-slate-500 rounded-full"></div>
+                                        <div className="w-8 h-1.5 bg-slate-500 rounded-full"></div>
+                                        <div className="w-8 h-1.5 bg-slate-500 rounded-full"></div>
                                     </div>
                                 </div>
-                            )}
-                            <button onClick={() => restoreSnapshot(selectedSnapshot)} className="w-full bg-indigo-600 text-white font-black py-4 rounded-xl mt-4 hover:bg-indigo-500 shadow-[0_0_15px_rgba(79,70,229,0.4)] transition-all flex justify-center items-center gap-2 text-base"><RefreshCw size={20}/> 이 상태로 완벽하게 덮어쓰기 (복원)</button>
-                        </div>
-                    ) : ( <div className="flex flex-col items-center justify-center h-full text-slate-500 opacity-50"><History size={64} className="mb-4"/><p className="font-bold">왼쪽에서 확인하실 수정 내역을 선택해주세요.</p></div> )}
-                </div>
-            </div>
-          </div>
-        </div>
-      )}
-
-      {isBoardOpen && (
-        <div className="fixed inset-0 bg-slate-900/90 z-[1000] flex items-center justify-center p-4 backdrop-blur-md animate-in fade-in overflow-y-auto">
-          <div className="bg-slate-100 rounded-2xl w-[800px] max-w-full h-[85vh] shadow-2xl flex flex-col overflow-hidden border border-slate-300">
-            <div className="p-4 bg-slate-800 flex justify-between items-center text-white shrink-0">
-              <h3 className="font-bold flex items-center gap-2"><Layers size={18} className="text-emerald-400"/> 브랜드별 실시간 시편 데이터 (Beta)</h3>
-              <button onClick={() => setIsBoardOpen(false)} className="hover:text-red-300 transition-colors bg-slate-700 p-1.5 rounded-full"><X size={16} /></button>
-            </div>
-            
-            <div className="p-3 bg-white border-b border-slate-200 flex flex-col sm:flex-row justify-between gap-3 shrink-0">
-                <div className="flex gap-2 w-full sm:w-auto overflow-x-auto pb-1 sm:pb-0">
-                    {['전체', ...Array.from(new Set(boardPosts.map(p => p.brand).filter(Boolean)))].map(b => (
-                        <button key={b as string} onClick={() => setBoardBrandFilter(b as string)} className={`px-3 py-1.5 rounded-full text-xs font-bold transition-colors whitespace-nowrap ${boardBrandFilter === b ? 'bg-emerald-600 text-white' : 'bg-slate-100 text-slate-600 hover:bg-slate-200 border border-slate-300'}`}>{b as string}</button>
-                    ))}
-                </div>
-                <div className="flex gap-2 flex-1 max-w-md">
-                    <div className="relative flex-1">
-                        <input type="text" value={boardSearch} onChange={e=>setBoardSearch(e.target.value)} placeholder="브랜드, 컬러코드, 특이사항 동시 검색" className="w-full bg-slate-50 border border-slate-300 text-sm px-3 py-1.5 rounded-lg pl-9 focus:outline-none focus:border-emerald-500 shadow-sm" />
-                        <Search size={16} className="absolute left-3 top-2.5 text-slate-400" />
-                    </div>
-                    <button onClick={saveToBoard} className="bg-emerald-600 text-white px-4 py-1.5 rounded-lg font-bold text-xs shadow-md hover:bg-emerald-700 transition-colors shrink-0 whitespace-nowrap flex items-center gap-1"><Plus size={14}/> 현재 배합 등록</button>
-                </div>
-            </div>
-
-            <div className="flex-1 p-4 overflow-y-auto space-y-3 bg-slate-100">
-                {boardPosts.filter(p => {
-                    const passBrandFilter = boardBrandFilter === '전체' || p.brand === boardBrandFilter;
-                    const searchLower = boardSearch.toLowerCase();
-                    const passSearch = p.brand.toLowerCase().includes(searchLower) || p.code.toLowerCase().includes(searchLower) || p.spec.toLowerCase().includes(searchLower);
-                    return passBrandFilter && passSearch;
-                }).map(post => (
-                    <div key={post.id} onClick={() => handleOpenPost(post)} className="bg-white p-4 rounded-xl border border-slate-200 shadow-sm hover:border-emerald-400 hover:shadow-md transition-all cursor-pointer group relative">
-                        <button onClick={(e) => deleteBoardPost(post.id, e)} className="absolute top-4 right-4 text-slate-400 hover:text-white hover:bg-red-500 px-2 py-1 rounded-md transition-all flex items-center gap-1 font-bold text-[10px]" title="이 시편 삭제하기"><Trash2 size={14} /> 삭제</button>
-                        <div className="flex justify-between items-start mb-2 pr-16">
-                            <div className="flex items-center gap-2">
-                                <span className="bg-slate-800 text-white text-[10px] px-2 py-0.5 rounded font-bold">{post.brand}</span>
-                                <span className="text-lg font-black text-emerald-700 uppercase tracking-wide group-hover:text-emerald-500 transition-colors notranslate" translate="no">{post.code}</span>
-                            </div>
-                            <span className="text-xs text-slate-400 font-medium flex items-center gap-1"><Calendar size={12}/> {post.date}</span>
-                        </div>
-                        <p className="text-sm text-slate-600 font-bold mb-3 break-keep pr-16">{post.spec}</p>
-                        <div className="flex justify-between items-center border-t border-slate-100 pt-3">
-                            <span className="text-xs text-slate-500">By. <b>{post.author}</b></span>
-                            <div className="flex gap-3 text-xs font-bold text-slate-400">
-                                <span className="flex items-center gap-1 group-hover:text-emerald-600 transition-colors"><Eye size={14}/> {post.views}</span>
-                                <span className="flex items-center gap-1 hover:text-blue-600 transition-colors"><ThumbsUp size={14}/> {post.likes}</span>
+                                <div className="bg-white border border-slate-300 rounded p-3 text-center shadow-inner flex-1">
+                                    <span className="text-[11px] font-bold text-blue-600 mb-2 block">&lt;사용 함&gt;</span>
+                                    <div className="h-12 bg-slate-200 w-full rounded relative overflow-hidden flex items-center justify-center">
+                                        <div className="w-6 h-6 bg-blue-300/60 rounded-full absolute left-4 top-1 blur-[1px]"></div>
+                                        <div className="w-7 h-7 bg-blue-300/60 rounded-full absolute right-6 bottom-1 blur-[1px]"></div>
+                                        <div className="w-8 h-1.5 bg-slate-600 rounded-full rotate-45 absolute top-2 left-6"></div>
+                                        <div className="w-8 h-1.5 bg-slate-600 rounded-full -rotate-12 absolute bottom-3 left-14"></div>
+                                        <div className="w-8 h-1.5 bg-slate-600 rounded-full rotate-90 absolute top-4 right-10"></div>
+                                    </div>
+                                </div>
                             </div>
                         </div>
+
+                        <h3 className="text-xl font-black text-slate-800 mb-4 flex items-center"><Target className="text-red-600 mr-2" size={20}/> WT386 vs WT352 vs WT322 특성 비교</h3>
+                        <div className="overflow-x-auto rounded-xl border border-slate-300 shadow-sm">
+                            <table className="w-full text-sm sm:text-base text-center border-collapse min-w-[500px]">
+                                <thead>
+                                    <tr className="bg-slate-800 text-white">
+                                        <th className="p-3 font-black w-24 border-r border-slate-700">조색제</th>
+                                        <th className="p-3 font-black w-16 border-r border-slate-700">구분</th>
+                                        <th className="p-3 font-black text-blue-300 border-r border-slate-700">15도 (정면)</th>
+                                        <th className="p-3 font-black text-yellow-300">45도 & 110도 (측면)</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr className="bg-white border-b border-slate-200">
+                                        <td className="border-r border-slate-200 font-black text-slate-900 bg-slate-50" rowSpan={2}>
+                                            <div className="flex flex-col items-center">
+                                                <span className="text-xl">WT386</span>
+                                            </div>
+                                        </td>
+                                        <td className="border-r border-slate-200 font-bold text-slate-600 p-3">명암</td>
+                                        <td className="border-r border-slate-200 font-black text-white bg-slate-700/80 p-3">어두워짐</td>
+                                        <td className="font-black text-slate-800 bg-yellow-50 p-3">밝아짐</td>
+                                    </tr>
+                                    <tr className="bg-white border-b-4 border-slate-300">
+                                        <td className="border-r border-slate-200 font-bold text-slate-600 p-3">색상</td>
+                                        <td className="border-r border-slate-200 font-bold text-blue-600 p-3">약하게 청색이 짙어짐</td>
+                                        <td className="font-bold text-yellow-600 p-3">약하게 황색이 짙어짐</td>
+                                    </tr>
+                                    <tr className="bg-slate-50 border-b border-slate-200">
+                                        <td className="border-r border-slate-200 font-black text-slate-900 bg-slate-100" rowSpan={2}>
+                                            <div className="flex flex-col items-center">
+                                                <span className="text-xl">WT352</span>
+                                            </div>
+                                        </td>
+                                        <td className="border-r border-slate-200 font-bold text-slate-600 p-3">명암</td>
+                                        <td className="border-r border-slate-200 font-black text-white bg-slate-700/80 p-3">어두워짐</td>
+                                        <td className="font-black text-slate-800 bg-yellow-50 p-3">밝아짐</td>
+                                    </tr>
+                                    <tr className="bg-slate-50 border-b-4 border-slate-300">
+                                        <td className="border-r border-slate-200 font-bold text-slate-600 p-3">색상</td>
+                                        <td className="border-r border-slate-200 font-black text-blue-700 p-3">강하게 청색이 짙어짐</td>
+                                        <td className="font-bold text-red-500 p-3">약하게 적색이 짙어짐</td>
+                                    </tr>
+                                    <tr className="bg-white border-b border-slate-200">
+                                        <td className="border-r border-slate-200 font-black text-slate-900 bg-slate-50" rowSpan={2}>
+                                            <div className="flex flex-col items-center">
+                                                <span className="text-xl">WT322</span>
+                                            </div>
+                                        </td>
+                                        <td className="border-r border-slate-200 font-bold text-slate-600 p-3">명암</td>
+                                        <td className="border-r border-slate-200 font-black text-white bg-slate-700/80 p-3">어두워짐</td>
+                                        <td className="font-black text-slate-800 bg-yellow-50 p-3">밝아짐</td>
+                                    </tr>
+                                    <tr className="bg-white">
+                                        <td className="border-r border-slate-200 font-bold text-slate-600 p-3">색상</td>
+                                        <td className="border-r border-slate-200 font-black text-yellow-600 p-3">강하게 황색이 짙어짐</td>
+                                        <td className="font-black text-red-600 p-3">강하게 적색이 짙어짐</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
                     </div>
-                ))}
-                {boardPosts.length === 0 && <div className="text-center py-10 text-slate-500">검색 조건에 맞는 시편 데이터가 없습니다.</div>}
+                ) : (
+                    <div className="w-full h-full flex flex-col justify-center relative">
+                        <div className="bg-white p-4 rounded-2xl border border-slate-200 w-full mb-3 text-center shadow-2xl shrink-0 z-10">
+                            <h3 className="text-slate-900 font-black text-xl mb-1">{zoomedImage.title}</h3>
+                            <p className="text-blue-700 text-xs font-bold">{zoomedImage.desc}</p>
+                        </div>
+                        {zoomedImage.url ? (
+                            <div className="relative w-full h-[65vh] flex flex-col bg-slate-900 rounded-2xl shadow-2xl overflow-hidden border border-slate-700">
+                                <div 
+                                    ref={scrollContainerRef}
+                                    className={`w-full h-full overflow-auto custom-scrollbar touch-pan-x touch-pan-y relative ${isDragging ? 'cursor-grabbing' : (imgScale > 1 ? 'cursor-grab' : '')}`}
+                                    style={{
+                                        display: imgScale === 1 ? 'flex' : 'block',
+                                        alignItems: 'center',
+                                        justifyContent: 'center'
+                                    }}
+                                    onMouseDown={handleMouseDown}
+                                    onMouseMove={handleMouseMove}
+                                    onMouseUp={handleMouseUp}
+                                    onMouseLeave={handleMouseUp}
+                                    onTouchStart={handleTouchStart}
+                                    onTouchMove={handleTouchMove}
+                                    onTouchEnd={handleTouchEnd}
+                                >
+                                    <img 
+                                        draggable={false}
+                                        src={zoomedImage.url} 
+                                        alt={zoomedImage.title} 
+                                        style={{ 
+                                            display: 'block',
+                                            margin: imgScale === 1 ? '0' : 'auto', 
+                                            width: imgScale === 1 ? 'auto' : `${imgScale * 100}%`, 
+                                            height: imgScale === 1 ? '100%' : 'auto',
+                                            maxWidth: imgScale === 1 ? '100%' : 'none',
+                                            maxHeight: imgScale === 1 ? '100%' : 'none',
+                                            objectFit: 'contain',
+                                            transition: pinchDist > 0 ? 'none' : 'width 0.1s ease-out' 
+                                        }}
+                                    />
+                                </div>
+                                <div className="absolute bottom-6 left-1/2 transform -translate-x-1/2 bg-black/80 backdrop-blur-md rounded-full px-5 py-2 flex items-center gap-6 z-50 shadow-[0_0_20px_rgba(0,0,0,0.5)] border border-slate-600">
+                                    <button onClick={(e) => { e.stopPropagation(); setImgScale(s => Math.max(1, s - 0.2)); }} className="text-white hover:text-blue-400 font-black text-2xl leading-none w-8 h-8 flex items-center justify-center">-</button>
+                                    <div className="flex flex-col items-center">
+                                        <span className="text-white text-sm font-black min-w-[45px] text-center tracking-wider">{Math.round(imgScale * 100)}%</span>
+                                        <button onClick={(e) => { e.stopPropagation(); setImgScale(1); }} className="text-[10px] text-blue-400 font-bold hover:text-white mt-0.5">RESET</button>
+                                    </div>
+                                    <button onClick={(e) => { e.stopPropagation(); setImgScale(s => Math.min(5, s + 0.2)); }} className="text-white hover:text-blue-400 font-black text-2xl leading-none w-8 h-8 flex items-center justify-center">+</button>
+                                </div>
+                            </div>
+                        ) : (
+                            <div className="w-full h-[65vh] flex flex-col items-center justify-center bg-slate-800/80 rounded-3xl shadow-2xl border border-slate-700">
+                                <Camera size={56} className="text-slate-500 mb-4" />
+                                <p className="text-slate-300 font-black text-lg mb-1">상세 이미지가 준비 중입니다.</p>
+                                <p className="text-slate-500 text-sm font-bold">추후 원본 데이터가 업데이트될 예정입니다.</p>
+                            </div>
+                        )}
+                    </div>
+                )}
             </div>
-          </div>
         </div>
       )}
 
-      {viewingPost && (
-        <div className="fixed inset-0 bg-slate-900/90 z-[1000] flex items-center justify-center p-4 backdrop-blur-md animate-in fade-in overflow-y-auto">
-          <div className="bg-white rounded-2xl w-[500px] max-w-full shadow-2xl flex flex-col overflow-hidden border border-slate-300 my-8">
-            <div className="p-4 bg-emerald-600 flex justify-between items-center text-white sticky top-0 z-10">
-              <h3 className="font-bold flex items-center gap-2"><Layers size={18} /> 시편 배합 상세 보기</h3>
-              <button onClick={() => setViewingPost(null)} className="hover:text-red-200 transition-colors bg-emerald-700 p-1.5 rounded-full"><X size={16} /></button>
-            </div>
-            <div className="p-6 overflow-y-auto space-y-4 bg-slate-50">
-              {isEditingPost ? (
-                  <div className="flex flex-col gap-3 mb-2 bg-emerald-50 p-4 rounded-xl border border-emerald-200 animate-in fade-in">
-                      <h4 className="text-xs font-black text-emerald-700 flex items-center gap-1"><Edit3 size={14}/> 게시물 정보 수정</h4>
-                      <div>
-                          <label className="text-[10px] font-bold text-slate-500 mb-1 block">브랜드 (차종)</label>
-                          <input value={editPostForm.brand} onChange={e => setEditPostForm({...editPostForm, brand: e.target.value})} className="w-full border border-slate-300 p-2 rounded text-sm font-bold text-slate-800 focus:outline-none focus:border-emerald-500" />
-                      </div>
-                      <div>
-                          <label className="text-[10px] font-bold text-slate-500 mb-1 block">컬러 코드</label>
-                          <input value={editPostForm.code} onChange={e => setEditPostForm({...editPostForm, code: e.target.value})} className="w-full border border-slate-300 p-2 rounded text-sm font-bold uppercase text-slate-800 focus:outline-none focus:border-emerald-500 notranslate" translate="no" />
-                      </div>
-                      <div>
-                          <label className="text-[10px] font-bold text-slate-500 mb-1 block">특이사항 및 스펙</label>
-                          <textarea value={editPostForm.spec} onChange={e => setEditPostForm({...editPostForm, spec: e.target.value})} className="w-full border border-slate-300 p-2 rounded text-sm text-slate-800 h-20 resize-none focus:outline-none focus:border-emerald-500 font-medium" />
-                      </div>
-                      <div className="flex justify-end gap-2 mt-2">
-                          <button onClick={() => setIsEditingPost(false)} className="px-4 py-2 bg-slate-200 hover:bg-slate-300 text-slate-700 rounded-lg font-bold text-xs transition-colors">취소</button>
-                          <button onClick={handleSavePostEdit} className="px-4 py-2 bg-emerald-600 hover:bg-emerald-700 text-white rounded-lg font-bold text-xs transition-colors flex items-center gap-1"><CheckCircle size={14}/> 저장하기</button>
-                      </div>
-                  </div>
-              ) : (
-                  <>
-                      <div className="flex justify-between items-start border-b border-slate-200 pb-3 relative">
-                         <div>
-                            <span className="bg-slate-800 text-white text-[10px] px-2 py-0.5 rounded font-bold mr-2">{viewingPost.brand}</span>
-                            <span className="text-2xl font-black text-emerald-700 uppercase tracking-wide notranslate" translate="no">{viewingPost.code}</span>
-                         </div>
-                         <div className="flex flex-col items-end gap-2">
-                            <span className="text-xs text-slate-500 font-medium">{viewingPost.date}</span>
-                            <button onClick={() => setIsEditingPost(true)} className="bg-slate-100 hover:bg-slate-200 text-slate-600 px-3 py-1.5 rounded-md text-[10px] font-black flex items-center gap-1 transition-colors shadow-sm border border-slate-200"><Edit3 size={12}/> 내용 수정</button>
-                         </div>
-                      </div>
-                      <div className="bg-yellow-50 border border-yellow-200 p-3 rounded-lg text-sm font-bold text-slate-700 break-keep">{viewingPost.spec}</div>
-                  </>
-              )}
-
-              <div>
-                <h4 className="text-xs font-bold text-blue-600 mb-2 flex items-center gap-1"><Layers size={14} /> 베이스 코트 (Ground Coat)</h4>
-                <div className="space-y-1.5">
-                  {viewingPost.baseFormula?.filter((t: any) => t.code).map((t: any, idx: number) => (
-                    <div key={idx} className="flex justify-between items-center bg-white p-2.5 rounded-lg border border-slate-200 shadow-sm">
-                      <div className="flex items-center gap-2"><span className="text-slate-800 font-black text-sm w-16">{t.code}</span><span className="text-xs text-slate-500">{TONER_DB[t.code]?.role || '미등록 안료'}</span></div>
-                      <span className="text-blue-600 font-bold">{t.adjustedWeight}g</span>
-                    </div>
-                  ))}
-                </div>
-              </div>
-
-              {viewingPost.isThreeCoat && viewingPost.pearlFormula?.filter((t: any) => t.code).length > 0 && (
-                <div className="mt-4 pt-4 border-t border-slate-200">
-                  <h4 className="text-xs font-bold text-purple-600 mb-2 flex items-center gap-1"><Zap size={14} /> 펄 코트 (Mid Coat)</h4>
-                  <div className="space-y-1.5">
-                    {viewingPost.pearlFormula?.filter((t: any) => t.code).map((t: any, idx: number) => (
-                      <div key={idx} className="flex justify-between items-center bg-white p-2.5 rounded-lg border border-slate-200 shadow-sm">
-                        <div className="flex items-center gap-2"><span className="text-slate-800 font-black text-sm w-16">{t.code}</span><span className="text-xs text-slate-500">{TONER_DB[t.code]?.role || '미등록 안료'}</span></div>
-                        <span className="text-purple-600 font-bold">{t.adjustedWeight}g</span>
-                      </div>
-                    ))}
-                  </div>
-                </div>
-              )}
-            </div>
-            <div className="p-4 border-t border-slate-200 bg-white flex justify-end">
-               <button onClick={() => setViewingPost(null)} className="bg-slate-800 text-white px-6 py-2 rounded-xl font-bold hover:bg-slate-700 transition-colors shadow-md">닫기</button>
-            </div>
-          </div>
-        </div>
-      )}
-
+      {/* ━━━━━━━━ [용어 사전 UI 전체 수정/확장] ━━━━━━━━ */}
       {isGlossaryModalOpen && (
         <div className="fixed inset-0 bg-slate-900/80 z-[2000] flex items-center justify-center p-4 backdrop-blur-sm animate-in fade-in">
-          <div className="bg-white rounded-2xl w-[700px] max-w-full h-[85vh] shadow-2xl flex flex-col overflow-hidden border border-slate-200">
+          <div className="bg-white rounded-2xl w-[750px] max-w-full h-[85vh] shadow-2xl flex flex-col overflow-hidden border border-slate-200">
             <div className="p-4 bg-emerald-600 flex justify-between items-center text-white shrink-0">
-              <h3 className="font-bold flex items-center gap-2"><BookOpen size={18} /> 📖 글라슈리트 실무 용어 사전</h3>
-              <button onClick={() => setIsGlossaryModalOpen(false)} className="hover:text-red-200 bg-emerald-700 p-1.5 rounded-full"><X size={16} /></button>
+              <h3 className="font-bold flex items-center gap-2"><BookOpen size={18} /> 📖 자동차 도장/조색 쉬운 용어 사전</h3>
+              <button onClick={() => setIsGlossaryModalOpen(false)} className="hover:text-red-200 bg-emerald-700 p-1.5 rounded-full transition-colors"><X size={16} /></button>
             </div>
-            <div className="p-6 overflow-y-auto flex-1 bg-slate-50 space-y-8">
+            <div className="p-6 overflow-y-auto custom-scrollbar flex-1 bg-slate-50 space-y-8">
               
               <div className="bg-blue-50 border border-blue-200 p-4 rounded-xl shadow-sm mb-6 flex flex-col sm:flex-row gap-3 items-center">
                   <div className="flex-1 w-full text-sm">
                       <p className="font-black text-blue-800 mb-1">🔍 사전에 없는 용어가 궁금하신가요?</p>
-                      <p className="text-slate-600 text-xs break-keep">아래 검색창에 궁금한 용어를 입력하고 엔터(Enter) 키를 치시면 구글 검색 결과로 이동합니다.</p>
-                      <div className="flex mt-2">
+                      <p className="text-slate-600 text-xs break-keep">아래 검색창에 궁금한 용어를 입력하고 엔터(Enter) 키를 치시면 바로 구글 검색 결과로 이동합니다.</p>
+                      <div className="flex mt-2 shadow-sm">
                         <input 
-                            ref={glossarySearchRef} 
+                            id="glossarySearchInput" 
                             lang="ko" 
                             onKeyDown={(e) => { if (e.key === 'Enter') handleGoogleGlossarySearch(); }} 
                             type="text" 
-                            placeholder="예: 글라슈리트 시라릭 펄, 플롭 현상 등 입력 후 엔터" 
-                            className="flex-1 p-2 border border-blue-300 rounded-l focus:outline-none focus:ring-2 focus:ring-blue-500 text-slate-800 font-bold" 
+                            placeholder="예: WT 303, 메탈릭 등 입력 후 엔터" 
+                            className="flex-1 p-2.5 border border-blue-300 rounded-l focus:outline-none focus:ring-2 focus:ring-blue-500 font-bold text-sm" 
                         />
-                        <button onClick={handleGoogleGlossarySearch} className="bg-blue-600 hover:bg-blue-700 text-white px-4 rounded-r font-bold text-xs flex items-center justify-center"><Search size={14} className="mr-1"/> 검색</button>
+                        <button onClick={handleGoogleGlossarySearch} className="bg-blue-600 hover:bg-blue-700 text-white px-5 rounded-r font-black text-sm flex items-center justify-center transition-colors"><Search size={16} className="mr-1.5"/> 검색</button>
                       </div>
                   </div>
               </div>
 
               <div>
-                <h4 className="font-black text-emerald-800 mb-3 border-b-2 border-emerald-200 pb-1">1. 수지 / 베이스 / 환원제</h4>
+                <h4 className="font-black text-emerald-800 mb-3 border-b-2 border-emerald-200 pb-1 text-lg">1. 페인트의 종류와 성질</h4>
                 <ul className="space-y-4 text-sm text-slate-700">
-                  <li><span className="bg-emerald-100 text-emerald-800 px-2 py-0.5 rounded font-bold mr-2">믹싱 베이스 (Mixing Base / 90-M4)</span><br/>안료들이 뭉치지 않고 차체에 균일하게 달라붙도록 안료를 품어주는 투명 기초 수지.<br/><span className="text-[11px] text-slate-500 block mt-1">비유: 물감 튜브 안의 '투명 베이스 반죽'. 없으면 안료가 뭉쳐 분사 불가.</span></li>
-                  <li><span className="bg-emerald-100 text-emerald-800 px-2 py-0.5 rounded font-bold mr-2">블렌딩 클리어 (Blending Clear / 90-M5)</span><br/>부분 도장(보카시) 시 신도막·구도막 경계를 화학적으로 녹여 자연스럽게 이어주는 수지.<br/><span className="text-[11px] text-slate-500 block mt-1">비유: 색이 다른 두 종이를 자연스럽게 이어주는 '투명 테이프'.</span></li>
-                  <li><span className="bg-emerald-100 text-emerald-800 px-2 py-0.5 rounded font-bold mr-2">환원제 (Adjusting Base / 93-E3)</span><br/>완성된 원액의 점도를 낮춰 스프레이 건으로 뿌릴 수 있게 만드는 희석제. 도장 후 100% 증발하여 날아가며 도막 두께를 형성하지 않음.<br/><span className="text-[11px] text-slate-500 block mt-1">비유: 된장찌개에 넣는 '물'. 농도만 조절하고 맛(색상)에는 영향 없음.</span></li>
-                  <li><span className="bg-emerald-100 text-emerald-800 px-2 py-0.5 rounded font-bold mr-2">지연형 환원제 (93-E3 Slow)</span><br/>30도 이상 고온에서 도료가 너무 빨리 말라 얼룩이 생기는 것을 방지. 여름철 대면적 도장 필수.<br/><span className="text-[11px] text-slate-500 block mt-1">비유: 여름 시멘트 작업 시 물을 더 넣어 천천히 굳게 하는 것.</span></li>
-                  <li><span className="bg-emerald-100 text-emerald-800 px-2 py-0.5 rounded font-bold mr-2">촉진형 환원제 (93-E3 Fast)</span><br/>15도 이하 저온에서 도료가 흘러내리지 않도록 빠르게 고정. 겨울철 소구역 도장 전용.</li>
-                  <li><span className="bg-emerald-100 text-emerald-800 px-2 py-0.5 rounded font-bold mr-2">플롭 컨트롤러 (90-M20)</span><br/>색상을 건드리지 않고 메탈릭 입자의 누워있는 각도만 바꿔 정면(Face)과 측면(Flop)의 밝기 차이(이색)만 미세 조정하는 특수 에이전트.</li>
+                  <li><span className="bg-emerald-100 text-emerald-800 px-2 py-0.5 rounded font-bold mr-2 shadow-sm">솔리드 컬러 (Solid Color)</span><br/>반짝이는 가루(은분이나 펄)가 단 1%도 들어가지 않은 '순수한 색상' 그 자체입니다. (비유: 펄 없는 새빨간 소방차, 노란 유치원 버스)</li>
+                  <li><span className="bg-emerald-100 text-emerald-800 px-2 py-0.5 rounded font-bold mr-2 shadow-sm">이펙트 컬러 (Effect Color)</span><br/>바라보는 각도나 햇빛의 양에 따라 색상과 반짝임이 마술처럼 변하는 페인트입니다. 금속 가루(알루미늄)나 진주 가루(펄)가 섞여 있어야만 이펙트 컬러가 됩니다. (비유: 맑은 날에는 은색인데 그늘에 가면 진한 쥐색으로 변하는 승용차)</li>
+                  <li><span className="bg-emerald-100 text-emerald-800 px-2 py-0.5 rounded font-bold mr-2 shadow-sm">알루미늄 / 실버 (Aluminum / Silver)</span><br/>자동차에 금속 특유의 차갑고 반짝이는 느낌을 주기 위해 페인트에 섞는 '실제 금속(은분) 가루'입니다.</li>
+                  <li><span className="bg-emerald-100 text-emerald-800 px-2 py-0.5 rounded font-bold mr-2 shadow-sm">마이카 / 펄 (Mica / Pearl)</span><br/>금속 가루가 아니라, 조개껍데기 안쪽이나 진주처럼 은은하고 영롱한 빛을 내는 가루입니다. 도장면을 고급스럽고 뽀얗게 만들어줍니다.</li>
+                  <li><span className="bg-emerald-100 text-emerald-800 px-2 py-0.5 rounded font-bold mr-2 shadow-sm">금속성 (Metallic / 메탈릭)</span><br/>쇠붙이나 깡통 표면처럼 차갑고 매끄럽게 빛을 반사하는 느낌을 말합니다.</li>
+                </ul>
+              </div>
+              
+              <div>
+                <h4 className="font-black text-blue-800 mb-3 border-b-2 border-blue-200 pb-1 text-lg">2. 반짝임과 빛의 성질</h4>
+                <ul className="space-y-4 text-sm text-slate-700">
+                  <li><span className="bg-blue-100 text-blue-800 px-2 py-0.5 rounded font-bold mr-2 shadow-sm">브릴리언트 / 광휘형 (Brilliant)</span><br/>일반적인 반짝임을 뛰어넘어, 눈이 부실 정도로 빛을 '쨍'하고 날카롭게 튕겨내는 엄청난 반사력을 뜻합니다. (비유: 일반 은분이 '은박지'라면, 브릴리언트는 '거울 조각'을 잘게 부숴놓은 것처럼 화려하게 반짝입니다.)</li>
+                  <li><span className="bg-blue-100 text-blue-800 px-2 py-0.5 rounded font-bold mr-2 shadow-sm">간섭 펄 (Interference Pearl)</span><br/>빛의 굴절을 이용해, 정면에서 볼 때와 옆에서 볼 때 색이 완전히 다르게 변신하는 카멜레온 같은 특수 펄입니다. (비유: 정면에서는 파란색으로 빛나다가, 고개를 돌려 옆에서 보면 빨간색으로 변하는 신비로운 가루입니다.)</li>
+                  
+                  {/* 🚨 착색 펄 추가됨 */}
+                  <li className="bg-blue-50/50 p-2 rounded-lg border border-blue-100"><span className="bg-blue-500 text-white px-2 py-0.5 rounded font-bold mr-2 shadow-sm">착색 펄 (Tinted / Colored Pearl)</span><br/><span className="font-bold text-blue-900">하얀 진주 가루(마이카) 표면에 산화철 같은 색상을 미리 코팅(착색)해 둔 펄</span>입니다. 단순히 빛만 하얗게 튕겨내는 것이 아니라, 가루 자체가 색깔을 품고 있어서 도장면의 색감을 훨씬 깊고 묵직하고 화려하게 만들어줍니다.</li>
+                  
+                  <li><span className="bg-blue-100 text-blue-800 px-2 py-0.5 rounded font-bold mr-2 shadow-sm">정면 (15도) vs 측면 (45도/110도, 플롭)</span><br/>자동차 페인트는 빛을 받는 각도에 따라 색이 다릅니다.<br/>- 정면(15도): 차를 햇빛 아래서 똑바로 마주 보았을 때의 밝고 반짝이는 색상.<br/>- 측면(45도/110도): 시선을 비스듬히 돌리거나 그늘진 쪽에서 바라봤을 때 짙어지는 색상(섀도우).</li>
                 </ul>
               </div>
 
               <div>
-                <h4 className="font-black text-blue-800 mb-3 border-b-2 border-blue-200 pb-1">2. 메탈릭 / 실버 / 알루미늄</h4>
+                <h4 className="font-black text-purple-800 mb-3 border-b-2 border-purple-200 pb-1 text-lg">3. 물리적인 역할과 재료</h4>
                 <ul className="space-y-4 text-sm text-slate-700">
-                  <li><span className="bg-blue-100 text-blue-800 px-2 py-0.5 rounded font-bold mr-2">알루미늄 / 은분 (Aluminum)</span><br/>차량 도막에 금속 특유의 차갑고 반짝이는 느낌을 부여하는 실제 금속 가루. 글라슈리트 90-M99/00~04, 10 시리즈가 대표적이며 입자 크기로 분류됨.<br/><span className="text-[11px] text-slate-500 block mt-1">비유: 은박지를 곱게 갈아 물감에 섞은 것.</span></li>
-                  <li><span className="bg-blue-100 text-blue-800 px-2 py-0.5 rounded font-bold mr-2">수퍼 파인 실버 (90-M99/00)</span><br/>입자가 극도로 미세하여 입자감이 눈에 전혀 안 보이는 최고급 실버. 액체 거울(Liquid Metal)처럼 매끄러운 크롬 질감.<br/><span className="text-[11px] text-red-500 font-bold block mt-1">주의: 두껍게 뿌리면 뭉침(Clumping) 하자 100% 발생.</span></li>
-                  <li><span className="bg-blue-100 text-blue-800 px-2 py-0.5 rounded font-bold mr-2">파인 실버 (90-M99/02)</span><br/>가장 범용적인 중간 굵기 표준 은분. 국산차 실버 메탈릭 대부분에 사용.</li>
-                  <li><span className="bg-blue-100 text-blue-800 px-2 py-0.5 rounded font-bold mr-2">코어스 실버 (90-M99/03~04)</span><br/>입자가 굵어 정면이 화려하게 반짝이고 측면은 묵직하게 어두워지는 남성적 질감. 다크 건메탈, 스포티 그레이 메탈릭 전용.</li>
-                  <li><span className="bg-blue-100 text-blue-800 px-2 py-0.5 rounded font-bold mr-2">메탈릭 (Metallic)</span><br/>은분(알루미늄) 입자가 포함된 도막의 통칭. 정면과 측면에서 명암 차이(이색)가 발생하는 것이 메탈릭의 핵심 특성.</li>
-                  <li><span className="bg-blue-100 text-blue-800 px-2 py-0.5 rounded font-bold mr-2">이색 (Flip-Flop / 이색 현상)</span><br/>메탈릭 컬러를 정면과 측면에서 볼 때 색상이 다르게 보이는 현상. 이색이 심한 차량은 보카시 범위를 넓게 잡아야 함.</li>
+                  <li><span className="bg-purple-100 text-purple-800 px-2 py-0.5 rounded font-bold mr-2 shadow-sm">파우더 펄 (Powder Pearl)</span><br/>일반적인 액체(물감) 상태가 아니라, 밀가루처럼 완전히 바싹 마른 100% 가루 형태로 된 펄 안료입니다.</li>
+                  <li><span className="bg-purple-100 text-purple-800 px-2 py-0.5 rounded font-bold mr-2 shadow-sm">바인더 / 믹싱 클리어 (Binder)</span><br/>가루나 입자들이 뭉치지 단 1%도 들어가지 않게 뭉치지 않고 차체에 고르게 달라붙을 수 있도록 도와주는 '투명한 물감'이자 '접착제' 같은 역할입니다.</li>
+                  <li><span className="bg-purple-100 text-purple-800 px-2 py-0.5 rounded font-bold mr-2 shadow-sm">은폐력 (Hiding Power)</span><br/>페인트를 칠했을 때, 밑바탕에 있던 원래 색이나 흠집을 얼마나 잘 가려주는지(덮어주는지) 나타내는 힘입니다. (비유: 은폐력이 좋으면 '페인트 마커'처럼 밑바탕을 완벽히 덮어버리고, 은폐력이 나쁘면 '투명한 셀로판지'처럼 밑바탕이 그대로 비쳐 보입니다.)</li>
+                  <li><span className="bg-purple-100 text-purple-800 px-2 py-0.5 rounded font-bold mr-2 shadow-sm">캔디 / 트랜스페어런트 (Candy / Transparent)</span><br/>은폐력이 전혀 없이, 투명하게 밑바탕을 비춰주는 '셀로판지' 같은 물감입니다. 밑에 칠해둔 반짝이는 은색을 그대로 투과시키면서 색깔만 예쁘게 입혀줍니다.</li>
                 </ul>
               </div>
 
               <div>
-                <h4 className="font-black text-purple-800 mb-3 border-b-2 border-purple-200 pb-1">3. 펄 계열 (진주 / 마이카)</h4>
+                <h4 className="font-black text-rose-800 mb-3 border-b-2 border-rose-200 pb-1 text-lg">4. 안료(조색제) 영문 명칭 쉬운 해석</h4>
                 <ul className="space-y-4 text-sm text-slate-700">
-                  <li><span className="bg-purple-100 text-purple-800 px-2 py-0.5 rounded font-bold mr-2">마이카 / 펄 (Mica / Pearl)</span><br/>조개 진주처럼 영롱하게 빛나는 천연 광물(운모) 기반 입자. 은분과 달리 차갑게 찌르는 반짝임이 아닌 부드럽고 입체적인 진주빛을 냄.<br/><span className="text-[11px] text-slate-500 block mt-1">비유: 은분이 '은박지 가루'라면 마이카 펄은 '진주 가루'.</span></li>
-                  <li><span className="bg-purple-100 text-purple-800 px-2 py-0.5 rounded font-bold mr-2">화이트 펄 (93-M010 / 93-M011)</span><br/>가장 많이 사용되는 표준 진주빛 마이카 펄. M010은 범용, M011은 입자가 더 고운 실크 화이트 펄. 3코트 화이트 펄 시스템의 미들 코트(펄층) 핵심 안료.</li>
-                  <li><span className="bg-purple-100 text-purple-800 px-2 py-0.5 rounded font-bold mr-2">골드 펄 (93-M176)</span><br/>따뜻한 18K 황금빛을 내는 간섭 마이카 펄. 샴페인 골드, 웜 베이지 메탈릭 조색에 사용. 극소량(0.1g)만 투입해도 전체 톤이 웜톤으로 살아나는 치트키 안료.</li>
-                  <li><span className="bg-purple-100 text-purple-800 px-2 py-0.5 rounded font-bold mr-2">간섭 펄 (Interference Pearl)</span><br/>정면과 측면에서 색이 완전히 달라지는 특수 마이카 펄. 빛의 파장 굴절로 색이 변하는 카멜레온 효과를 냄.<br/><span className="text-[11px] text-slate-500 block mt-1">비유: 비눗방울 표면이나 홀로그램 스티커처럼 각도마다 색이 바뀜.</span></li>
-                  <li><span className="bg-purple-100 text-purple-800 px-2 py-0.5 rounded font-bold mr-2">3코트 시스템 (3-Coat System)</span><br/>베이스 코트(바탕색) → 미들 코트(펄층) → 클리어 코트(보호막) 순서로 총 3번 도장하는 고급 도장 방식. 화이트 펄, 블랙 펄 차량에 주로 사용. 앱의 '3Coat 켜기' 스위치가 이 방식.</li>
-                </ul>
-              </div>
+                  
+                  {/* 🚨 영문 명칭 대폭 추가됨 */}
+                  <li className="bg-rose-50/50 p-2 rounded-lg border border-rose-100"><span className="bg-rose-500 text-white px-2 py-0.5 rounded font-bold mr-2 shadow-sm">프리즈마 (Prisma)</span><br/><span className="font-bold text-rose-900">빛을 무지개색으로 나누는 다면체(Prism)에서 따온 이름</span>입니다. 일반 은분/펄과 달리 햇빛을 받으면 <b>무지갯빛 오로라 광채</b>를 뿜어내는 최고급 안료입니다. (예: 프리즈마 실버 = 무지갯빛 눈부신 은분)</li>
+                  
+                  <li className="bg-rose-50/50 p-2 rounded-lg border border-rose-100"><span className="bg-rose-500 text-white px-2 py-0.5 rounded font-bold mr-2 shadow-sm">그라나다 (Granada)</span><br/><span className="font-bold text-rose-900">스페인어로 '석류'를 뜻합니다.</span> 가벼운 빨강이 아니라, 잘 익은 석류알처럼 <b>아주 검붉고 깊이감 있는 핏빛/와인빛 붉은색</b>을 의미합니다. (예: 그라나다 레드)</li>
+                  
+                  <li className="bg-rose-50/50 p-2 rounded-lg border border-rose-100"><span className="bg-rose-500 text-white px-2 py-0.5 rounded font-bold mr-2 shadow-sm">애저 (Azure)</span><br/>맑고 화창한 가을 하늘빛이나 투명한 바다를 연상시키는 <b>청량하고 맑은 하늘색(청록빛 파랑)</b>을 의미합니다. 탁한 느낌이 전혀 없는 맑은 파랑입니다. (예: 애저 블루)</li>
+                  
+                  <li className="bg-rose-50/50 p-2 rounded-lg border border-rose-100"><span className="bg-rose-500 text-white px-2 py-0.5 rounded font-bold mr-2 shadow-sm">오커 (Ochre)</span><br/><span className="font-bold text-rose-900">황토(황토색 흙)를 의미합니다.</span> 맑은 노랑이 아니라, 무게감 있고 탁한 흙빛이 도는 옐로우나 브라운 섀도우를 만들 때 씁니다. (예: 마스터 오커)</li>
+                  
+                  <li className="bg-rose-50/50 p-2 rounded-lg border border-rose-100"><span className="bg-rose-500 text-white px-2 py-0.5 rounded font-bold mr-2 shadow-sm">트랜스페어런트 (Transparent)</span><br/><span className="font-bold text-rose-900">셀로판지처럼 맑고 '투명하다'는 뜻</span>입니다. 밑바탕을 가리는 힘(은폐력)이 제로(0)인 안료로, 캔디 컬러나 밑색을 화사하게 비춰줄 때 사용합니다. (예: 트랜스페어런트 옐로우 = 아주 맑고 투명한 노란색)</li>
 
-              <div>
-                <h4 className="font-black text-rose-800 mb-3 border-b-2 border-rose-200 pb-1">4. 특수 이펙트 (시라릭 / 카멜레온)</h4>
-                <ul className="space-y-4 text-sm text-slate-700">
-                  <li><span className="bg-rose-100 text-rose-800 px-2 py-0.5 rounded font-bold mr-2">시라릭 / 질라릭 (Xirallic)</span><br/>천연 운모가 아닌 인공 합성 크리스탈(산화알루미늄) 기재의 최고급 이펙트 안료. 일반 펄보다 훨씬 굵고 투과율이 높아 태양광 아래에서 유리 파편이 부서지는 듯한 압도적인 다이아몬드 스파클을 폭발시킴. 글라슈리트 98-M919(크리스탈 실버), 90-A34(다이아몬드 화이트), 90-A35(다이아몬드 레드)가 대표적.<br/><span className="text-[11px] text-slate-500 block mt-1">비유: 일반 펄이 '진주 가루'라면 시라릭은 '다이아몬드 가루'.</span><br/><span className="text-[11px] text-red-500 font-bold block mt-1">주의: 웻(Wet) 코트로 뿌리면 입자가 수직으로 서서 까맣게 멍듦. 반드시 거리를 띄운 드롭 코트(Drop Coat)로만 안착.</span></li>
-                  <li><span className="bg-rose-100 text-rose-800 px-2 py-0.5 rounded font-bold mr-2">카멜레온 펄 (98-M80)</span><br/>각도에 따라 색이 완전히 달라지는 최고급 특수 이펙트 안료. 98-M80은 정면에서 청록색, 측면에서 보라색으로 180도 변신.<br/><span className="text-[11px] text-red-500 font-bold block mt-1">필수 조건: 바탕색(하도)이 반드시 빛을 100% 흡수하는 딥 블랙이어야만 효과 발현. 흰색·회색 하도 위에 올리면 카멜레온 효과 전혀 없음.</span></li>
-                  <li><span className="bg-rose-100 text-rose-800 px-2 py-0.5 rounded font-bold mr-2">홀로그래픽 실버 (98-M88)</span><br/>레이저 프리즘처럼 백색광을 7색 무지개빛으로 완전 분리하는 극한의 커스텀 안료. 모터쇼 출품 차량 등 극한의 화려함 전용. 노즐 막힘 주의. 도장 후 클리어 샌딩 및 재클리어 공정 필수.</li>
-                  <li><span className="bg-rose-100 text-rose-800 px-2 py-0.5 rounded font-bold mr-2">캔디 / 투명 틴터 (Candy)</span><br/>은폐력 0%인 순수 투명 물감. 셀로판지처럼 빛이 투과하며 색깔만 입힘. 메탈릭 하도 위에 올려 거울 반사에 색 필터를 씌우는 캔디 이펙트를 만듦. 글라슈리트 90-A329(투명 레드)가 대표적.<br/><span className="text-[11px] text-slate-500 block mt-1">비유: 거울 위에 빨간 셀로판지를 덮으면 빨간 거울이 되는 것.</span></li>
-                </ul>
-              </div>
+                  <li className="bg-rose-50/50 p-2 rounded-lg border border-rose-100"><span className="bg-rose-500 text-white px-2 py-0.5 rounded font-bold mr-2 shadow-sm">러스터 (Luster)</span><br/>은은하고 부드러운 '윤기'나 '광택'을 뜻합니다. 금속 특유의 쨍하고 차가운 번쩍임보다는 <b>비단결처럼 우아하고 부드러운 반짝임</b>을 냅니다.</li>
 
-              <div>
-                <h4 className="font-black text-amber-800 mb-3 border-b-2 border-amber-200 pb-1">5. 도장 기법 및 품질 용어</h4>
-                <ul className="space-y-4 text-sm text-slate-700">
-                  <li><span className="bg-amber-100 text-amber-800 px-2 py-0.5 rounded font-bold mr-2">보카시 / 숨김 도장 (Bokashi)</span><br/>부분 도장 시 신도막과 구도막 경계를 흐리게 만들어 경계선을 없애는 기법. 블렌딩 클리어(90-M5)가 필수. 비유: 포토샵의 '페더(Feather)' 기능.</li>
-                  <li><span className="bg-amber-100 text-amber-800 px-2 py-0.5 rounded font-bold mr-2">플래시 오프 (Flash-Off)</span><br/>한 번 도장 후 다음 코트 전 잠시 기다리는 건조 대기 시간. 무시하면 도막 뭉침, 솔벤트 트래핑 하자 발생.</li>
-                  <li><span className="bg-amber-100 text-amber-800 px-2 py-0.5 rounded font-bold mr-2">모틀링 / 얼룩 (Mottling)</span><br/>메탈릭/펄 입자가 고르게 분산되지 않고 덩어리져 구름 모양 얼룩이 생기는 하자. 입자가 미세할수록, 도장이 두꺼울수록 발생 빈도 높음.</li>
-                  <li><span className="bg-amber-100 text-amber-800 px-2 py-0.5 rounded font-bold mr-2">드롭 코트 (Drop Coat)</span><br/>스프레이 건을 평소보다 멀리 띄워 도료가 반쯤 마른 상태로 도달하게 하는 기법. 시라릭, 대형 입자 펄 도장 시 얼룩 방지를 위해 필수.</li>
-                  <li><span className="bg-amber-100 text-amber-800 px-2 py-0.5 rounded font-bold mr-2">웻 코트 (Wet Coat)</span><br/>도료가 충분히 촉촉하게 도막에 적셔지도록 가까이서 두껍게 뿌리는 일반 기법. 솔리드 컬러, 은폐력이 필요한 상황에 적합.</li>
-                  <li><span className="bg-amber-100 text-amber-800 px-2 py-0.5 rounded font-bold mr-2">오렌지필 (Orange Peel)</span><br/>도막 표면이 오렌지 껍데기처럼 오돌토돌하게 굳어버리는 도장 하자. 환원제 비율 오류 또는 건조가 너무 빠를 때 발생.</li>
-                  <li><span className="bg-amber-100 text-amber-800 px-2 py-0.5 rounded font-bold mr-2">클리어 코트 (Clear Coat)</span><br/>색이 없는 투명 보호 도막. 베이스와 펄을 자외선·오염으로부터 보호하는 최상위 층. 현장에서는 '투명'이라고 부름.</li>
-                  <li><span className="bg-amber-100 text-amber-800 px-2 py-0.5 rounded font-bold mr-2">은폐력 (Hiding Power)</span><br/>페인트가 밑바탕의 색과 흠집을 가려주는 힘. 고은폐력: 밑이 완전히 가려짐 / 저은폐력: 밑이 그대로 비쳐 보임.</li>
-                </ul>
-              </div>
-
-              <div>
-                <h4 className="font-black text-indigo-800 mb-3 border-b-2 border-indigo-200 pb-1">6. 색채 이론 및 조색 필수 용어</h4>
-                <ul className="space-y-4 text-sm text-slate-700">
-                  <li><span className="bg-indigo-100 text-indigo-800 px-2 py-0.5 rounded font-bold mr-2">정면 (Face / 15도) vs 측면 (Flop / 110도)</span><br/>자동차 도막은 보는 각도에 따라 색이 달라집니다.<br/>- 정면(Face): 차에 정면으로 가까이 서서 봤을 때 밝고 화사한 색상.<br/>- 측면(Flop): 비스듬히 옆에서 봤을 때 나타나는 어두운 섀도우 색상.<br/>메탈릭 컬러 매칭 시 이 두 가지를 모두 맞추는 것이 핵심.</li>
-                  <li><span className="bg-indigo-100 text-indigo-800 px-2 py-0.5 rounded font-bold mr-2">웜톤 (Warm Tone) vs 쿨톤 (Cool Tone)</span><br/>- 웜톤: 노란기·붉은기·황금기가 도는 따뜻한 색조 (아이보리 화이트, 골드).<br/>- 쿨톤: 푸른기·회색기가 도는 차가운 색조 (스노우 화이트, 다크 네이비).<br/>조색 시 웜/쿨 방향을 먼저 파악하지 않으면 색상이 엉뚱한 방향으로 흐름.</li>
-                  <li><span className="bg-indigo-100 text-indigo-800 px-2 py-0.5 rounded font-bold mr-2">탁색 (Muddying)</span><br/>여러 안료를 섞을 때 색이 탁하거나 칙칙하게 변하는 현상. 보색 관계 안료를 잘못 혼합하면 반드시 발생.<br/><span className="text-[11px] text-red-500 font-bold block mt-1">예: 파랑+노랑 → 탁한 녹색 / 빨강+녹색 → 갈색.</span></li>
-                  <li><span className="bg-indigo-100 text-indigo-800 px-2 py-0.5 rounded font-bold mr-2">톤 다운 vs 톤 업</span><br/>- 톤 다운: 색을 더 어둡게/탁하게 만드는 것 (블랙, 오커 안료 사용).<br/>- 톤 업: 색을 더 밝게/맑게 만드는 것 (화이트, 레몬 골드 안료 사용).</li>
-                  <li><span className="bg-indigo-100 text-indigo-800 px-2 py-0.5 rounded font-bold mr-2">채도 (Chroma)</span><br/>색의 선명하고 맑은 정도. 채도 높음 = 원색처럼 쨍함. 채도 낮음 = 탁하고 회색빛.</li>
-                  <li><span className="bg-indigo-100 text-indigo-800 px-2 py-0.5 rounded font-bold mr-2">명도 (Value/Lightness)</span><br/>색의 밝고 어두운 정도. 높으면 흰색에 가깝고 낮으면 검정에 가까움.</li>
-                  <li><span className="bg-indigo-100 text-indigo-800 px-2 py-0.5 rounded font-bold mr-2">보색 (Complementary Color)</span><br/>색상환에서 정반대에 위치한 색. 섞으면 탁색이 발생하지만, 조색에서 채도를 낮추는 용도로 극소량 활용되기도 함.</li>
+                  <li><span className="bg-rose-100 text-rose-800 px-2 py-0.5 rounded font-bold mr-2 shadow-sm">브라이트(Bright) / 브릴리언트(Brilliant)</span><br/>'밝은', '눈부신', '화사한'이라는 뜻입니다. 탁하지 않고 쨍하게 빛나는 맑은 원색을 의미합니다.</li>
+                  <li><span className="bg-rose-100 text-rose-800 px-2 py-0.5 rounded font-bold mr-2 shadow-sm">그리니쉬(Greenish) / 블루이쉬(Bluish) / 레디쉬(Reddish)</span><br/>'~빛이 도는'이라는 뜻입니다. (예: 그리니쉬 블루 = 초록빛이 감도는 파랑 / 레디쉬 옐로우 = 붉은빛이 도는 노랑)</li>
+                  <li><span className="bg-rose-100 text-rose-800 px-2 py-0.5 rounded font-bold mr-2 shadow-sm">마룬(Maroon) / 옥사이드(Oxide)</span><br/>마룬은 '밤색, 적갈색(버건디)'을 뜻하고, 옥사이드는 '산화철(녹슨 철)'을 뜻합니다. 맑기보단 묵직하고 탁한 흙빛 섀도우를 냅니다.</li>
+                  <li><span className="bg-rose-100 text-rose-800 px-2 py-0.5 rounded font-bold mr-2 shadow-sm">마젠타(Magenta) / 시안(Cyan)</span><br/>마젠타는 '자주색(밝은 핑크/적자색)', 시안은 '청록색(하늘색/바다색)'을 의미합니다.</li>
+                  <li><span className="bg-rose-100 text-rose-800 px-2 py-0.5 rounded font-bold mr-2 shadow-sm">트랜스루센트(Translucent)</span><br/>완전 투명(트랜스페어런트)이 아니라, 불투명 유리처럼 살짝 비치는 '반투명(저농)'을 뜻합니다.</li>
+                  <li><span className="bg-rose-100 text-rose-800 px-2 py-0.5 rounded font-bold mr-2 shadow-sm">코스(Coarse) / 파인(Fine) / 마이크로(Micro)</span><br/>은분이나 펄 입자의 크기입니다. 코스(입자가 굵고 거침) &gt; 파인(입자가 작고 고움) &gt; 마이크로(먼지처럼 아주 미세함).</li>
                 </ul>
               </div>
             </div>
@@ -1157,73 +1140,101 @@ export default function App() {
         </div>
       )}
 
-      {isProcessOpen && (
-        <div className="fixed inset-0 bg-black bg-opacity-70 flex items-center justify-center z-[3000] p-4 backdrop-blur-sm transition-opacity">
-          <div className="bg-slate-800 p-6 rounded-xl border border-slate-600 shadow-2xl max-w-4xl w-full max-h-[85vh] flex flex-col overflow-hidden relative">
-            
-            <button onClick={() => setIsProcessOpen(false)} className="absolute top-4 right-4 text-slate-400 hover:text-white bg-slate-700 p-1.5 rounded-full transition-colors z-10"><X size={20} /></button>
-
-            <div className="border-b border-emerald-500/50 pb-4 mb-5 shrink-0">
-                <h4 className="text-2xl sm:text-3xl font-black text-white tracking-wide mb-1">
-                    Glasurit Master DB Architecture
-                </h4>
-                <p className="text-emerald-400 font-bold text-sm sm:text-base">
-                    Total 161 Items Perfectly Built & Engineered
-                </p>
-                <div className="mt-4 inline-flex bg-slate-900 px-3 py-1.5 rounded border border-slate-700 items-center">
-                    <span className="text-slate-400 text-[11px] sm:text-xs mr-2">Lead Color & Data Engineer:</span>
-                    <span className="text-white font-black text-sm sm:text-base">윤성만 팀장</span>
-                </div>
+      {isPearlGuideOpen && (
+        <div className="fixed inset-0 bg-slate-900/95 z-[3000] flex items-center justify-center p-4 backdrop-blur-md animate-in fade-in overflow-y-auto">
+          <div className="bg-slate-100 rounded-2xl w-[900px] max-w-full h-[90vh] shadow-2xl flex flex-col overflow-hidden border border-slate-300 my-8 relative">
+            <div className="p-4 bg-slate-900 flex justify-between items-center text-white shrink-0 sticky top-0 z-20">
+              <h3 className="font-bold flex items-center gap-2 tracking-wide"><Target size={18} className="text-purple-400"/> PP(분말) 가이드 및 밑색 마스터 클래스</h3>
+              <button onClick={() => setIsPearlGuideOpen(false)} className="hover:text-red-300 transition-colors bg-slate-800 p-1.5 rounded-full"><X size={16} /></button>
             </div>
-
-            <div className="overflow-y-auto space-y-6 text-slate-300 font-sans text-xs sm:text-[13px] leading-relaxed break-keep pr-2 custom-scrollbar">
-                
-                <div className="bg-slate-900/50 p-4 rounded-lg border border-slate-700">
-                    <div className="flex items-center gap-2 mb-3">
-                        <span className="bg-blue-600 text-white px-2 py-0.5 rounded text-[10px] font-black shrink-0">Update 1</span>
-                        <span className="font-bold text-white text-sm sm:text-base">90라인 수용성 솔리드 전면 교정 (총 38종)</span>
+            <div className="flex-1 overflow-y-auto custom-scrollbar flex flex-col">
+                <div className="p-6 bg-purple-50 border-b border-purple-200 shrink-0">
+                    <h2 className="text-lg font-black text-purple-900 mb-4 flex items-center gap-2"><Beaker size={20} className="text-purple-600"/> 🌬️ PP (Powder Pearl) 가루 안료 특별 취급 가이드</h2>
+                    <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                        <div className="bg-white p-4 rounded-xl shadow-sm border border-purple-200">
+                            <h3 className="font-black text-purple-700 text-sm mb-2">PP 304 (분말 다이아몬드)</h3>
+                            <p className="text-xs text-slate-600 mb-2 font-bold">수지가 완전히 배제된 100% 건식 분말 글라스 스파클.</p>
+                            <p className="text-xs text-slate-500 leading-relaxed bg-slate-50 p-2 rounded">눈부신 다이아몬드 순수 난반사를 발현합니다. 수지가 없으므로 원액에 다이렉트 투입 시 100% 뭉치고 덩어리지는 얼룩(Clumping) 하자가 발생합니다.</p>
+                        </div>
+                        <div className="bg-white p-4 rounded-xl shadow-sm border border-purple-200">
+                            <h3 className="font-black text-purple-700 text-sm mb-2">PP 305 (분말 컬러스트림)</h3>
+                            <p className="text-xs text-slate-600 mb-2 font-bold">포르쉐/마이바흐 전용 초고해상도 카멜레온 가루 펄.</p>
+                            <p className="text-xs text-slate-500 leading-relaxed bg-slate-50 p-2 rounded">탁색률 0%의 예리한 광채를 뿜어내며 바탕색을 1%도 덮지 않고 투과합니다. 입자가 매우 예민하여 파괴를 막기 위해 기계식 교반기를 절대 사용하면 안 됩니다.</p>
+                        </div>
+                        <div className="bg-red-50 p-4 rounded-xl shadow-sm border border-red-200">
+                            <h3 className="font-black text-red-700 text-sm mb-2">⚠️ PP 분말 조색 공통 철칙</h3>
+                            <ul className="text-[11px] text-red-800 space-y-2 font-bold list-disc pl-4">
+                                <li>가루 형태이므로 베이스 원액에 직접 투하 절대 금지.</li>
+                                <li>반드시 <span className="underline">WT 386(에이전트)</span> 또는 블렌드 수지에 선 계량.</li>
+                                <li>가루가 뭉치지 않도록 스틱으로 액상화(완벽히 개어서 믹스) 후 투입할 것.</li>
+                            </ul>
+                        </div>
                     </div>
-                    <p className="text-slate-400 mb-2">기존 안료 이름 유추에 의한 AI의 톤(웜톤/쿨톤) 오류를 공식 기술지원집 정면/측면 색상 데이터 기반으로 완벽히 교정.</p>
-                    <ul className="pl-4 space-y-2 list-disc marker:text-blue-500">
-                        <li><b className="text-blue-300">90-A503 (스카이 블루):</b> 다크 코발트 블루 묘사 삭제 → 정/측면 산뜻한 녹미(Greenish) 청색으로 교정</li>
-                        <li><b className="text-blue-300">90-A927 (블랙 2):</b> 차가운 블루블랙 오표기 수정 → 따뜻한 적황미(Red-yellowish) 발현 교정</li>
-                        <li><b className="text-blue-300">98-A097 (마이크로 화이트):</b> 바탕 은폐가 불가능한 완전 투명 백색 틴터로 특성 확립</li>
-                    </ul>
                 </div>
 
-                <div className="bg-slate-900/50 p-4 rounded-lg border border-slate-700">
-                    <div className="flex items-center gap-2 mb-3">
-                        <span className="bg-red-600 text-white px-2 py-0.5 rounded text-[10px] font-black shrink-0">Update 2</span>
-                        <span className="font-bold text-white text-sm sm:text-base">22라인 우레탄 솔리드 및 틴터 체계 확립 (총 28종)</span>
+                <div className="p-5 bg-white border-b border-slate-200 shrink-0 sticky top-0 z-10 shadow-sm mt-4">
+                    <div className="flex gap-1.5 overflow-x-auto pb-2 scrollbar-hide snap-x">
+                        {PEARL_LEVELS.map(lvl => (
+                            <button key={lvl.level} onClick={() => setActivePearlLevel(lvl.level)} className={`snap-center shrink-0 px-3 py-2 rounded-lg text-[11px] font-black transition-all flex flex-col items-center gap-1 ${activePearlLevel === lvl.level ? 'bg-slate-800 text-white shadow-md transform scale-105' : 'bg-slate-100 text-slate-500 hover:bg-slate-200 border border-slate-200'}`}>
+                                <span>Lv.{lvl.level}</span><span className="opacity-80 font-bold whitespace-nowrap">{lvl.name}</span>
+                            </button>
+                        ))}
                     </div>
-                    <ul className="pl-4 space-y-2 list-disc marker:text-red-500">
-                        <li><b className="text-red-300">알파벳 명칭 교정:</b> 저농 틴터 A105, A126 오표기를 기술집 기준 M105, M126 등으로 전면 교체</li>
-                        <li><b className="text-red-300">뼈대/조미료 완벽 분리:</b> M60, M26 등 은폐력이 막강한 뼈대 안료를 틴팅에 사용할 경우 발생하는 탁색 하자 경고 로직 엄격 적용</li>
-                    </ul>
                 </div>
 
-                <div className="bg-slate-900/50 p-4 rounded-lg border border-slate-700">
-                    <div className="flex items-center gap-2 mb-3">
-                        <span className="bg-purple-600 text-white px-2 py-0.5 rounded text-[10px] font-black shrink-0">Update 3</span>
-                        <span className="font-bold text-white text-sm sm:text-base">11/93/98라인 특수 펄 및 파우더 이펙트 (총 26종)</span>
+                <div className="p-6 bg-slate-50 flex-1 flex flex-col gap-6">
+                    {PEARL_LEVELS.filter(lvl => lvl.level === activePearlLevel).map(lvl => (
+                        <div key={lvl.level} className="animate-in slide-in-from-right-4 duration-300 flex flex-col">
+                            <h2 className="text-2xl font-black text-slate-800 tracking-tight mb-4">{lvl.name} <span className="text-sm font-bold text-purple-600 bg-purple-100 px-2 py-0.5 rounded-full ml-2">Lv.{lvl.level} Size: {lvl.size}</span></h2>
+                            {lvl.codes.length > 0 && (
+                                <div className="grid grid-cols-1 md:grid-cols-2 gap-3 mb-6">
+                                    {lvl.codes.map((code: string) => {
+                                        const tInfo = TONER_DB[code]; if(!tInfo) return null;
+                                        return (
+                                        <div key={code} className="bg-white border border-slate-200 rounded-xl p-3 shadow-sm flex items-center gap-3">
+                                            <div className="w-12 h-12 rounded-lg shadow-inner shrink-0" style={{background: getTonerDetailBackground(code, tInfo.role, 'face')}}></div>
+                                            <div className="flex flex-col"><span className="font-black text-slate-800 text-sm">{code}</span><span className="text-[10px] font-bold text-slate-500">{tInfo.role}</span></div>
+                                        </div>
+                                    )})}
+                                </div>
+                            )}
+                            <div className="grid grid-cols-1 gap-3">
+                                <div className="bg-white p-4 rounded-xl border border-slate-200 shadow-sm"><h4 className="text-[11px] font-black text-indigo-600 mb-1 flex items-center gap-1"><BookOpen size={14}/> 일반 특성</h4><p className="text-sm font-medium text-slate-700">{lvl.desc}</p></div>
+                                <div className="bg-white p-4 rounded-xl border border-slate-200 shadow-sm"><h4 className="text-[11px] font-black text-blue-600 mb-1 flex items-center gap-1"><Eye size={14}/> 외관 변화</h4><p className="text-sm font-medium text-slate-700 whitespace-pre-line">{lvl.faceFlop}</p></div>
+                                <div className="bg-red-50 p-4 rounded-xl border border-red-200 shadow-sm"><h4 className="text-[11px] font-black text-red-600 mb-1 flex items-center gap-1"><AlertTriangle size={14}/> 주의점</h4><p className="text-sm font-medium text-red-800">{lvl.warning}</p></div>
+                            </div>
+                        </div>
+                    ))}
+                    
+                    <div className="bg-slate-900 p-6 rounded-2xl border border-slate-700 shadow-lg mt-8 shrink-0 flex flex-col gap-6">
+                        <h4 className="text-lg font-black text-yellow-400 flex items-center gap-2"><BookOpen size={20}/> 🧠 [6부작] 실전 이해하기 : 밑색 분석 및 광학 메커니즘</h4>
+                        <div className="space-y-4">
+                            <div className="bg-slate-800 p-4 rounded-lg border border-slate-600 border-l-4 border-l-slate-400">
+                                <p className="text-sm font-bold text-white mb-2">1부: 무채색 (Black & White) 계열의 밑색 분석</p>
+                                <p className="text-xs text-slate-300 leading-relaxed">차가운 푸른빛을 내는 슈퍼 딥 블랙(WT 188)과 따뜻한 황갈색 흙빛을 내는 스페셜 블랙(WT 323)이 은분과 만났을 때의 실무 온도 차이 규명.</p>
+                            </div>
+                            <div className="bg-slate-800 p-4 rounded-lg border border-slate-600 border-l-4 border-l-blue-400">
+                                <p className="text-sm font-bold text-white mb-2">2부: 블루 (Blue) & 바이올렛 (Violet) 계열의 밑색 분석</p>
+                                <p className="text-xs text-slate-300 leading-relaxed">측면(Flop)이 붉어지는 브릴리언트 블루(WT 318), 정직한 블루(WT 343), 청록색으로 빠지는 애저 블루(WT 341)의 색상 왜곡 통제.</p>
+                            </div>
+                            <div className="bg-slate-800 p-4 rounded-lg border border-slate-600 border-l-4 border-l-red-500">
+                                <p className="text-sm font-bold text-white mb-2">3부: 레드 (Red) & 마젠타 (Magenta) 계열의 밑색 분석</p>
+                                <p className="text-xs text-slate-300 leading-relaxed">차가운 자주빛 블루이쉬 마젠타(WT 338)와 화사한 주황빛 옐로우 마젠타(WT 340)의 쿨톤/웜톤 결정 원리.</p>
+                            </div>
+                            <div className="bg-slate-800 p-4 rounded-lg border border-slate-600 border-l-4 border-l-yellow-400">
+                                <p className="text-sm font-bold text-white mb-2">4부: 옐로우 (Yellow) & 오렌지 (Orange) 계열의 밑색 분석</p>
+                                <p className="text-xs text-slate-300 leading-relaxed">따뜻한 금빛 레디쉬 옐로우(WT 324), 차가운 그리니쉬 옐로우(WT 326), 그리고 탁색 마스터 오커(WT 328)의 맑음과 탁함 제어.</p>
+                            </div>
+                            <div className="bg-slate-800 p-4 rounded-lg border border-slate-600 border-l-4 border-l-emerald-400">
+                                <p className="text-sm font-bold text-white mb-2">5부: 그린 (Green) & 투명 (Translucent) 계열의 밑색 분석</p>
+                                <p className="text-xs text-slate-300 leading-relaxed">빛을 100% 투과시키는 투명 그린(WT 347)과 반투명 그린(WT 349)의 필터 효과 및 캔디 도장 깊이감 비교.</p>
+                            </div>
+                            <div className="bg-slate-800 p-4 rounded-lg border border-slate-600 border-l-4 border-l-purple-400">
+                                <p className="text-sm font-bold text-white mb-2">6부: 메탈릭과 펄 질감 변화 메커니즘</p>
+                                <p className="text-xs text-slate-300 leading-relaxed">입자 간 물리적 간섭 및 얼룩(Mottling) 통제, 무거운 입자를 눕혀주는 이펙트 수지(WT 386, WT 390)의 배향 제어 원리 총망라.</p>
+                            </div>
+                        </div>
                     </div>
-                    <p className="text-slate-400 mb-2">펄 안료의 핵심인 '측면 플롭(Flop) 반사광'과 도장 방식(액상 vs 분말)에 대한 오류 수정.</p>
-                    <ul className="pl-4 space-y-2 list-disc marker:text-purple-500">
-                        <li><b className="text-purple-300">11-E120 (엠버 골드 펄):</b> 정면 골드, 측면 백청미(하얗고 푸른빛)가 도는 역전 플롭 특성 확립</li>
-                        <li><b className="text-purple-300">파우더 펄 독립 분류:</b> 11-M021, M033 등 액상형 취급 오류 수정 (미교반 시 좁쌀/멍자국 하자 경고 추가)</li>
-                    </ul>
-                </div>
-
-                <div className="bg-slate-900/50 p-4 rounded-lg border border-slate-700">
-                    <div className="flex items-center gap-2 mb-3">
-                        <span className="bg-emerald-600 text-white px-2 py-0.5 rounded text-[10px] font-black shrink-0">Update 4</span>
-                        <span className="font-bold text-white text-sm sm:text-base">신규 카테고리 전면 추가 (총 60종)</span>
-                    </div>
-                    <ul className="pl-4 space-y-2 list-disc marker:text-emerald-500">
-                        <li><b className="text-emerald-300">55라인 유성 시스템 구축:</b> 은분 10종, 펄 14종, 유색/틴터 22종 완벽 동기화 구축</li>
-                        <li><b className="text-emerald-300">상도 투명 클리어 세분화:</b> 923-155(MS), 923-255(HS), 923-447(불소), 923-55(무광) 등 용도 확립</li>
-                        <li><b className="text-emerald-300">부자재 혼합비 규격화:</b> 하도재, 경화제(929-), 유연제(522-111), 보카시(55-8.500) 매뉴얼 완벽 적용</li>
-                    </ul>
                 </div>
             </div>
           </div>
