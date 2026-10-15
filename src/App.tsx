@@ -4,7 +4,8 @@ import {
   Sliders, Trash2, Plus, X, Maximize, Beaker, Sun, 
   Layers, ChevronDown, ChevronUp, BookOpen, Share2, Zap, Search, 
   FileSpreadsheet, History, Mail, Code, Calendar, Eye, ThumbsUp, 
-  CheckCircle, Edit3, Target, MessageSquare, Send, Save, RefreshCw 
+  CheckCircle, Edit3, Target, MessageSquare, Send, Save, RefreshCw,
+  Cloud, QrCode, Smartphone, Monitor, Link, Copy, Check
 } from 'lucide-react';
 
 import { TONER_DB, shortcuts, PEARL_LEVELS, OEM_COLORS, TonerData } from './tonerDB';
@@ -16,6 +17,8 @@ if (typeof window !== 'undefined' && !document.querySelector('#tailwind-script')
   script.src = 'https://cdn.tailwindcss.com';
   document.head.appendChild(script);
 }
+
+const LAST_PATCH_DATE = "2026.10.15 (글라슈리트 ⇄ 스피스헥커 양방향 다이렉트 연동 시스템 이식 완료)"; 
 
 export const catalogData = Object.entries(TONER_DB).map(([code, data]) => { return { code, ...data }; });
 export const safeNum = (val: any): number => { const num = Number(val); return isNaN(num) ? 0 : num; };
@@ -81,7 +84,7 @@ const MUNSELL_WHEEL_COLORS = [
 ];
 
 const MIXING_DATA: Record<string, any> = {
-  'R': { c1: '빨강 (R)', h1: '#ff0000', r1: 100 }, 'yR': { c1: '빨강 (R)', h1: '#ff0000', r1: 75, c2: '노랑 (Y)', h2: '#ffff00', r2: 25 }, 'YR': { c1: '빨강 (R)', h1: '#ff0000', r1: 50, c2: '노랑 (Y)', h2: '#ffff00', r2: 50 }, 'rY': { c1: '노랑 (Y)', h1: '#ffff00', r1: 75, c2: '빨강 (R)', h2: '#ff0000', r2: 25 }, 'Y': { c1: '노랑 (Y)', h1: '#ffff00', r1: 100 }, 'gY': { c1: '노랑 (Y)', h1: '#ffff00', r1: 75, c2: '녹색 (G)', h2: '#009900', r2: 25 }, 'GY': { c1: '노랑 (Y)', h1: '#ffff00', r1: 50, c2: '녹색 (G)', h2: '#009900', r2: 50 }, 'yG': { c1: '녹색 (G)', h1: '#009900', r1: 75, c2: '노랑 (Y)', h2: '#ffff00', r2: 25 }, 'G': { c1: '녹색 (G)', h1: '#009900', r1: 100 }, 'bG': { c1: '녹색 (G)', h1: '#009900', r1: 75, c2: '파랑 (B)', h2: '#0000ff', r2: 25 }, 'BG': { c1: '녹색 (G)', h1: '#009900', r1: 50, c2: '파랑 (B)', h2: '#0000ff', r2: 50 }, 'gB': { c1: '파랑 (B)', h1: '#0000ff', r1: 75, c2: '녹색 (G)', h2: '#009900', r2: 25 }, 'B': { c1: '파랑 (B)', h1: '#0000ff', r1: 100 }, 'pB': { c1: '파랑 (B)', h1: '#0000ff', r1: 75, c2: '보라 (P)', h2: '#700070', r2: 25 }, 'PB': { c1: '파랑 (B)', h1: '#0000ff', r1: 50, c2: '보라 (P)', h2: '#700070', r2: 50 }, 'bP': { c1: '보라 (P)', h1: '#700070', r1: 75, c2: '파랑 (B)', h2: '#0000ff', r2: 25 }, 'P': { c1: '보라 (P)', h1: '#700070', r1: 100 }, 'rP': { c1: '보라 (P)', h1: '#700070', r1: 75, c2: '빨강 (R)', h2: '#ff0000', r2: 25 }, 'RP': { c1: '보라 (P)', h1: '#700070', r1: 50, c2: '빨강 (R)', h2: '#ff0000', r2: 50 }, 'pR': { c1: '빨강 (R)', h1: '#ff0000', r1: 75, c2: '보라 (P)', h2: '#700070', r2: 25 },
+    'R': { c1: '빨강 (R)', h1: '#ff0000', r1: 100 }, 'yR': { c1: '빨강 (R)', h1: '#ff0000', r1: 75, c2: '노랑 (Y)', h2: '#ffff00', r2: 25 }, 'YR': { c1: '빨강 (R)', h1: '#ff0000', r1: 50, c2: '노랑 (Y)', h2: '#ffff00', r2: 50 }, 'rY': { c1: '노랑 (Y)', h1: '#ffff00', r1: 75, c2: '빨강 (R)', h2: '#ff0000', r2: 25 }, 'Y': { c1: '노랑 (Y)', h1: '#ffff00', r1: 100 }, 'gY': { c1: '노랑 (Y)', h1: '#ffff00', r1: 75, c2: '녹색 (G)', h2: '#009900', r2: 25 }, 'GY': { c1: '노랑 (Y)', h1: '#ffff00', r1: 50, c2: '녹색 (G)', h2: '#009900', r2: 50 }, 'yG': { c1: '녹색 (G)', h1: '#009900', r1: 75, c2: '노랑 (Y)', h2: '#ffff00', r2: 25 }, 'G': { c1: '녹색 (G)', h1: '#009900', r1: 100 }, 'bG': { c1: '녹색 (G)', h1: '#009900', r1: 75, c2: '파랑 (B)', h2: '#0000ff', r2: 25 }, 'BG': { c1: '녹색 (G)', h1: '#009900', r1: 50, c2: '파랑 (B)', h2: '#0000ff', r2: 50 }, 'gB': { c1: '파랑 (B)', h1: '#0000ff', r1: 75, c2: '녹색 (G)', h2: '#009900', r2: 25 }, 'B': { c1: '파랑 (B)', h1: '#0000ff', r1: 100 }, 'pB': { c1: '파랑 (B)', h1: '#0000ff', r1: 75, c2: '보라 (P)', h2: '#700070', r2: 25 }, 'PB': { c1: '파랑 (B)', h1: '#0000ff', r1: 50, c2: '보라 (P)', h2: '#700070', r2: 50 }, 'bP': { c1: '보라 (P)', h1: '#700070', r1: 75, c2: '파랑 (B)', h2: '#0000ff', r2: 25 }, 'P': { c1: '보라 (P)', h1: '#700070', r1: 100 }, 'rP': { c1: '보라 (P)', h1: '#700070', r1: 75, c2: '빨강 (R)', h2: '#ff0000', r2: 25 }, 'RP': { c1: '보라 (P)', h1: '#700070', r1: 50, c2: '빨강 (R)', h2: '#ff0000', r2: 50 }, 'pR': { c1: '빨강 (R)', h1: '#ff0000', r1: 75, c2: '보라 (P)', h2: '#700070', r2: 25 },
 };
 
 const polarToCartesian = (centerX: number, centerY: number, radius: number, angleInDegrees: number) => { const angleInRadians = (angleInDegrees - 90) * Math.PI / 180.0; return { x: centerX + (radius * Math.cos(angleInRadians)), y: centerY + (radius * Math.sin(angleInRadians)) }; };
@@ -107,12 +110,12 @@ export default function App() {
   const [memoModal, setMemoModal] = useState<{isOpen: boolean, id: string, code: string, isPearl: boolean, text: string, history: string[]}>({isOpen: false, id: '', code: '', isPearl: false, text: '', history: []});
   const [activeTab, setActiveTab] = useState<'90LINE'|'100LINE'|'22LINE'|'68LINE'|'EFFECT'|'ADDITIVE'>('90LINE');
   
-  // 🚨 추가된 상태들 
+  // 🚨 [NEW] 다이렉트 동기화(QR 및 카톡 링크 공유) 상태
   const [isCloudModalOpen, setIsCloudModalOpen] = useState(false);
+  const [syncLink, setSyncLink] = useState('');
   const [copied, setCopied] = useState(false);
   
   const [isEmailModalOpen, setIsEmailModalOpen] = useState(false);
-  const [isHistoryModalOpen, setIsHistoryModalOpen] = useState(false);
   const [isGlossaryModalOpen, setIsGlossaryModalOpen] = useState(false);
   const [isProcessOpen, setIsProcessOpen] = useState(false); 
   
@@ -129,7 +132,6 @@ export default function App() {
   const [selectedSnapshot, setSelectedSnapshot] = useState<any>(null);
 
   const [isPearlGuideOpen, setIsPearlGuideOpen] = useState(false);
-  const [activePearlLevel, setActivePearlLevel] = useState(6);
   const [boardPosts, setBoardPosts] = useState<any[]>([]);
 
   const codeRefs = useRef<{ [key: string]: HTMLInputElement | null }>({}); 
@@ -178,7 +180,7 @@ export default function App() {
     if (typeof window !== 'undefined') {
         const urlParams = new URLSearchParams(window.location.search); const d = urlParams.get('d'); 
         const ori = window.location.origin;
-        if (!ori.includes('google') && !ori.includes('gemini') && !ori.includes('null')) localStorage.setItem('hitec_clean_domain', ori);
+        if (!ori.includes('google') && !ori.includes('gemini') && !ori.includes('null')) localStorage.setItem('glasurit_clean_domain', ori);
         let loadedFromUrl = false;
         if (d) {
             const safeD = d.replace(/ /g, '+'); 
@@ -198,11 +200,12 @@ export default function App() {
                     if(parsedData.b && parsedData.b.length > 0) setToners(parsedData.b); if(parsedData.p && parsedData.p.length > 0) setPearlToners(parsedData.p);
                     setIsThreeCoatMode(parsedData.t || false); if(parsedData.date) setRegistrationDate(parsedData.date);
                     window.history.replaceState({}, document.title, window.location.pathname); loadedFromUrl = true; 
+                    alert("✅ 링크를 통해 배합 데이터가 성공적으로 불러와졌습니다!");
                 }
             } catch (e) {}
         }
         if (!loadedFromUrl) {
-            const savedBase = localStorage.getItem('hitec_base'); const savedPearl = localStorage.getItem('hitec_pearl'); const savedCode = localStorage.getItem('hitec_code'); const savedMode = localStorage.getItem('hitec_mode'); const savedVehicle = localStorage.getItem('hitec_vehicle'); const savedCarModel = localStorage.getItem('hitec_carmodel'); const savedJob = localStorage.getItem('hitec_job'); const savedNotes = localStorage.getItem('hitec_notes'); const savedBoard = localStorage.getItem('hitec_board_mock'); const savedSnapshots = localStorage.getItem('hitec_snapshots');
+            const savedBase = localStorage.getItem('glasurit_base'); const savedPearl = localStorage.getItem('glasurit_pearl'); const savedCode = localStorage.getItem('glasurit_code'); const savedMode = localStorage.getItem('glasurit_mode'); const savedVehicle = localStorage.getItem('glasurit_vehicle'); const savedCarModel = localStorage.getItem('glasurit_carmodel'); const savedJob = localStorage.getItem('glasurit_job'); const savedNotes = localStorage.getItem('glasurit_notes'); const savedBoard = localStorage.getItem('glasurit_board_mock'); const savedSnapshots = localStorage.getItem('glasurit_snapshots');
             if (savedBase) setToners(JSON.parse(savedBase)); if (savedPearl) setPearlToners(JSON.parse(savedPearl)); if (savedCode) setTargetColorCode(savedCode); if (savedMode) setIsThreeCoatMode(JSON.parse(savedMode)); if (savedVehicle) setVehicleNumber(savedVehicle); if (savedCarModel) setCarModel(savedCarModel); if (savedJob) setJobDescription(savedJob); if (savedNotes) setSpecialNotes(savedNotes); if (savedBoard) setBoardPosts(JSON.parse(savedBoard)); if (savedSnapshots) setSnapshots(JSON.parse(savedSnapshots));
         }
         setIsLoaded(true); 
@@ -212,7 +215,7 @@ export default function App() {
   useEffect(() => {
       const urlParams = new URLSearchParams(window.location.search); if (urlParams.get('d')) return;
       if (!isLoaded || typeof window === 'undefined') return;
-      localStorage.setItem('hitec_base', JSON.stringify(toners)); localStorage.setItem('hitec_pearl', JSON.stringify(pearlToners)); localStorage.setItem('hitec_code', targetColorCode); localStorage.setItem('hitec_mode', JSON.stringify(isThreeCoatMode)); localStorage.setItem('hitec_vehicle', vehicleNumber); localStorage.setItem('hitec_carmodel', carModel); localStorage.setItem('hitec_job', jobDescription); localStorage.setItem('hitec_notes', specialNotes); localStorage.setItem('hitec_board_mock', JSON.stringify(boardPosts)); localStorage.setItem('hitec_snapshots', JSON.stringify(snapshots));
+      localStorage.setItem('glasurit_base', JSON.stringify(toners)); localStorage.setItem('glasurit_pearl', JSON.stringify(pearlToners)); localStorage.setItem('glasurit_code', targetColorCode); localStorage.setItem('glasurit_mode', JSON.stringify(isThreeCoatMode)); localStorage.setItem('glasurit_vehicle', vehicleNumber); localStorage.setItem('glasurit_carmodel', carModel); localStorage.setItem('glasurit_job', jobDescription); localStorage.setItem('glasurit_notes', specialNotes); localStorage.setItem('glasurit_board_mock', JSON.stringify(boardPosts)); localStorage.setItem('glasurit_snapshots', JSON.stringify(snapshots));
   }, [toners, pearlToners, targetColorCode, isThreeCoatMode, vehicleNumber, carModel, jobDescription, specialNotes, boardPosts, snapshots, isLoaded]);
 
   useEffect(() => {
@@ -330,9 +333,9 @@ export default function App() {
   };
 
   const generateShareText = () => {
-    let baseListText = toners.filter(t => t.code).map(t => `  - ${t.code} (${TONER_DB[t.code]?.role || '미지정'}): ${t.adjustedWeight || '0'}g`).join('\n'); let pearlListText = pearlToners.filter(t => t.code).map(t => `  - ${t.code} (${TONER_DB[t.code]?.role || '미지정'}): ${t.adjustedWeight || '0'}g`).join('\n'); let currentOrigin = localStorage.getItem('hitec_clean_domain') || window.location.origin;
+    let baseListText = toners.filter(t => t.code).map(t => `  - ${t.code} (${TONER_DB[t.code]?.role || '미지정'}): ${t.adjustedWeight || '0'}g`).join('\n'); let pearlListText = pearlToners.filter(t => t.code).map(t => `  - ${t.code} (${TONER_DB[t.code]?.role || '미지정'}): ${t.adjustedWeight || '0'}g`).join('\n'); let currentOrigin = localStorage.getItem('glasurit_clean_domain') || window.location.origin;
     const payloadStr = [vehicleNumber, carModel, targetColorCode, jobDescription, specialNotes, packToners(toners), isThreeCoatMode ? packToners(pearlToners) : '', isThreeCoatMode ? '1' : '0', registrationDate].join('|'); const shareUrl = `${currentOrigin}${window.location.pathname}?d=${btoa(unescape(encodeURIComponent(payloadStr)))}`;
-    return `[조색 배합 지시서]\n================================\n📅 등록날짜: ${registrationDate}\n🚗 차량번호: ${vehicleNumber || '미지정'}\n🚙 브랜드: ${carModel || '미지정'}\n🎨 컬러코드: ${targetColorCode || '미지정'}\n🛠️ 작업내용: ${jobDescription || '미지정'}\n📌 특이사항: ${specialNotes || '없음'}\n================================\n\n[▼ 베이스 코트]\n${baseListText || '  (입력 데이터 없음)'}\n--------------------------------\n▶ 베이스 합계: ${totalBaseWeight}g\n▶ 93-E3 수지: ${(parseFloat(totalBaseWeight) * (isBaseMetallic ? 0.5 : 0.1)).toFixed(1)}g\n\n${isThreeCoatMode ? `[▼ 펄 코트]\n${pearlListText || '  (입력 데이터 없음)'}\n--------------------------------\n▶ 펄 합계: ${totalPearlWeight}g\n▶ 93-E3 수지: ${(parseFloat(totalPearlWeight) * (isPearlMetallic ? 0.5 : 0.1)).toFixed(1)}g\n\n` : ''}================================\n✨ 최종 도막 총량: ${(parseFloat((parseFloat(totalBaseWeight) * (isBaseMetallic ? 1.5 : 1.1)).toFixed(1)) + (isThreeCoatMode ? parseFloat((parseFloat(totalPearlWeight) * (isPearlMetallic ? 1.5 : 1.1)).toFixed(1)) : 0)).toFixed(1)}g\n\n👉 링크:\n${shareUrl}`;
+    return `[글라슈리트 조색 배합 지시서]\n================================\n📅 등록날짜: ${registrationDate}\n🚗 차량번호: ${vehicleNumber || '미지정'}\n🚙 브랜드: ${carModel || '미지정'}\n🎨 컬러코드: ${targetColorCode || '미지정'}\n🛠️ 작업내용: ${jobDescription || '미지정'}\n📌 특이사항: ${specialNotes || '없음'}\n================================\n\n[▼ 베이스 코트]\n${baseListText || '  (입력 데이터 없음)'}\n--------------------------------\n▶ 베이스 합계: ${totalBaseWeight}g\n▶ 93-E3 수지: ${(parseFloat(totalBaseWeight) * (isBaseMetallic ? 0.5 : 0.1)).toFixed(1)}g\n\n${isThreeCoatMode ? `[▼ 펄 코트]\n${pearlListText || '  (입력 데이터 없음)'}\n--------------------------------\n▶ 펄 합계: ${totalPearlWeight}g\n▶ 93-E3 수지: ${(parseFloat(totalPearlWeight) * (isPearlMetallic ? 0.5 : 0.1)).toFixed(1)}g\n\n` : ''}================================\n✨ 최종 도막 총량: ${(parseFloat((parseFloat(totalBaseWeight) * (isBaseMetallic ? 1.5 : 1.1)).toFixed(1)) + (isThreeCoatMode ? parseFloat((parseFloat(totalPearlWeight) * (isPearlMetallic ? 1.5 : 1.1)).toFixed(1)) : 0)).toFixed(1)}g\n\n👉 링크:\n${shareUrl}`;
   };
 
   const handleShareKakao = () => { 
@@ -351,11 +354,37 @@ export default function App() {
   };
 
   const handleShareSMS = () => { window.location.href = `sms:?body=${encodeURIComponent(generateShareText())}`; setIsShareModalOpen(false); };
-  const handleShareMail = () => { window.location.href = `mailto:?subject=${encodeURIComponent('[조색 Pro] 배합 지시서 공유')}&body=${encodeURIComponent(generateShareText())}`; setIsShareModalOpen(false); };
-  const generateShareUrl = () => { let currentOrigin = localStorage.getItem('hitec_clean_domain') || window.location.origin; const payloadStr = [vehicleNumber, carModel, targetColorCode, jobDescription, specialNotes, packToners(toners), isThreeCoatMode ? packToners(pearlToners) : '', isThreeCoatMode ? '1' : '0', registrationDate].join('|'); return `${currentOrigin}${window.location.pathname}?d=${btoa(unescape(encodeURIComponent(payloadStr)))}`; }
+  const handleShareMail = () => { window.location.href = `mailto:?subject=${encodeURIComponent('[글라슈리트 조색 Pro] 배합 지시서')}&body=${encodeURIComponent(generateShareText())}`; setIsShareModalOpen(false); };
+  
+  // 🚨 [NEW] 무적의 URL 딥링크 생성 (모바일 ➔ PC 양방향 연동 핵심)
+  const generateSyncUrl = () => { 
+      let currentOrigin = localStorage.getItem('glasurit_clean_domain') || window.location.origin; 
+      const payloadStr = [vehicleNumber, carModel, targetColorCode, jobDescription, specialNotes, packToners(toners), isThreeCoatMode ? packToners(pearlToners) : '', isThreeCoatMode ? '1' : '0', registrationDate].join('|'); 
+      return `${currentOrigin}${window.location.pathname}?d=${btoa(unescape(encodeURIComponent(payloadStr)))}`; 
+  };
+
+  const handleSendToPcKakao = () => {
+      const shareUrl = generateSyncUrl();
+      const shareText = `[글라슈리트 Pro] PC로 작업 보내기\n차량: ${vehicleNumber} / ${carModel}\n컬러: ${targetColorCode}\n👉 PC 카톡에서 아래 링크 클릭:\n${shareUrl}`;
+      if (typeof navigator !== 'undefined' && navigator.clipboard) { 
+          navigator.clipboard.writeText(shareText).then(() => {
+              window.location.href = 'kakaotalk://'; 
+          }).catch(() => { alert("복사 실패. 브라우저를 확인해주세요."); });
+      } else { alert("클립보드를 지원하지 않습니다."); } 
+  };
+
+  const handleCopyLinkForPc = () => {
+      const url = generateSyncUrl();
+      if (navigator.clipboard) {
+          navigator.clipboard.writeText(url).then(() => {
+              setCopied(true);
+              setTimeout(() => setCopied(false), 2000);
+          });
+      }
+  };
 
   const handleDirectExcelCopy = () => {
-      const shareUrl = generateShareUrl(); const plainText = `${registrationDate || '-'}	${vehicleNumber || '미입력'}	${carModel || '미입력'}	${targetColorCode || '미지정'}	${jobDescription || '미입력'}	${specialNotes || '-'}	${shareUrl}`;
+      const shareUrl = generateSyncUrl(); const plainText = `${registrationDate || '-'}	${vehicleNumber || '미입력'}	${carModel || '미입력'}	${targetColorCode || '미지정'}	${jobDescription || '미입력'}	${specialNotes || '-'}	${shareUrl}`;
       const htmlText = `<meta charset="utf-8"><table><tr><td>${registrationDate || '-'}</td><td>${vehicleNumber || '미입력'}</td><td>${carModel || '미입력'}</td><td>${targetColorCode || '미지정'}</td><td>${jobDescription || '미입력'}</td><td>${specialNotes || '-'}</td><td><a href="${shareUrl}">[배합보기]</a></td></tr></table>`;
       if (typeof navigator !== 'undefined' && navigator.clipboard && (window as any).ClipboardItem) {
           const htmlBlob = new Blob([htmlText], { type: 'text/html' }); const textBlob = new Blob([plainText], { type: 'text/plain' });
@@ -385,7 +414,7 @@ export default function App() {
   if (!designReady) {
     return (
       <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', height: '100vh', backgroundColor: '#0f172a', color: '#38bdf8', fontFamily: 'sans-serif' }}>
-        <h2 style={{ fontSize: '24px', fontWeight: 'bold' }}>🎨 글라슈리트 시스템 초기화 중...</h2>
+        <h2 style={{ fontSize: '24px', fontWeight: 'bold' }}>🦜 글라슈리트 시스템 초기화 중...</h2>
         <p style={{ marginTop: '10px', color: '#94a3b8' }}>인터넷 환경에 따라 최대 3~4초 정도 소요될 수 있습니다.</p>
       </div>
     );
@@ -394,10 +423,11 @@ export default function App() {
   return (
     <div className="min-h-screen bg-slate-100 text-slate-800 font-sans flex flex-col relative overflow-x-hidden pb-[320px] lg:pb-[140px] notranslate" translate="no">
       
-      {/* 🚨 글라슈리트용 브랜드 스위처 헤더 🚨 */}
+      {/* 🦜 [글라슈리트용 양방향 브랜드 스위처 헤더] */}
       <header className="bg-slate-900 flex flex-col md:flex-row justify-between items-center p-3 border-b border-slate-800 shadow-md shrink-0 gap-3 z-40">
         <div className="flex flex-col sm:flex-row items-center justify-between w-full md:w-auto gap-3">
             <div className="flex items-center bg-slate-800 p-1.5 rounded-xl border border-slate-700 shadow-inner w-full sm:w-auto justify-center">
+                {/* 🔴 스피스헥커로 돌아가는 버튼 */}
                 <button 
                     onClick={() => window.location.href="https://hitec-app.vercel.app"} 
                     className="flex items-center gap-2 px-4 py-2 text-slate-400 hover:text-white transition-all group"
@@ -406,14 +436,16 @@ export default function App() {
                     <span className="text-xl group-hover:scale-110 transition-transform origin-center">🔴</span>
                     <span className="font-bold text-xs tracking-wide">SPIES HECKER</span>
                 </button>
+                {/* 현재 활성화된 글라슈리트 탭 */}
                 <div className="flex items-center gap-2 bg-white px-4 py-2 rounded-lg shadow-sm border border-slate-200 cursor-default">
                     <span className="text-blue-600 font-black italic text-sm tracking-tighter">🦜 Glasurit</span>
                 </div>
             </div>
-            <span className="bg-slate-800 text-slate-400 text-[10px] px-2.5 py-1 rounded-full border border-slate-700 hidden md:inline-block shrink-0">Last Patch: 2026.10.15</span>
+            <span className="bg-slate-800 text-slate-400 text-[10px] px-2.5 py-1 rounded-full border border-slate-700 hidden md:inline-block shrink-0">Last Patch: {LAST_PATCH_DATE}</span>
         </div>
 
         <div className="flex gap-2 w-full md:w-auto overflow-x-auto pb-1 md:pb-0 scrollbar-hide snap-x">
+            {/* 🚨 [NEW] 무적의 다이렉트 연동 모달 오픈 버튼 */}
             <button onClick={() => { setIsCloudModalOpen(true); setCopied(false); }} className="snap-start flex items-center gap-1.5 bg-blue-600 hover:bg-blue-700 text-white border border-blue-500 px-3 py-2 rounded-lg text-xs font-bold transition-colors whitespace-nowrap shadow-sm">
                 ☁️ 기기 간 즉시 연동
             </button>
@@ -763,6 +795,7 @@ export default function App() {
         </div>
       </div>
 
+      {/* ━━━━━━━━ 하단 실시간 합계 바 ━━━━━━━━ */}
       <div className="flex flex-col lg:flex-row p-3 lg:p-4 justify-between items-center gap-3 lg:gap-4 fixed bottom-0 left-0 w-full z-[500] bg-slate-950/95 backdrop-blur-xl border-t border-slate-800 shadow-[0_-12px_45px_rgba(0,0,0,0.85)] text-slate-100 pb-[env(safe-area-inset-bottom)]">
             <div className="flex w-full lg:w-auto gap-3 flex-col sm:flex-row justify-between lg:justify-start">
                 <div className="flex flex-col gap-1 flex-1 min-w-[200px] lg:min-w-[240px]">
@@ -791,10 +824,59 @@ export default function App() {
             <div className="flex flex-col items-center justify-center w-full lg:w-auto shrink-0 bg-gradient-to-br from-amber-950/50 to-yellow-900/20 border-2 border-yellow-500/60 px-6 py-2 rounded-xl shadow-[0_0_25px_rgba(234,179,8,0.2)]">
                <span className="text-[11px] text-yellow-500 font-black tracking-widest flex items-center uppercase"><Beaker size={13} className="mr-1"/> ✨ 최종 도막 혼합 총량</span>
                <span className="text-2xl lg:text-3xl font-black text-yellow-400 drop-shadow-[0_0_10px_rgba(234,179,8,0.5)]">
-                  {(parseFloat((parseFloat(totalBaseWeight) * (isBaseMetallic ? 1.5 : 1.1)).toFixed(1)) + (isThreeCoatMode ? parseFloat((parseFloat(totalPearlWeight) * (isPearlMetallic ? 1.5 : 1.1)).toFixed(1)) : 0)).toFixed(1)}<span className="text-base lg:text-lg font-bold text-yellow-600 ml-0.5">g</span>
+                 {(parseFloat((parseFloat(totalBaseWeight) * (isBaseMetallic ? 1.5 : 1.1)).toFixed(1)) + (isThreeCoatMode ? parseFloat((parseFloat(totalPearlWeight) * (isPearlMetallic ? 1.5 : 1.1)).toFixed(1)) : 0)).toFixed(1)}<span className="text-base lg:text-lg font-bold text-yellow-600 ml-0.5">g</span>
                </span>
             </div>
       </div>
+
+      {/* 🦜 [NEW] 무적의 다이렉트 동기화(QR코드 & 카톡 전송) 모달 창 */}
+      {isCloudModalOpen && (
+        <div className="fixed inset-0 bg-slate-900/80 z-[3000] flex items-center justify-center p-4 backdrop-blur-sm animate-in fade-in">
+          <div className="bg-white rounded-2xl w-[450px] max-w-full shadow-2xl flex flex-col overflow-hidden border border-slate-200 h-auto max-h-[85vh]">
+            <div className="p-4 bg-blue-600 flex justify-between items-center text-white shrink-0">
+              <h3 className="font-bold flex items-center gap-2"><Cloud size={18} /> 글라슈리트 기기 간 초고속 다이렉트 연동</h3>
+              <button onClick={() => setIsCloudModalOpen(false)} className="hover:text-red-200 transition-colors bg-blue-700 p-1.5 rounded-full"><X size={16} /></button>
+            </div>
+            
+            <div className="p-6 flex flex-col gap-6 bg-slate-50 overflow-y-auto flex-1 custom-scrollbar pb-12 sm:pb-6">
+              
+              {/* 1. PC -> 모바일 (QR 스캔) */}
+              <div className="bg-white p-5 rounded-xl border border-blue-200 shadow-sm flex flex-col items-center text-center shrink-0">
+                  <span className="bg-blue-100 text-blue-800 text-[11px] font-black px-3 py-1 rounded-full mb-3 flex items-center gap-1.5"><Monitor size={14}/> PC ➔ 모바일 연결</span>
+                  <h4 className="text-base font-black text-slate-800 mb-1 flex items-center gap-1.5"><QrCode size={18} className="text-blue-600"/> 스마트폰 카메라로 QR 스캔</h4>
+                  <p className="text-xs text-slate-500 mb-4">현재 PC 화면의 배합을 모바일로 즉시 넘기려면<br/>스마트폰 기본 카메라로 아래 QR 코드를 비추세요.</p>
+                  <div className="bg-white p-3 border-2 border-dashed border-blue-300 rounded-2xl">
+                      <img src={`https://api.qrserver.com/v1/create-qr-code/?size=160x160&data=${encodeURIComponent(generateSyncUrl())}`} alt="배합 동기화 QR코드" className="w-[140px] h-[140px]" />
+                  </div>
+              </div>
+
+              {/* 2. 모바일 -> PC (카카오톡 전송) */}
+              <div className="bg-white p-5 rounded-xl border border-yellow-200 shadow-sm flex flex-col items-center text-center relative overflow-hidden shrink-0">
+                  <div className="absolute top-0 left-0 w-full h-1 bg-[#FEE500]"></div>
+                  <span className="bg-yellow-100 text-yellow-800 text-[11px] font-black px-3 py-1 rounded-full mb-3 flex items-center gap-1.5 mt-2"><Smartphone size={14}/> 모바일 ➔ PC 연결</span>
+                  <h4 className="text-base font-black text-slate-800 mb-1 flex items-center gap-1.5"><MessageSquare size={18} className="text-yellow-500"/> PC 카카오톡으로 전송하기</h4>
+                  <p className="text-xs text-slate-500 mb-4 break-keep">모바일에서 작업한 내역을 PC로 보낼 때는<br/><b>카카오톡 PC버전</b>으로 보내는 것이 가장 빠르고 확실합니다.</p>
+                  
+                  <div className="flex flex-col gap-2.5 w-full">
+                      <button 
+                          onClick={handleSendToPcKakao} 
+                          className="w-full bg-[#FEE500] hover:bg-[#E5C100] text-slate-900 py-3.5 rounded-xl font-black text-sm shadow-sm transition-colors flex items-center justify-center gap-2"
+                      >
+                          <MessageSquare size={18} /> 카카오톡 (나에게 쓰기) 로 보내기
+                      </button>
+                      <button 
+                          onClick={handleCopyLinkForPc} 
+                          className={`w-full py-3.5 rounded-xl font-black text-sm shadow-sm transition-colors flex items-center justify-center gap-2 ${copied ? 'bg-emerald-100 text-emerald-700 border border-emerald-300' : 'bg-slate-800 text-white hover:bg-slate-700'}`}
+                      >
+                          {copied ? <><Check size={18}/> 링크가 복사되었습니다!</> : <><Link size={18}/> 다이렉트 링크 주소 복사하기</>}
+                      </button>
+                  </div>
+              </div>
+
+            </div>
+          </div>
+        </div>
+      )}
 
       {memoModal.isOpen && (
         <div className="fixed inset-0 bg-slate-900/80 z-[2000] flex items-center justify-center p-4 backdrop-blur-sm animate-in fade-in">
@@ -1071,46 +1153,99 @@ export default function App() {
         </div>
       )}
 
-      {/* ━━━━━━━━ 펄/이펙트 마스터 인덱스 모달창 ━━━━━━━━ */}
-      {isPearlGuideOpen && (
-        <div className="fixed inset-0 bg-slate-950/90 z-[4000] flex items-center justify-center p-4 backdrop-blur-md animate-in fade-in">
-          <div className="bg-[#0f172a] rounded-2xl w-[900px] max-w-full h-[85vh] shadow-2xl flex flex-col overflow-hidden border border-slate-700">
-            <div className="p-4 bg-slate-900 flex justify-between items-center text-white shrink-0 border-b border-slate-800">
-              <h3 className="font-black flex items-center gap-2 text-lg tracking-wide"><BookOpen size={20} className="text-blue-400" /> 글라슈리트 펄/이펙트 마스터 인덱스</h3>
-              <button onClick={() => setIsPearlGuideOpen(false)} className="hover:bg-red-500 hover:text-white text-slate-400 transition-colors bg-slate-800 p-2 rounded-full"><X size={18} /></button>
+      {/* ━━━━━━━━ 컬러/조색 용어 사전 모달 ━━━━━━━━ */}
+      {isGlossaryModalOpen && (
+        <div className="fixed inset-0 bg-slate-900/80 z-[2000] flex items-center justify-center p-4 backdrop-blur-sm animate-in fade-in">
+          <div className="bg-white rounded-2xl w-[750px] max-w-full h-[85vh] shadow-2xl flex flex-col overflow-hidden border border-slate-200">
+            <div className="p-4 bg-emerald-600 flex justify-between items-center text-white shrink-0">
+              <h3 className="font-bold flex items-center gap-2"><BookOpen size={18} /> 📖 글라슈리트 도장/조색 쉬운 용어 사전</h3>
+              <button onClick={() => setIsGlossaryModalOpen(false)} className="hover:text-red-200 bg-emerald-700 p-1.5 rounded-full transition-colors"><X size={16} /></button>
             </div>
-            <div className="p-6 overflow-y-auto flex-1 bg-slate-800 custom-scrollbar">
-              <div className="bg-slate-900/50 border border-blue-500/30 p-4 rounded-xl mb-6 shadow-inner">
-                  <h4 className="text-blue-400 font-bold text-sm mb-2 flex items-center gap-1"><Target size={16}/> 마스터 인덱스 활용 가이드</h4>
-                  <p className="text-slate-400 text-xs break-keep leading-relaxed">
-                      글라슈리트 90라인, 11라인, 93/98라인의 핵심 펄/이펙트 안료 입자 크기와 반사각 특성을 정리한 광학 맵입니다. 하도 색상에 따른 투과율과 정/측면 플롭(Flop) 역전 현상을 고려하여 정밀 조색에 활용하십시오.
-                  </p>
-              </div>
-              
-              {PEARL_LEVELS && PEARL_LEVELS.length > 0 ? (
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    {PEARL_LEVELS.map((pearl: any, idx: number) => (
-                      <div key={idx} className="bg-slate-700/50 p-4 rounded-xl border border-slate-600 hover:border-blue-400 transition-colors shadow-sm flex flex-col">
-                          <div className="flex justify-between items-start mb-2">
-                              <span className="text-white font-black text-xl notranslate" translate="no">{pearl.code}</span>
-                              {pearl.level && <span className="bg-blue-900/50 text-blue-300 text-[10px] font-bold px-2 py-1 rounded border border-blue-700/50">Level {pearl.level}</span>}
-                          </div>
-                          {pearl.name && <span className="text-sm font-bold text-emerald-400 mb-2">{pearl.name}</span>}
-                          <p className="text-xs text-slate-300 break-keep leading-relaxed">{pearl.desc || '상세 특성 정보가 업데이트 중입니다.'}</p>
+            <div className="p-6 overflow-y-auto flex-1 bg-slate-50 space-y-8 custom-scrollbar">
+              <div className="bg-blue-50 border border-blue-200 p-4 rounded-xl shadow-sm mb-6 flex flex-col sm:flex-row gap-3 items-center">
+                  <div className="flex-1 w-full text-sm">
+                      <p className="font-black text-blue-800 mb-1">🔍 사전에 없는 용어가 궁금하신가요?</p>
+                      <p className="text-slate-600 text-xs break-keep">아래 검색창에 궁금한 용어를 입력하고 엔터(Enter) 키를 치시면 바로 구글 검색 결과로 이동합니다.</p>
+                      <div className="flex mt-2 shadow-sm">
+                        <input 
+                            ref={glossarySearchRef}
+                            lang="ko" 
+                            onKeyDown={(e) => { if (e.key === 'Enter') handleGoogleGlossarySearch(); }} 
+                            type="text" 
+                            placeholder="예: 90라인, 알루미늄 등 입력 후 엔터" 
+                            className="flex-1 p-2.5 border border-blue-300 rounded-l focus:outline-none focus:ring-2 focus:ring-blue-500 font-bold text-sm" 
+                        />
+                        <button onClick={handleGoogleGlossarySearch} className="bg-blue-600 hover:bg-blue-700 text-white px-5 rounded-r font-black text-sm flex items-center justify-center transition-colors"><Search size={16} className="mr-1.5"/> 검색</button>
                       </div>
-                    ))}
                   </div>
-              ) : (
-                  <div className="text-center py-20 text-slate-500 flex flex-col items-center gap-4">
-                      <Target size={48} className="opacity-20" />
-                      <p className="font-bold">펄 DB(PEARL_LEVELS)를 불러오고 있습니다...</p>
-                  </div>
-              )}
-            </div>
-            <div className="p-4 bg-slate-900 border-t border-slate-800 flex justify-end shrink-0">
-               <button onClick={() => setIsPearlGuideOpen(false)} className="bg-blue-600 text-white px-6 py-2.5 rounded-xl font-bold hover:bg-blue-700 transition-colors shadow-md">확인 및 닫기</button>
+              </div>
+              <div>
+                <h4 className="font-black text-emerald-800 mb-3 border-b-2 border-emerald-200 pb-1 text-lg">1. 글라슈리트 라인업 및 페인트 성질</h4>
+                <ul className="space-y-4 text-sm text-slate-700">
+                  <li><span className="bg-emerald-100 text-emerald-800 px-2 py-0.5 rounded font-bold mr-2 shadow-sm">90라인 (Series 90)</span><br/>글라슈리트의 최고급 수성 베이스코트 시스템입니다. 우수한 은폐력과 조색 일치율을 자랑합니다.</li>
+                  <li><span className="bg-emerald-100 text-emerald-800 px-2 py-0.5 rounded font-bold mr-2 shadow-sm">100라인 (Series 100)</span><br/>친환경성과 초고속 작업성을 극대화한 최첨단 수성 베이스코트 라인입니다.</li>
+                  <li><span className="bg-emerald-100 text-emerald-800 px-2 py-0.5 rounded font-bold mr-2 shadow-sm">22라인 / 68라인</span><br/>각각 상용차 및 승용차 도장에 최적화된 고성능 2액형 아크릴 우레탄(우레탄/유성) 도료 라인입니다.</li>
+                </ul>
+              </div>
             </div>
           </div>
+        </div>
+      )}
+
+      {/* ━━━━━━━━ 먼셀 컬러 믹싱 랩 (Configurator) 모달 ━━━━━━━━ */}
+      {isConfiguratorOpen && (
+        <div className="fixed inset-0 bg-slate-950/98 z-[800] flex flex-col text-white font-sans select-none animate-in fade-in overflow-y-scroll custom-scrollbar">
+          <header className="p-4 flex justify-between items-center bg-black/60 border-b border-slate-800 shrink-0 sticky top-0 z-40 backdrop-blur-md">
+            <h2 className="text-base font-black tracking-widest text-slate-300 uppercase flex items-center"><Beaker className="mr-2 text-indigo-500"/> 먼셀 컬러 믹싱 스튜디오 (Munsell Mixing Lab)</h2>
+            <button onClick={() => setIsConfiguratorOpen(false)} className="p-2 bg-slate-800 hover:bg-red-600 rounded-full border border-slate-700 transition-colors"><X size={18}/></button>
+          </header>
+          <main className="flex-1 p-6 md:p-10 flex flex-col items-center relative bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))] from-slate-800 via-slate-950 to-slate-950 overflow-x-hidden">
+             <div className="w-full max-w-[1200px] grid grid-cols-1 lg:grid-cols-2 gap-8 md:gap-12 mb-8 items-start">
+                 <div className="w-full flex flex-col items-center justify-center h-[460px]">
+                     <h3 className="text-lg font-black text-white mb-6 flex items-center bg-slate-900 px-6 py-2 rounded-full border border-slate-700 shadow-lg shrink-0"><Sun className="mr-2 text-yellow-400" size={20}/> 먼셀 20 색상환 (Munsell Wheel)</h3>
+                     <div className="relative flex justify-center items-center w-[360px] h-[360px] shrink-0">
+                        <svg className="w-full h-full drop-shadow-[0_0_50px_rgba(0,0,0,0.8)]" viewBox="0 0 400 400">
+                            <defs><marker id="arrowhead" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto"><polygon points="0 0, 10 3.5, 0 7" fill="#ef4444" /></marker></defs>
+                            {MUNSELL_WHEEL_COLORS.map((color, index) => {
+                                const startAngle = index * 18; const endAngle = (index + 1) * 18 - 1; const pathData = describeArc(200, 200, 100, 170, startAngle, endAngle); const isSelected = selectedWheelIndex === index;
+                                return ( <path key={index} d={pathData} fill={color.hex} stroke={isSelected ? "#ffffff" : "transparent"} strokeWidth={isSelected ? "3" : "0"} className={`cursor-pointer transition-all duration-300 hover:opacity-80`} onClick={(e) => { e.preventDefault(); e.stopPropagation(); handleWheelClick(index); }} style={{ transformOrigin: '200px 200px', transform: isSelected ? 'scale(1.05)' : 'scale(1)' }} /> );
+                            })}
+                            {MUNSELL_WHEEL_COLORS.map((color, index) => {
+                                const midAngle = index * 18 + 8.5; const pos = polarToCartesian(200, 200, 185, midAngle); let textRotation = midAngle; if (midAngle > 90 && midAngle < 270) textRotation += 180;
+                                return ( <g key={`label_${index}`} transform={`rotate(${textRotation}, ${pos.x}, ${pos.y})`}><text x={pos.x} y={pos.y - 4} fill="#cbd5e1" fontSize="10" fontWeight="bold" textAnchor="middle" className="pointer-events-none drop-shadow-md">{color.name}</text><text x={pos.x} y={pos.y + 6} fill="#64748b" fontSize="8" fontWeight="normal" textAnchor="middle" className="pointer-events-none">({color.symbol})</text></g> );
+                            })}
+                            <circle cx="200" cy="200" r="98" fill="#0f172a" stroke="#1e293b" strokeWidth="2" />
+                            <text x="200" y="195" fill="#94a3b8" fontSize="14" fontWeight="bold" textAnchor="middle" dominantBaseline="middle" className="tracking-widest">MUNSELL</text>
+                            <text x="200" y="215" fill="#ffffff" fontSize="16" fontWeight="900" textAnchor="middle" dominantBaseline="middle">표준 색상환</text>
+                            {selectedWheelIndex !== null && MUNSELL_WHEEL_COLORS[selectedWheelIndex] && ( <line x1={polarToCartesian(200, 200, 80, selectedWheelIndex * 18 + 8.5).x} y1={polarToCartesian(200, 200, 80, selectedWheelIndex * 18 + 8.5).y} x2={polarToCartesian(200, 200, 80, ((selectedWheelIndex + 10) % 20) * 18 + 8.5).x} y2={polarToCartesian(200, 200, 80, ((selectedWheelIndex + 10) % 20) * 18 + 8.5).y} stroke="#ef4444" strokeWidth="3.5" markerEnd="url(#arrowhead)" className="drop-shadow-[0_0_12px_rgba(239,68,68,1)] pointer-events-none" /> )}
+                        </svg>
+                     </div>
+                 </div>
+                 <div className="w-full flex flex-col items-center justify-center h-[460px]">
+                    {selectedWheelIndex !== null && MUNSELL_WHEEL_COLORS[selectedWheelIndex] ? (
+                        <div className="bg-slate-800 p-6 rounded-3xl border border-blue-500/50 shadow-[0_0_25px_rgba(59,130,246,0.3)] w-full max-w-[420px] h-[420px] flex flex-col justify-center text-center">
+                            <h4 className="text-xl font-black text-white mb-6 flex items-center justify-center gap-3 shrink-0"><span className="w-6 h-6 rounded-full shadow-md border border-slate-400" style={{backgroundColor: MUNSELL_WHEEL_COLORS[selectedWheelIndex].hex}}></span>{MUNSELL_WHEEL_COLORS[selectedWheelIndex].name} ({MUNSELL_WHEEL_COLORS[selectedWheelIndex].symbol}) 배합 규격</h4>
+                            <div className="flex justify-center items-center gap-6 bg-slate-900 py-8 px-4 rounded-xl border border-slate-700 w-full shrink-0 min-h-[140px]">
+                                {MIXING_DATA[MUNSELL_WHEEL_COLORS[selectedWheelIndex].symbol] ? (
+                                    <div className="flex flex-row justify-center items-center gap-6 w-full">
+                                        <div className="flex flex-col items-center gap-3"><div className="w-14 h-14 rounded-full border-2 border-slate-500 shadow-inner" style={{backgroundColor: MIXING_DATA[MUNSELL_WHEEL_COLORS[selectedWheelIndex].symbol].h1}}></div><span className="text-slate-300 font-bold text-sm">{MIXING_DATA[MUNSELL_WHEEL_COLORS[selectedWheelIndex].symbol].c1}</span><span className="text-white font-black text-3xl">{MIXING_DATA[MUNSELL_WHEEL_COLORS[selectedWheelIndex].symbol].r1}%</span></div>
+                                        {MIXING_DATA[MUNSELL_WHEEL_COLORS[selectedWheelIndex].symbol].c2 && (
+                                            <div className="flex flex-row justify-center items-center gap-6"><span className="text-slate-600 font-black text-2xl">+</span><div className="flex flex-col items-center gap-3"><div className="w-14 h-14 rounded-full border-2 border-slate-500 shadow-inner" style={{backgroundColor: MIXING_DATA[MUNSELL_WHEEL_COLORS[selectedWheelIndex].symbol].h2}}></div><span className="text-slate-300 font-bold text-sm">{MIXING_DATA[MUNSELL_WHEEL_COLORS[selectedWheelIndex].symbol].c2}</span><span className="text-white font-black text-3xl">{MIXING_DATA[MUNSELL_WHEEL_COLORS[selectedWheelIndex].symbol].r2}%</span></div></div>
+                                        )}
+                                    </div>
+                                ) : ( <div className="text-red-400 text-sm font-bold w-full text-center">배합 데이터를 불러올 수 없습니다.</div> )}
+                            </div>
+                            <p className="text-xs text-slate-400 mt-6 font-medium bg-slate-900/50 py-3 rounded-lg shrink-0">* 기술 보고서 기준의 단일 원색 정밀 조색 비율입니다.</p>
+                        </div>
+                    ) : (
+                        <div className="bg-slate-800/40 p-6 rounded-3xl border border-slate-700 border-dashed w-full max-w-[420px] h-[420px] flex flex-col items-center justify-center gap-4 text-center text-slate-500"><Sun className="text-slate-600 mb-2" size={40} /><p className="text-base font-bold text-slate-400">색상환에서 컬러를 클릭하세요.</p><p className="text-sm">선택된 색상의 원색 조색 배율이<br/>이곳에 표시됩니다.</p></div>
+                    )}
+                 </div>
+             </div>
+             <div className="mt-4 pb-12 w-full flex justify-center shrink-0">
+                <button onClick={() => setIsConfiguratorOpen(false)} className="bg-slate-800 hover:bg-slate-700 text-white border border-slate-600 font-bold py-4 px-16 rounded-full transition-colors shadow-[0_0_15px_rgba(0,0,0,0.5)] flex items-center gap-2 text-lg"><X size={24} /> 믹싱 스튜디오 닫기</button>
+             </div>
+          </main>
         </div>
       )}
 
