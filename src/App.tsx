@@ -423,14 +423,16 @@ export default function App() {
   return (
     <div className="min-h-screen bg-slate-100 text-slate-800 font-sans flex flex-col relative overflow-x-hidden pb-[320px] lg:pb-[140px] notranslate" translate="no">
       
-      {/* 🦜 [글라슈리트용 양방향 브랜드 스위처 헤더] */}
+{/* 🦜 [글라슈리트용 양방향 브랜드 스위처 헤더 - 완벽 왕복 패치 적용] */}
       <header className="bg-slate-900 flex flex-col md:flex-row justify-between items-center p-3 border-b border-slate-800 shadow-md shrink-0 gap-3 z-40">
         <div className="flex flex-col sm:flex-row items-center justify-between w-full md:w-auto gap-3">
             <div className="flex items-center bg-slate-800 p-1.5 rounded-xl border border-slate-700 shadow-inner w-full sm:w-auto justify-center">
-                {/* 🔴 스피스헥커로 돌아가는 버튼 */}
+                {/* 🔴 스피스헥커로 완벽하게 초기화면 점프 (window.replace 활용으로 세션 꼬임 방지) */}
                 <button 
-                    onClick={() => window.location.href="https://hitec-app.vercel.app"} 
-                    className="flex items-center gap-2 px-4 py-2 text-slate-400 hover:text-white transition-all group"
+                    onClick={() => { 
+                        window.location.replace("https://hitec-app.vercel.app"); 
+                    }} 
+                    className="flex items-center gap-2 px-4 py-2 text-slate-400 hover:text-white transition-all group cursor-pointer"
                     title="스피스헥커 하이텍으로 이동"
                 >
                     <span className="text-xl group-hover:scale-110 transition-transform origin-center">🔴</span>
@@ -441,11 +443,10 @@ export default function App() {
                     <span className="text-blue-600 font-black italic text-sm tracking-tighter">🦜 Glasurit</span>
                 </div>
             </div>
-            <span className="bg-slate-800 text-slate-400 text-[10px] px-2.5 py-1 rounded-full border border-slate-700 hidden md:inline-block shrink-0">Last Patch: {LAST_PATCH_DATE}</span>
+            <span className="bg-slate-800 text-slate-400 text-[10px] px-2.5 py-1 rounded-full border border-slate-700 hidden md:inline-block shrink-0">Last Patch: 2026.10.15</span>
         </div>
 
         <div className="flex gap-2 w-full md:w-auto overflow-x-auto pb-1 md:pb-0 scrollbar-hide snap-x">
-            {/* 🚨 [NEW] 무적의 다이렉트 연동 모달 오픈 버튼 */}
             <button onClick={() => { setIsCloudModalOpen(true); setCopied(false); }} className="snap-start flex items-center gap-1.5 bg-blue-600 hover:bg-blue-700 text-white border border-blue-500 px-3 py-2 rounded-lg text-xs font-bold transition-colors whitespace-nowrap shadow-sm">
                 ☁️ 기기 간 즉시 연동
             </button>
@@ -456,7 +457,7 @@ export default function App() {
                 <RefreshCw size={14} /> 업데이트
             </button>
             <button onClick={() => setIsBoardOpen(true)} className="snap-start flex items-center gap-1.5 bg-slate-800 hover:bg-slate-700 text-emerald-400 border border-emerald-900/50 px-3 py-2 rounded-lg text-xs font-bold transition-colors whitespace-nowrap shadow-sm">
-                <Layers size={14} /> 시편 게시판
+                <Layers size={14} / > 시편 게시판
             </button>
         </div>
       </header>
